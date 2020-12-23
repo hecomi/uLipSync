@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
   m_Name: Preset-Man
   m_EditorClassIdentifier: 
-  lpcOrder: 32
-  sampleCount: 2048
+  lpcOrder: 64
+  sampleCount: 4096
   formantA:
-    f1: 345
-    f2: 552
+    f1: 713
+    f2: 1035
   formantI:
-    f1: 115
-    f2: 1127
-  formantU:
-    f1: 161
-    f2: 1150
-  formantE:
-    f1: 240
-    f2: 1058
-  formantO:
     f1: 253
-    f2: 1472
+    f2: 2277
+  formantU:
+    f1: 345
+    f2: 966
+  formantE:
+    f1: 506
+    f2: 2001
+  formantO:
+    f1: 391
+    f2: 736
+  maxError: 500

@@ -434,7 +434,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCount: 1024
   micIndex: 0
 --- !u!82 &2066038225
 AudioSource:
@@ -544,4 +543,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9370f5d3e3d00f94baf4c82c48c7aff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volThresh: 0.0001
+  threshVolume: -20

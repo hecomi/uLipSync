@@ -17,9 +17,17 @@ public class LipSync : MonoBehaviour
         get { return config ? config.sampleCount : 1024; }
     }
 
+    public float deltaFreq
+    {
+        get { return (float)sampleRate_ / sampleCount; }
+    }
+
     float[] data_ = null;
     int sampleRate_ = 48000;
     int dataIndex_ = 0;
+
+    public float[] H { get; private set; } = null;
+    public LipSyncInfo lastInfo { get; private set; }
 
     void Awake()
     {
@@ -33,10 +41,10 @@ public class LipSync : MonoBehaviour
         {
             while (lipSyncInfo_.Count > 0)
             {
-                var info = lipSyncInfo_.Dequeue();
+                lastInfo = lipSyncInfo_.Dequeue();
                 if (onLipSyncUpdate != null) 
                 {
-                    onLipSyncUpdate.Invoke(info);
+                    onLipSyncUpdate.Invoke(lastInfo);
                 }
             }
         }
@@ -46,6 +54,7 @@ public class LipSync : MonoBehaviour
 	{
         if (data_ == null) return;
 
+        int preIndex = dataIndex_;
         dataIndex_ = dataIndex_ % data_.Length;
 		for (int i = 0; i < input.Length; i += channels) 
         {
@@ -53,9 +62,18 @@ public class LipSync : MonoBehaviour
             dataIndex_ = (dataIndex_ + 1) % data_.Length;
 		}
 
-        var df = sampleRate_ / input.Length;
+        if (muteInputSound)
+        {
+            System.Array.Clear(input, 0, input.Length);   
+        }
+
+        if (dataIndex_ > preIndex) return;
+
 		float vol = Core.GetVolume(data_);
-        var formant = Core.GetFormants(data_, dataIndex_, config, df);
+
+        H = Core.CalcLpcSpectralEnvelope(data_, dataIndex_, config);
+        var formant = Core.GetFormants(H, deltaFreq);
+
 		var vowel = Core.GetVowel(formant, config);
 
         lock (lipSyncInfo_)
@@ -65,11 +83,6 @@ public class LipSync : MonoBehaviour
                 formant = formant,
                 vowel = vowel,
             });
-        }
-
-        if (muteInputSound)
-        {
-            System.Array.Clear(input, 0, input.Length);   
         }
 	}
 }
