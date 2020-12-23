@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-[RequireComponent(typeof(AudioSource))]
 public class LipSync : MonoBehaviour
 {
     Queue<LipSyncInfo> lipSyncInfo_ = new Queue<LipSyncInfo>();
@@ -13,12 +12,19 @@ public class LipSync : MonoBehaviour
     public bool muteInputSound = false;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
-    float[] input_ = null;
+    public int sampleCount 
+    { 
+        get { return config ? config.sampleCount : 1024; }
+    }
+
+    float[] data_ = null;
     int sampleRate_ = 48000;
+    int dataIndex_ = 0;
 
     void Awake()
     {
         sampleRate_ = AudioSettings.outputSampleRate;
+        data_ = new float[sampleCount];
     }
 
     void Update()
@@ -36,24 +42,20 @@ public class LipSync : MonoBehaviour
         }
     }
 
-	void OnAudioFilterRead(float[] data, int channels)
+	void OnAudioFilterRead(float[] input, int channels)
 	{
-        if (!config) return;
+        if (data_ == null) return;
 
-        if (input_ == null || input_.Length != data.Length)
+        dataIndex_ = dataIndex_ % data_.Length;
+		for (int i = 0; i < input.Length; i += channels) 
         {
-            input_ = new float[data.Length / channels];
-        }
-
-		for (int i = 0, n = 0; i < data.Length && n < input_.Length; i += channels) 
-        {
-			input_[n] = data[i];
-			++n;
+			data_[dataIndex_] = input[i];
+            dataIndex_ = (dataIndex_ + 1) % data_.Length;
 		}
 
-        var df = sampleRate_ / data.Length;
-		float vol = Core.GetVolume(input_);
-        var formant = Core.GetFormants(input_, config, df);
+        var df = sampleRate_ / input.Length;
+		float vol = Core.GetVolume(data_);
+        var formant = Core.GetFormants(data_, dataIndex_, config, df);
 		var vowel = Core.GetVowel(formant, config);
 
         lock (lipSyncInfo_)
@@ -67,7 +69,7 @@ public class LipSync : MonoBehaviour
 
         if (muteInputSound)
         {
-            System.Array.Clear(data, 0, data.Length);   
+            System.Array.Clear(input, 0, input.Length);   
         }
 	}
 }

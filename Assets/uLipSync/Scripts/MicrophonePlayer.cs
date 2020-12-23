@@ -4,9 +4,8 @@ namespace uLipSync
 {
 
 [RequireComponent(typeof(AudioSource))]
-public class MicHandler : MonoBehaviour
+public class MicrophonePlayer : MonoBehaviour
 {
-    public int sampleCount = 1024;
     public int micIndex = 0;
 
     AudioSource source_;
@@ -14,17 +13,17 @@ public class MicHandler : MonoBehaviour
     int maxFreq_;
     string micName_ = null;
 
-    public bool isReady { get; set; } = false;
-    public bool isRecording { get; set; } = false;
+    public bool isReady { get; private set; } = false;
+    public bool isRecording { get; private set; } = false;
 
     bool isSourcePlainyg 
     { 
         get { return source_ && source_.isPlaying; } 
     }
 
-    public float deltaFreq
+    public float freq
     {
-        get { return clip ? clip.frequency / sampleCount : 0.0f; }
+        get {  return clip ? clip.frequency : 44100; }
     }
 
     public AudioClip clip
@@ -37,6 +36,8 @@ public class MicHandler : MonoBehaviour
     {
         InitMicInfo();
         source_ = GetComponent<AudioSource>();
+
+        // TODO: start manually
         StartRecord();
     }
 
@@ -112,7 +113,7 @@ public class MicHandler : MonoBehaviour
 
     void StartRecordInternal()
     {
-        clip = Microphone.Start(micName_, false, 10, maxFreq_);
+        clip = Microphone.Start(micName_, true, 10, maxFreq_);
         while (Microphone.GetPosition(micName_) <= 0) ;
         source_.Play();
     }

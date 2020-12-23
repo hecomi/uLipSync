@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
 
 namespace uLipSync
 {
@@ -7,19 +7,27 @@ public static class Core
 {
     public static float GetVolume(float[] input)
     {
-        float vol = 0f;
+        float refAmp = 0.1f;
+        float maxAmp = 0f;
         for (int i = 0; i < input.Length; ++i)
         {
-            vol += input[i] * input[i];
+            maxAmp = math.max(maxAmp, math.abs(input[i]));
         }
-        vol /= input.Length;
-        return vol;
+        return math.max(20f * math.log10(maxAmp / refAmp), -160f);
     }
 
-    public static FormantPair GetFormants(float[] input, Config config, float deltaFreq)
+    public static float[] CalcLpcSpectralEnvelope(float[] input, int startIndex, Config config)
     {
-        var data = new float[input.Length];
-        System.Array.Copy(input, 0, data, 0, input.Length);
+        int len = input.Length;
+        var data = new float[len];
+        {
+            int n = len - startIndex;
+            System.Array.Copy(input, startIndex, data, 0, n);
+            if (startIndex != 0)
+            {
+                System.Array.Copy(input, 0, data, n, len - n);
+            }
+        }
 
         int N = data.Length;
         int order = config.lpcOrder;
@@ -27,7 +35,7 @@ public static class Core
         // multiply hamming window function
         for (int i = 1; i < N - 1; ++i)
         {
-            data[i] *= 0.54f - 0.46f * Mathf.Cos(2f * Mathf.PI * i / (N - 1));
+            data[i] *= 0.54f - 0.46f * math.cos(2f * math.PI * i / (N - 1));
         }
         data[0] = data[N - 1] = 0f;
 
@@ -38,8 +46,8 @@ public static class Core
             if (data[i] > max) max = data[i];
             if (data[i] < min) min = data[i];
         }
-        max = Mathf.Abs(max);
-        min = Mathf.Abs(min);
+        max = math.abs(max);
+        min = math.abs(min);
         float factor = 1f;
         if (max > min) factor = 1f / max;
         if (max < min) factor = 1f / min;
@@ -105,17 +113,25 @@ public static class Core
             float nr = 0f, ni = 0f, dr = 0f, di = 0f;
             for (int i = 0; i < order + 1; ++i)
             {
-                float re = Mathf.Cos(-2f * Mathf.PI * n * i / N);
-                float im = Mathf.Sin(-2f * Mathf.PI * n * i / N);
+                float re = math.cos(-2f * math.PI * n * i / N);
+                float im = math.sin(-2f * math.PI * n * i / N);
                 nr += e[order - i] * re;
                 ni += e[order - i] * im;
                 dr += a[order - i] * re;
                 di += a[order - i] * im;
             }
-            float numerator = Mathf.Sqrt(Mathf.Pow(nr, 2f) + Mathf.Pow(ni, 2f));
-            float denominator = Mathf.Sqrt(Mathf.Pow(dr, 2f) + Mathf.Pow(di, 2f));
+            float numerator = math.sqrt(math.pow(nr, 2f) + math.pow(ni, 2f));
+            float denominator = math.sqrt(math.pow(dr, 2f) + math.pow(di, 2f));
             H[n] = numerator / denominator;
         }
+
+        return H;
+    }
+
+    public static FormantPair GetFormants(float[] input, int startIndex, Config config, float deltaFreq)
+    {
+        var N = input.Length;
+        var H = CalcLpcSpectralEnvelope(input, startIndex, config);
 
         // identify the first and the second formant frequency
         bool foundFirst = false;
@@ -140,9 +156,9 @@ public static class Core
         return new FormantPair(f1 * deltaFreq, f2 * deltaFreq);
     }
 
-    public static Vowel GetVowel(float[] input, Config config, float deltaFreq)
+    public static Vowel GetVowel(float[] input, int startIndex, Config config, float deltaFreq)
     {
-        return GetVowel(GetFormants(input, config, deltaFreq), config);
+        return GetVowel(GetFormants(input, startIndex, config, deltaFreq), config);
     }
 
     public static Vowel GetVowel(FormantPair formant, Config config)
@@ -152,7 +168,8 @@ public static class Core
         float diffU = FormantPair.Dist(formant, config.formantU);
         float diffE = FormantPair.Dist(formant, config.formantE);
         float diffO = FormantPair.Dist(formant, config.formantO);
-        float minDiff = Mathf.Min(new float[] { diffA, diffI, diffU, diffE, diffO });
+        float minDiff = math.min(diffA, math.min(diffI, math.min(diffU, math.min(diffE, diffO))));
+        if (minDiff > config.maxError) return Vowel.None;
 
         if      (diffA == minDiff) { return Vowel.A; }
         else if (diffI == minDiff) { return Vowel.I; }
