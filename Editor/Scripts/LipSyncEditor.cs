@@ -7,9 +7,8 @@ namespace uLipSync
 [CustomEditor(typeof(LipSync))]
 public class LipSyncEditor : Editor
 {
-    LipSync lipSync_ = null;
-
-    Config config { get { return lipSync_.config; } }
+    LipSync lipSync { get { return target as LipSync; } }
+    Config config { get { return lipSync.config; } }
 
     internal struct Margin
     {
@@ -26,31 +25,14 @@ public class LipSyncEditor : Editor
         }
     }
 
-    void OnEnable()
-    {
-        lipSync_ = (LipSync)target;
-    }
-
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        float height = 400f;
-        var area = GUILayoutUtility.GetRect(Screen.width, height);
-        var margin = new Margin(10, 10f, 30f, 40f);
-        var range = new Vector2(1000f, 3000f);
+        if (!lipSync) return;
 
-        DrawGrid(
-            area,
-            Color.white, 
-            new Color(1f, 1f, 1f, 0.5f), 
-            margin,
-            range,
-            new Vector2(5f, 3f));
-        DrawFormants(
-            area,
-            margin,
-            range);
+        DrawFormants();
+        DrawLPCSpectralEnvelope();
     }
 
     void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)
@@ -125,8 +107,20 @@ public class LipSyncEditor : Editor
         }
     }
 
-    void DrawFormants(Rect area, Margin margin, Vector2 range)
+    void DrawFormants()
     {
+        var area = GUILayoutUtility.GetRect(Screen.width, 400f);
+        var margin = new Margin(10, 10f, 30f, 40f);
+        var range = new Vector2(1000f, 3000f);
+
+        DrawGrid(
+            area,
+            Color.white, 
+            new Color(1f, 1f, 1f, 0.5f), 
+            margin,
+            range,
+            new Vector2(5f, 3f));
+
         if (!config) return; 
 
         float xMin = area.x + margin.left;
@@ -166,12 +160,12 @@ public class LipSyncEditor : Editor
         for (int i = 0; i < formants.Length; ++i)
         {
             var f = formants[i];
-            var dx = width / range.x; 
-            var dy = height / range.y;
-            var x = xMin + dx * f.f1;
-            var y = yMin + (height - dy * f.f2);
-            var rx = config.maxError * dx;
-            var ry = config.maxError * dy;
+            float dx = width / range.x; 
+            float dy = height / range.y;
+            float x = xMin + dx * f.f1;
+            float y = yMin + (height - dy * f.f2);
+            float rx = config.maxError * dx;
+            float ry = config.maxError * dy;
             var origColor = Handles.color;
             var center = new Vector3(x, y, 0f);
             var color = colors[i];
@@ -191,9 +185,9 @@ public class LipSyncEditor : Editor
         var n = points.Length;
         for (int i = 0; i < n; ++i)
         {
-            var ang = 2 * Mathf.PI * i / n;
-            var x = rx * Mathf.Cos(ang);
-            var y = ry * Mathf.Sin(ang);
+            float ang = 2 * Mathf.PI * i / n;
+            float x = rx * Mathf.Cos(ang);
+            float y = ry * Mathf.Sin(ang);
             var pos = center + new Vector3(x, y, 0f);
             pos.x = Mathf.Max(Mathf.Min(pos.x, area.xMax), area.xMin);
             pos.y = Mathf.Max(Mathf.Min(pos.y, area.yMax), area.yMin);
@@ -204,6 +198,48 @@ public class LipSyncEditor : Editor
 
     void DrawLPCSpectralEnvelope()
     {
+        var area = GUILayoutUtility.GetRect(Screen.width, 400f);
+        var margin = new Margin(10, 10f, 30f, 40f);
+        var range = new Vector2(3000f, 10f);
+
+        DrawGrid(
+            area,
+            Color.white, 
+            new Color(1f, 1f, 1f, 0.5f), 
+            margin,
+            range,
+            new Vector2(3f, 1f));
+
+        var H = lipSync.H;
+        if (H == null) return;
+
+        float xMin = area.x + margin.left;
+        float xMax = area.xMax - margin.right;
+        float yMin = area.y + margin.top;
+        float yMax = area.yMax - margin.bottom;
+        float width = xMax - xMin;
+        float height = yMax - yMin;
+
+        float maxH = Core.GetMaxValue(H);
+        float df = lipSync.deltaFreq;
+        int n = Mathf.CeilToInt(range.x / df);
+        var points = new Vector3[n];
+        float min = Mathf.Log10(1e-3f);
+        for (int i = 0; i < n; ++i)
+        {
+            float val = H[i] / maxH;
+            val = Mathf.Log10(10f * val);
+            val = (val - min) / (1f - min);
+            val = Mathf.Max(val, 0f);
+            float x = xMin + width * i / (n - 1);
+            float y = yMax - height * val;
+            points[i] = new Vector3(x, y, 0f);
+        }
+
+        var origColor = Handles.color;
+        Handles.color = Color.red;
+        Handles.DrawAAPolyLine(5f, points);
+        Handles.color = origColor;
     }
 }
 

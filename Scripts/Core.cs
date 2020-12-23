@@ -5,14 +5,20 @@ namespace uLipSync
 
 public static class Core
 {
+    public static float GetMaxValue(float[] input)
+    {
+        float max = 0f;
+        for (int i = 0; i < input.Length; ++i)
+        {
+            max = math.max(max, math.abs(input[i]));
+        }
+        return max;
+    }
+
     public static float GetVolume(float[] input)
     {
         float refAmp = 0.1f;
-        float maxAmp = 0f;
-        for (int i = 0; i < input.Length; ++i)
-        {
-            maxAmp = math.max(maxAmp, math.abs(input[i]));
-        }
+        float maxAmp = GetMaxValue(input);
         return math.max(20f * math.log10(maxAmp / refAmp), -160f);
     }
 
@@ -130,30 +136,34 @@ public static class Core
 
     public static FormantPair GetFormants(float[] input, int startIndex, Config config, float deltaFreq)
     {
-        var N = input.Length;
         var H = CalcLpcSpectralEnvelope(input, startIndex, config);
+        return GetFormants(H, deltaFreq);
+    }
 
-        // identify the first and the second formant frequency
+    public static FormantPair GetFormants(float[] H, float deltaFreq)
+    {
+        int N = H.Length;
+        var formant = new FormantPair();
         bool foundFirst = false;
-        int f1 = 0, f2 = 0;
+
         for (int i = 1; i < N - 1; ++i)
         {
             if (H[i] > H[i - 1] && H[i] > H[i + 1])
             {
                 if (!foundFirst)
                 {
-                    f1 = i;
+                    formant.f1 = i * deltaFreq;
                     foundFirst = true;
                 }
                 else
                 {
-                    f2 = i;
+                    formant.f2 = i * deltaFreq;
                     break;
                 }
             }
         }
 
-        return new FormantPair(f1 * deltaFreq, f2 * deltaFreq);
+        return formant;
     }
 
     public static Vowel GetVowel(float[] input, int startIndex, Config config, float deltaFreq)
