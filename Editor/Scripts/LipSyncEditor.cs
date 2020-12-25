@@ -37,6 +37,8 @@ public class LipSyncEditor : Editor
 
     void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)
     {
+        var origColor = Handles.color;
+
         float xMin = area.x + margin.left;
         float xMax = area.xMax - margin.right;
         float yMin = area.y + margin.top;
@@ -105,13 +107,17 @@ public class LipSyncEditor : Editor
             var rect = new Rect(x, yMax, 40f, 20f);
             EditorGUI.LabelField(rect, (range.x * i / div.x).ToString());
         }
+
+        Handles.color = origColor;
     }
 
     void DrawFormants()
     {
+        var origColor = Handles.color;
+
         var area = GUILayoutUtility.GetRect(Screen.width, 400f);
         var margin = new Margin(10, 10f, 30f, 40f);
-        var range = new Vector2(1000f, 3000f);
+        var range = new Vector2(1200f, 4000f);
 
         DrawGrid(
             area,
@@ -119,7 +125,7 @@ public class LipSyncEditor : Editor
             new Color(1f, 1f, 1f, 0.5f), 
             margin,
             range,
-            new Vector2(5f, 3f));
+            new Vector2(6f, 4f));
 
         if (!config) return; 
 
@@ -129,6 +135,9 @@ public class LipSyncEditor : Editor
         float yMax = area.yMax - margin.bottom;
         float width = xMax - xMin;
         float height = yMax - yMin;
+
+        var result = lipSync.result;
+        int vowelIndex = (int)Util.GetVowel(result.formant, config);
 
         var colors = new Color[] 
         {
@@ -148,7 +157,7 @@ public class LipSyncEditor : Editor
             config.formantO,
         };
 
-        var vowels = new string[]
+        var vowelLabels = new string[]
         {
             "A",
             "I",
@@ -157,26 +166,35 @@ public class LipSyncEditor : Editor
             "O",
         };
 
+        float dx = width / range.x; 
+        float dy = height / range.y;
         for (int i = 0; i < formants.Length; ++i)
         {
             var f = formants[i];
-            float dx = width / range.x; 
-            float dy = height / range.y;
             float x = xMin + dx * f.f1;
             float y = yMin + (height - dy * f.f2);
             float rx = config.maxError * dx;
             float ry = config.maxError * dy;
-            var origColor = Handles.color;
             var center = new Vector3(x, y, 0f);
             var color = colors[i];
             Handles.color = color;
             Handles.DrawSolidDisc(center, Vector3.forward, 5f);
-            color.a = 0.15f;
+            color.a = (i == vowelIndex) ? 0.5f : 0.15f;
             Handles.color = color;
             DrawEllipse(center, rx, ry, new Rect(xMin, yMin, width, height));
-            EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 20f, 20f), vowels[i]);
-            Handles.color = origColor;
+            EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 20f, 20f), vowelLabels[i]);
         }
+
+        {
+            float x = xMin + result.formant.f1 * dx;
+            float y = yMin + (height - result.formant.f2 * dy);
+            float size = Mathf.Lerp(2f, 20f, Mathf.Min(result.volume / 0.1f, 1f));
+            var center = new Vector3(x, y, 0f);
+            Handles.color = Color.white;
+            Handles.DrawWireDisc(center, Vector3.forward, size);
+        }
+
+        Handles.color = origColor;
     }
 
     void DrawEllipse(Vector3 center, float rx, float ry, Rect area)
@@ -198,9 +216,11 @@ public class LipSyncEditor : Editor
 
     void DrawLPCSpectralEnvelope()
     {
+        var origColor = Handles.color;
+
         var area = GUILayoutUtility.GetRect(Screen.width, 400f);
         var margin = new Margin(10, 10f, 30f, 40f);
-        var range = new Vector2(3000f, 10f);
+        var range = new Vector2(4000f, 10f);
 
         DrawGrid(
             area,
@@ -210,8 +230,9 @@ public class LipSyncEditor : Editor
             range,
             new Vector2(3f, 1f));
 
-        var H = lipSync.editorOnlyHForDebug;
-        if (H == null) return;
+        if (!Application.isPlaying) return;
+
+        var H = lipSync.lpcSpectralEnvelopeForEditor;
 
         float xMin = area.x + margin.left;
         float xMax = area.xMax - margin.right;
@@ -220,13 +241,14 @@ public class LipSyncEditor : Editor
         float width = xMax - xMin;
         float height = yMax - yMin;
 
+        float maxH = Algorithm.GetMaxValue(ref H);
         float df = lipSync.deltaFreq;
         int n = Mathf.CeilToInt(range.x / df);
         var points = new Vector3[n];
         float min = Mathf.Log10(1e-3f);
         for (int i = 0; i < n && i < H.Length; ++i)
         {
-            float val = H[i];
+            float val = H[i] / maxH;
             val = Mathf.Log10(10f * val);
             val = (val - min) / (1f - min);
             val = Mathf.Max(val, 0f);
@@ -235,9 +257,23 @@ public class LipSyncEditor : Editor
             points[i] = new Vector3(x, y, 0f);
         }
 
-        var origColor = Handles.color;
         Handles.color = Color.red;
         Handles.DrawAAPolyLine(5f, points);
+
+        {
+            var result = lipSync.result;
+            float xF1 = xMin + width * (result.formant.f1 / df) / n;
+            float xF2 = xMin + width * (result.formant.f2 / df) / n;
+            var pointsF1 = new Vector3[2] { new Vector3(xF1, yMin, 0f), new Vector3(xF1, yMax, 0f) };
+            var pointsF2 = new Vector3[2] { new Vector3(xF2, yMin, 0f), new Vector3(xF2, yMax, 0f) };
+            Handles.color = Color.green;
+            Handles.DrawAAPolyLine(3f, pointsF1);
+            Handles.color = Color.blue;
+            Handles.DrawAAPolyLine(3f, pointsF2);
+            EditorGUI.LabelField(new Rect(xF1 + 10f, yMin + 10f, 200f, 20f), $"f1: {(int)result.formant.f1} Hz");
+            EditorGUI.LabelField(new Rect(xF2 + 10f, yMin + 30f, 200f, 20f), $"f2: {(int)result.formant.f2} Hz");
+        }
+
         Handles.color = origColor;
     }
 }

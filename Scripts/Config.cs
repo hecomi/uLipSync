@@ -14,6 +14,7 @@ public class Config : ScriptableObject
     public FormantPair formantE = new FormantPair(550f, 2053f);
     public FormantPair formantO = new FormantPair(696f, 3660f);
     public float maxError = 500f; // Hz
+    public float volumeThresh = 1e-4f;
 }
 
 }

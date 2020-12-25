@@ -5,8 +5,8 @@ namespace uLipSync.Samples
 
 public class DebugPrintLipSyncInfo : MonoBehaviour
 {
-    [Range(-160f, 20f), Tooltip("dB")]
-    public float threshVolume = 0f;
+    [Range(0f, 1f), Tooltip("RMS Volume")]
+    public float threshVolume = 0.01f;
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {

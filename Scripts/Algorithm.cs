@@ -20,10 +20,37 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static float GetVolume(float maxAmp)
+    public static float GetMinValue(ref NativeArray<float> array)
     {
-        float refAmp = 0.1f;
-        return math.max(20f * math.log10(maxAmp / refAmp), -160f);
+        float min = 0f;
+        for (int i = 0; i < array.Length; ++i)
+        {
+            min = math.min(min, math.abs(array[i]));
+        }
+        return min;
+    }
+
+    [BurstCompile]
+    public static float GetRMSVolume(ref NativeArray<float> array)
+    {
+        float average = 0f;
+        int n = array.Length;
+        for (int i = 0; i < n; ++i)
+        {
+            average += array[i] * array[i];
+        }
+        return math.sqrt(average / n);
+    }
+
+    [BurstCompile]
+    public static void CopyRingBuffer(ref NativeArray<float> src, ref NativeArray<float> dst, int startSrcIndex)
+    {
+        int N = src.Length;
+        for (int i = 0; i < N; ++i)
+        {
+            int index = (startSrcIndex + i) % N;
+            dst[i] = src[index];
+        }
     }
 
     [BurstCompile]

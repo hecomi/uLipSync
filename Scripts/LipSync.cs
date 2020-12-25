@@ -11,43 +11,46 @@ public class LipSync : MonoBehaviour
     public bool muteInputSound = false;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
-    NativeArray<float> data_;
-    NativeArray<float> input_;
-    NativeArray<float> H_;
-    NativeArray<CalcFormantsJob.Result> result_;
+    NativeArray<float> rawData_;
+    NativeArray<float> inputData_;
+    NativeArray<float> lpcSpectralEnvelope_;
+    NativeArray<CalcFormantsResult> result_;
     JobHandle jobHandle_;
     object lockObject_ = new object();
     int index_ = 0;
     int sampleRate_ = 48000;
 #if UNITY_EDITOR
-    NativeArray<float> editorOnlyHForDebug_;
-    public NativeArray<float> editorOnlyHForDebug { get { return editorOnlyHForDebug_; } }
+    NativeArray<float> lpcSpectralEnvelopeForEditor_;
+    public NativeArray<float> lpcSpectralEnvelopeForEditor { get { return lpcSpectralEnvelopeForEditor_; } }
 #endif
 
     public int sampleCount { get { return config ? config.sampleCount : 1024; } }
     public float deltaFreq { get { return (float)sampleRate_ / sampleCount; } }
 
+    CalcFormantsResult resultA_ = new CalcFormantsResult();
+    public CalcFormantsResult result { get { return resultA_; } }
+
     void OnEnable()
     {
         sampleRate_ = AudioSettings.outputSampleRate;
-        data_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
-        input_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        H_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        result_ = new NativeArray<CalcFormantsJob.Result>(1, Allocator.Persistent);
+        rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
+        inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        result_ = new NativeArray<CalcFormantsResult>(1, Allocator.Persistent);
 #if UNITY_EDITOR
-        editorOnlyHForDebug_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelopeForEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
 #endif
     }
 
     void OnDisable()
     {
         jobHandle_.Complete();
-        data_.Dispose();
-        input_.Dispose();
-        H_.Dispose();
+        rawData_.Dispose();
+        inputData_.Dispose();
+        lpcSpectralEnvelope_.Dispose();
         result_.Dispose();
 #if UNITY_EDITOR
-        editorOnlyHForDebug_.Dispose();
+        lpcSpectralEnvelopeForEditor_.Dispose();
 #endif
     }
 
@@ -63,18 +66,17 @@ public class LipSync : MonoBehaviour
     void GetResultAndInvokeCallback()
     {
 #if UNITY_EDITOR
-        editorOnlyHForDebug_.CopyFrom(H_);
+        lpcSpectralEnvelopeForEditor_.CopyFrom(lpcSpectralEnvelope_);
 #endif
 
         if (onLipSyncUpdate == null) return;
 
-        var volume = result_[0].volume;
-        var formant = result_[0].formant;
+        resultA_ = result_[0];
         var info = new LipSyncInfo()
         {
-            volume = volume,
-            formant = formant,
-            vowel = Util.GetVowel(formant, config),
+            volume = result.volume,
+            formant = result.formant,
+            vowel = Util.GetVowel(result.formant, config),
         };
         onLipSyncUpdate.Invoke(info);
     }
@@ -84,18 +86,19 @@ public class LipSync : MonoBehaviour
         int index = 0;
         lock (lockObject_)
         {
-            input_.CopyFrom(data_);
+            inputData_.CopyFrom(rawData_);
             index = index_;
         }
 
         var job = new CalcFormantsJob()
         {
-            input = input_,
+            input = inputData_,
             startIndex = index,
             lpcOrder = config.lpcOrder,
             deltaFreq = deltaFreq,
-            H = H_,
+            H = lpcSpectralEnvelope_,
             result = result_,
+            volumeThresh = config.volumeThresh,
         };
 
         jobHandle_ = job.Schedule();
@@ -103,13 +106,16 @@ public class LipSync : MonoBehaviour
 
 	void OnAudioFilterRead(float[] input, int channels)
 	{
-        lock (lockObject_)
+        if (rawData_ != null)
         {
-            int n = data_.Length;
-            for (int i = 0; i < n; i += channels) 
+            lock (lockObject_)
             {
-                data_[index_] = input[i];
-                index_ = (index_ + 1) % n;
+                int n = input.Length;
+                for (int i = 0; i < n; i += channels) 
+                {
+                    rawData_[index_] = input[i];
+                    index_ = (index_ + 1) % n;
+                }
             }
         }
 
