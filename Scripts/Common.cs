@@ -26,6 +26,11 @@ public struct FormantPair
         this.f2 = f2;
     }
 
+    public void Print()
+    {
+        Debug.LogFormat("F1: {0}, F2: {1}", f1, f2);
+    }
+
     public static float Dist(FormantPair a, FormantPair b)
     {
         return Mathf.Sqrt(Mathf.Pow(a.f1 - b.f1, 2f) + Mathf.Pow(a.f2 - b.f2, 2f));

@@ -8,17 +8,25 @@ public class MicrophonePlayer : MonoBehaviour
 {
     public int micIndex = 0;
 
-    AudioSource source_;
-    int minFreq_;
-    int maxFreq_;
-    string micName_ = null;
-
+    public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
+    public string micName { get; private set; } = "";
 
-    bool isSourcePlainyg 
+    int minFreq_;
+    int maxFreq_;
+    public int micFreq { get { return minFreq_; } }
+    public int maxFreq { get { return maxFreq_; } }
+
+    bool isPlaying 
     { 
-        get { return source_ && source_.isPlaying; } 
+        get { return source && source.isPlaying; } 
+    }
+
+    public AudioClip clip
+    {
+        get { return source ? source.clip : null; }
+        set { if (source) source.clip = value; }
     }
 
     public float freq
@@ -26,16 +34,10 @@ public class MicrophonePlayer : MonoBehaviour
         get {  return clip ? clip.frequency : 44100; }
     }
 
-    public AudioClip clip
-    {
-        get { return source_.clip; }
-        set { source_.clip = value; }
-    }
-
     void OnEnable()
     {
         InitMicInfo();
-        source_ = GetComponent<AudioSource>();
+        source = GetComponent<AudioSource>();
 
         // TODO: start manually
         StartRecord();
@@ -48,12 +50,12 @@ public class MicrophonePlayer : MonoBehaviour
 
     void Update()
     {
-        if (!isSourcePlainyg && isReady && isRecording)
+        if (!isPlaying && isReady && isRecording)
         {
             StartRecordInternal();
         }
 
-        if (isSourcePlainyg && !isRecording)
+        if (isPlaying && !isRecording)
         {
             StopRecordInternal();
         }
@@ -62,7 +64,7 @@ public class MicrophonePlayer : MonoBehaviour
     void OnApplicationPause()
     {
         StopRecordInternal();
-        source_.Stop();
+        source.Stop();
         Destroy(clip);
     }
 
@@ -80,18 +82,10 @@ public class MicrophonePlayer : MonoBehaviour
             {
                 micIndex = maxIndex;
             }
-            micName_ = Microphone.devices[micIndex];
+            micName = Microphone.devices[micIndex];
         }
 
-        Microphone.GetDeviceCaps(micName_, out minFreq_, out maxFreq_);
-        if (minFreq_ == 0 && maxFreq_ == 0)
-        {
-            maxFreq_ = 44100;
-        }
-        else if (maxFreq_ > 44100)
-        {
-            maxFreq_ = 44100;
-        }
+        Microphone.GetDeviceCaps(micName, out minFreq_, out maxFreq_);
 
         isReady = true;
     }
@@ -113,14 +107,15 @@ public class MicrophonePlayer : MonoBehaviour
 
     void StartRecordInternal()
     {
-        clip = Microphone.Start(micName_, true, 10, maxFreq_);
-        while (Microphone.GetPosition(micName_) <= 0) ;
-        source_.Play();
+        clip = Microphone.Start(micName, true, 10, maxFreq);
+        while (Microphone.GetPosition(micName) <= 0) ;
+        source.loop = true;
+        source.Play();
     }
 
     void StopRecordInternal()
     {
-        source_.Stop();
+        source.Stop();
         Destroy(clip);
     }
 }

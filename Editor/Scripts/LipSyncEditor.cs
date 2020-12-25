@@ -210,7 +210,7 @@ public class LipSyncEditor : Editor
             range,
             new Vector2(3f, 1f));
 
-        var H = lipSync.H;
+        var H = lipSync.editorOnlyHForDebug;
         if (H == null) return;
 
         float xMin = area.x + margin.left;
@@ -220,14 +220,13 @@ public class LipSyncEditor : Editor
         float width = xMax - xMin;
         float height = yMax - yMin;
 
-        float maxH = Core.GetMaxValue(H);
         float df = lipSync.deltaFreq;
         int n = Mathf.CeilToInt(range.x / df);
         var points = new Vector3[n];
         float min = Mathf.Log10(1e-3f);
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < n && i < H.Length; ++i)
         {
-            float val = H[i] / maxH;
+            float val = H[i];
             val = Mathf.Log10(10f * val);
             val = (val - min) / (1f - min);
             val = Mathf.Max(val, 0f);

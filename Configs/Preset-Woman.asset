@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
-  m_Name: Preset-Man
+  m_Name: Preset-Woman
   m_EditorClassIdentifier: 
   lpcOrder: 64
-  sampleCount: 1024
+  sampleCount: 4096
   formantA:
-    f1: 713
-    f2: 1035
+    f1: 900
+    f2: 1450
   formantI:
-    f1: 253
-    f2: 2277
+    f1: 320
+    f2: 3000
   formantU:
-    f1: 345
-    f2: 966
+    f1: 500
+    f2: 1000
   formantE:
-    f1: 506
-    f2: 2001
+    f1: 770
+    f2: 2500
   formantO:
-    f1: 391
-    f2: 736
+    f1: 450
+    f2: 950
   maxError: 500

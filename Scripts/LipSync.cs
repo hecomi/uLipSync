@@ -1,88 +1,121 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 
 namespace uLipSync
 {
 
 public class LipSync : MonoBehaviour
 {
-    Queue<LipSyncInfo> lipSyncInfo_ = new Queue<LipSyncInfo>();
-
     public Config config;
     public bool muteInputSound = false;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
-    public int sampleCount 
-    { 
-        get { return config ? config.sampleCount : 1024; }
-    }
-
-    public float deltaFreq
-    {
-        get { return (float)sampleRate_ / sampleCount; }
-    }
-
-    float[] data_ = null;
+    NativeArray<float> data_;
+    NativeArray<float> input_;
+    NativeArray<float> H_;
+    NativeArray<CalcFormantsJob.Result> result_;
+    JobHandle jobHandle_;
+    object lockObject_ = new object();
+    int index_ = 0;
     int sampleRate_ = 48000;
-    int dataIndex_ = 0;
+#if UNITY_EDITOR
+    NativeArray<float> editorOnlyHForDebug_;
+    public NativeArray<float> editorOnlyHForDebug { get { return editorOnlyHForDebug_; } }
+#endif
 
-    public float[] H { get; private set; } = null;
-    public LipSyncInfo lastInfo { get; private set; }
+    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
+    public float deltaFreq { get { return (float)sampleRate_ / sampleCount; } }
 
-    void Awake()
+    void OnEnable()
     {
         sampleRate_ = AudioSettings.outputSampleRate;
-        data_ = new float[sampleCount];
+        data_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
+        input_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        H_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        result_ = new NativeArray<CalcFormantsJob.Result>(1, Allocator.Persistent);
+#if UNITY_EDITOR
+        editorOnlyHForDebug_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+#endif
+    }
+
+    void OnDisable()
+    {
+        jobHandle_.Complete();
+        data_.Dispose();
+        input_.Dispose();
+        H_.Dispose();
+        result_.Dispose();
+#if UNITY_EDITOR
+        editorOnlyHForDebug_.Dispose();
+#endif
     }
 
     void Update()
     {
-        lock (lipSyncInfo_)
+        if (!jobHandle_.IsCompleted) return;
+
+        jobHandle_.Complete();
+        GetResultAndInvokeCallback();
+        ScheduleJob();
+    }
+
+    void GetResultAndInvokeCallback()
+    {
+#if UNITY_EDITOR
+        editorOnlyHForDebug_.CopyFrom(H_);
+#endif
+
+        if (onLipSyncUpdate == null) return;
+
+        var volume = result_[0].volume;
+        var formant = result_[0].formant;
+        var info = new LipSyncInfo()
         {
-            while (lipSyncInfo_.Count > 0)
-            {
-                lastInfo = lipSyncInfo_.Dequeue();
-                if (onLipSyncUpdate != null) 
-                {
-                    onLipSyncUpdate.Invoke(lastInfo);
-                }
-            }
+            volume = volume,
+            formant = formant,
+            vowel = Util.GetVowel(formant, config),
+        };
+        onLipSyncUpdate.Invoke(info);
+    }
+
+    void ScheduleJob()
+    {
+        int index = 0;
+        lock (lockObject_)
+        {
+            input_.CopyFrom(data_);
+            index = index_;
         }
+
+        var job = new CalcFormantsJob()
+        {
+            input = input_,
+            startIndex = index,
+            lpcOrder = config.lpcOrder,
+            deltaFreq = deltaFreq,
+            H = H_,
+            result = result_,
+        };
+
+        jobHandle_ = job.Schedule();
     }
 
 	void OnAudioFilterRead(float[] input, int channels)
 	{
-        if (data_ == null) return;
-
-        int preIndex = dataIndex_;
-        dataIndex_ = dataIndex_ % data_.Length;
-		for (int i = 0; i < input.Length; i += channels) 
+        lock (lockObject_)
         {
-			data_[dataIndex_] = input[i];
-            dataIndex_ = (dataIndex_ + 1) % data_.Length;
-		}
+            int n = data_.Length;
+            for (int i = 0; i < n; i += channels) 
+            {
+                data_[index_] = input[i];
+                index_ = (index_ + 1) % n;
+            }
+        }
 
         if (muteInputSound)
         {
             System.Array.Clear(input, 0, input.Length);   
-        }
-
-        if (dataIndex_ > preIndex) return;
-
-		float vol = Core.GetVolume(data_);
-
-        H = Core.CalcLpcSpectralEnvelope(data_, dataIndex_, config);
-        var formant = Core.GetFormants(H, deltaFreq);
-
-		var vowel = Core.GetVowel(formant, config);
-
-        lock (lipSyncInfo_)
-        {
-            lipSyncInfo_.Enqueue(new LipSyncInfo {
-                volume = vol,
-                formant = formant,
-                vowel = vowel,
-            });
         }
 	}
 }
