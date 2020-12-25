@@ -6,47 +6,40 @@ using Unity.Burst;
 namespace uLipSync
 {
 
+public struct CalcFormantsResult
+{
+    public FormantPair formant;
+    public float volume;
+}
+
 [BurstCompile]
 public struct CalcFormantsJob : IJob
 {
-    public struct Result
-    {
-        public FormantPair formant;
-        public float volume;
-    }
-
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
     [ReadOnly] public int lpcOrder;
     [ReadOnly] public float deltaFreq;
+    [ReadOnly] public float volumeThresh;
     public NativeArray<float> H;
-    [WriteOnly] public NativeArray<Result> result;
+    [WriteOnly] public NativeArray<CalcFormantsResult> result;
 
     public void Execute()
     {
         int N = input.Length;
 
         // skip if volume is smaller than threshold
-        float maxVolume = Algorithm.GetMaxValue(ref input);
-        float volume = Algorithm.GetVolume(maxVolume);
-        if (volume < -30f) return;
+        float volume = Algorithm.GetRMSVolume(ref input);
+        if (volume < volumeThresh) return;
 
         // copy input ring buffer to a temporary array
         var data = new NativeArray<float>(N, Allocator.Temp);
-        for (int i = 0; i < N; ++i)
-        {
-            int index = (startIndex + i) % N;
-            data[i] = input[index];
-        }
+        Algorithm.CopyRingBuffer(ref input, ref data, startIndex);
 
         // multiply hamming window function
         for (int i = 1; i < N - 1; ++i)
         {
             data[i] *= 0.54f - 0.46f * math.cos(2f * math.PI * i / (N - 1));
         }
-        data[0] = data[N - 1] = 0f;
-
-        Algorithm.Normalize(ref data);
 
         // auto correlational function
         var r = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
@@ -123,10 +116,11 @@ public struct CalcFormantsJob : IJob
                 Htmp[n] = numerator / denominator;
             }
         }
+
         Algorithm.Normalize(ref Htmp);
         for (int i = 0; i < N; ++i)
         {
-            H[i] += (Htmp[i] - H[i]) * 0.3f;
+            H[i] += (Htmp[i] - H[i]) * 0.35f;
         }
 
         data.Dispose();
@@ -155,7 +149,7 @@ public struct CalcFormantsJob : IJob
             }
         }
 
-        result[0] = new Result()
+        result[0] = new CalcFormantsResult()
         {
             volume = volume,
             formant = formant,

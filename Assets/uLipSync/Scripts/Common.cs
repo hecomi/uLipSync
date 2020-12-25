@@ -6,12 +6,12 @@ namespace uLipSync
 
 public enum Vowel
 {
-    None,
     A,
     I,
     U,
     E,
     O,
+    None,
 }
 
 [System.Serializable]
@@ -24,11 +24,6 @@ public struct FormantPair
     {
         this.f1 = f1;
         this.f2 = f2;
-    }
-
-    public void Print()
-    {
-        Debug.LogFormat("F1: {0}, F2: {1}", f1, f2);
     }
 
     public static float Dist(FormantPair a, FormantPair b)
