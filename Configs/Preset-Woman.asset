@@ -13,20 +13,21 @@ MonoBehaviour:
   m_Name: Preset-Woman
   m_EditorClassIdentifier: 
   lpcOrder: 64
-  sampleCount: 4096
+  sampleCount: 2048
   formantA:
-    f1: 900
-    f2: 1450
+    f1: 960
+    f2: 1500
   formantI:
-    f1: 320
+    f1: 281
     f2: 3000
   formantU:
-    f1: 500
-    f2: 1000
+    f1: 328
+    f2: 1851
   formantE:
-    f1: 770
-    f2: 2500
+    f1: 375
+    f2: 2343
   formantO:
-    f1: 450
-    f2: 950
+    f1: 539
+    f2: 1218
   maxError: 500
+  volumeThresh: 0.001

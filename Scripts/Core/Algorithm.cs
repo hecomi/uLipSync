@@ -45,10 +45,11 @@ public static class Algorithm
     [BurstCompile]
     public static void CopyRingBuffer(ref NativeArray<float> src, ref NativeArray<float> dst, int startSrcIndex)
     {
-        int N = src.Length;
-        for (int i = 0; i < N; ++i)
+        int sn = src.Length;
+        int dn = dst.Length;
+        for (int i = 0; i < dn; ++i)
         {
-            int index = (startSrcIndex + i) % N;
+            int index = (startSrcIndex + i) % sn;
             dst[i] = src[index];
         }
     }

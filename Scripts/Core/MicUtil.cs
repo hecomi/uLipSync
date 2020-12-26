@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-public struct MicrophoneInfo
+public struct MicInfo
 {
     public string name;
     public int index;
@@ -14,13 +14,13 @@ public struct MicrophoneInfo
 
 public static class MicrophoneUtil
 {
-    public static List<MicrophoneInfo> GetMicrophoneList()
+    public static List<MicInfo> GetList()
     {
-        var list = new List<MicrophoneInfo>();
+        var list = new List<MicInfo>();
 
         for (int i = 0; i < Microphone.devices.Length; ++i)
         {
-            var info = new MicrophoneInfo();
+            var info = new MicInfo();
             info.name = Microphone.devices[i];
             info.index = i;
             Microphone.GetDeviceCaps(info.name, out info.minFreq, out info.maxFreq);

@@ -5,7 +5,7 @@ using Unity.Jobs;
 namespace uLipSync
 {
 
-public class LipSync : MonoBehaviour
+public class uLipSync : MonoBehaviour
 {
     public Config config;
     public bool muteInputSound = false;
@@ -33,10 +33,10 @@ public class LipSync : MonoBehaviour
     {
         rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
         inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount * 4, Allocator.Persistent); 
         result_ = new NativeArray<CalcFormantsResult>(1, Allocator.Persistent);
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
 #endif
     }
 
@@ -115,7 +115,7 @@ public class LipSync : MonoBehaviour
                     index_ = (index_ + 1) % n;
                 }
             }
-    }
+        }
 
         if (muteInputSound)
         {

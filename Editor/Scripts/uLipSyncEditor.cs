@@ -4,10 +4,10 @@ using UnityEditor;
 namespace uLipSync
 {
 
-[CustomEditor(typeof(LipSync))]
-public class LipSyncEditor : Editor
+[CustomEditor(typeof(uLipSync))]
+public class uLipSyncEditor : Editor
 {
-    LipSync lipSync { get { return target as LipSync; } }
+    uLipSync lipSync { get { return target as uLipSync; } }
     Config config { get { return lipSync.config; } }
 
     internal struct Margin

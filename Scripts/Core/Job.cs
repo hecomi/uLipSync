@@ -25,7 +25,7 @@ public struct CalcFormantsJob : IJob
 
     public void Execute()
     {
-        int N = input.Length;
+        int N = H.Length;
 
         // skip if volume is smaller than threshold
         float volume = Algorithm.GetRMSVolume(ref input);
