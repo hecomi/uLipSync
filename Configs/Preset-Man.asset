@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Preset-Man
   m_EditorClassIdentifier: 
   lpcOrder: 64
-  sampleCount: 2048
+  sampleCount: 1024
   formantA:
     f1: 726
     f2: 1171

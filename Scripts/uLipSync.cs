@@ -31,6 +31,27 @@ public class uLipSync : MonoBehaviour
 
     void OnEnable()
     {
+        AllocateBuffers();
+    }
+
+    void OnDisable()
+    {
+        DisposeBuffers();
+    }
+
+    void Update()
+    {
+        if (!jobHandle_.IsCompleted) return;
+
+        jobHandle_.Complete();
+        GetResultAndInvokeCallback();
+        ScheduleJob();
+
+        UpdateBuffers();
+    }
+
+    void AllocateBuffers()
+    {
         rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
         inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
@@ -40,7 +61,7 @@ public class uLipSync : MonoBehaviour
 #endif
     }
 
-    void OnDisable()
+    void DisposeBuffers()
     {
         jobHandle_.Complete();
         rawData_.Dispose();
@@ -52,13 +73,15 @@ public class uLipSync : MonoBehaviour
 #endif
     }
 
-    void Update()
+    void UpdateBuffers()
     {
-        if (!jobHandle_.IsCompleted) return;
+        if (sampleCount == rawData_.Length || sampleCount == 0) return;
 
-        jobHandle_.Complete();
-        GetResultAndInvokeCallback();
-        ScheduleJob();
+        lock (lockObject_)
+        {
+            DisposeBuffers();
+            AllocateBuffers();
+        }
     }
 
     void GetResultAndInvokeCallback()
@@ -109,6 +132,7 @@ public class uLipSync : MonoBehaviour
             lock (lockObject_)
             {
                 int n = rawData_.Length;
+                index_ = index_ % n;
                 for (int i = 0; i < input.Length; i += channels) 
                 {
                     rawData_[index_] = input[i];
