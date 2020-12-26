@@ -18,16 +18,18 @@ public class uLipSync : MonoBehaviour
     JobHandle jobHandle_;
     object lockObject_ = new object();
     int index_ = 0;
+    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
+    CalcFormantsResult lastResult_ = new CalcFormantsResult();
+    public CalcFormantsResult result { get { return lastResult_; } }
+
 #if UNITY_EDITOR
     NativeArray<float> lpcSpectralEnvelopeForEditorOnly_;
     public NativeArray<float> lpcSpectralEnvelopeForEditorOnly 
     { 
         get { return lpcSpectralEnvelopeForEditorOnly_; } 
     }
+    [HideInInspector] public bool foldOutVisualizer = false;
 #endif
-    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
-    CalcFormantsResult lastResult_ = new CalcFormantsResult();
-    public CalcFormantsResult result { get { return lastResult_; } }
 
     void OnEnable()
     {

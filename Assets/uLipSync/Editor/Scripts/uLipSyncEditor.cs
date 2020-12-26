@@ -31,8 +31,12 @@ public class uLipSyncEditor : Editor
 
         if (!lipSync) return;
 
-        DrawFormants();
-        DrawLPCSpectralEnvelope();
+        lipSync.foldOutVisualizer = EditorGUILayout.Foldout(lipSync.foldOutVisualizer, "Visualizer");
+        if (lipSync.foldOutVisualizer)
+        {
+            DrawFormants();
+            DrawLPCSpectralEnvelope();
+        }
     }
 
     void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)
