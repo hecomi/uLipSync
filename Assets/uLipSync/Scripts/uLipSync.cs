@@ -8,7 +8,7 @@ namespace uLipSync
 public class uLipSync : MonoBehaviour
 {
     public Config config;
-    public bool muteInputSound = false;
+    [Range(0f, 2f)] public float outputSoundGain = 1f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
     NativeArray<float> rawData_;
@@ -33,7 +33,7 @@ public class uLipSync : MonoBehaviour
     {
         rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
         inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount * 4, Allocator.Persistent); 
+        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         result_ = new NativeArray<CalcFormantsResult>(1, Allocator.Persistent);
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
@@ -117,9 +117,12 @@ public class uLipSync : MonoBehaviour
             }
         }
 
-        if (muteInputSound)
+        if (Mathf.Abs(outputSoundGain - 1f) > Mathf.Epsilon)
         {
-            System.Array.Clear(input, 0, input.Length);   
+            for (int i = 0; i < input.Length; ++i) 
+            {
+                input[i] *= outputSoundGain;
+            }
         }
 	}
 }

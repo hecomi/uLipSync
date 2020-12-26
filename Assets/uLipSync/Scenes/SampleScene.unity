@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 37d8bd96d2e899140843028c65a1c78d, type: 2}
-  muteInputSound: 0
+  outputSoundGain: 1
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -434,7 +434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  micIndex: 0
+  index: 0
 --- !u!82 &2066038225
 AudioSource:
   m_ObjectHideFlags: 0
@@ -543,4 +543,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9370f5d3e3d00f94baf4c82c48c7aff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  threshVolume: -20
+  threshVolume: 0.01
