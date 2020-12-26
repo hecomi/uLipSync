@@ -4,14 +4,14 @@ namespace uLipSync
 {
 
 [RequireComponent(typeof(AudioSource))]
-public class MicrophonePlayer : MonoBehaviour
+public class uLipSyncMicInput : MonoBehaviour
 {
     public int micIndex = 0;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
-    MicrophoneInfo mic { get; set; } = new MicrophoneInfo();
+    MicInfo mic { get; set; } = new MicInfo();
     public int micFreq { get { return mic.minFreq; } }
     public int maxFreq { get { return mic.maxFreq; } }
 
@@ -67,7 +67,7 @@ public class MicrophonePlayer : MonoBehaviour
 
     void InitMicInfo()
     {
-        var mics = MicrophoneUtil.GetMicrophoneList();
+        var mics = MicrophoneUtil.GetList();
         if (mics.Count <= 0) return;
 
         if (micIndex < 0 || micIndex >= mics.Count) micIndex = 0;
