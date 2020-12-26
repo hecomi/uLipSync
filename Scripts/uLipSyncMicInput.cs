@@ -6,14 +6,16 @@ namespace uLipSync
 [RequireComponent(typeof(AudioSource))]
 public class uLipSyncMicInput : MonoBehaviour
 {
-    public int micIndex = 0;
+    public int index = 0;
+    private int preIndex_ = 0;
+    public bool isAutoStart = true;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
-    MicInfo mic { get; set; } = new MicInfo();
-    public int micFreq { get { return mic.minFreq; } }
-    public int maxFreq { get { return mic.maxFreq; } }
+    public MicDevice device { get; private set; } = new MicDevice();
+    public int micFreq { get { return device.minFreq; } }
+    public int maxFreq { get { return device.maxFreq; } }
 
     bool isPlaying 
     { 
@@ -33,11 +35,16 @@ public class uLipSyncMicInput : MonoBehaviour
 
     void OnEnable()
     {
-        InitMicInfo();
         source = GetComponent<AudioSource>();
 
-        // TODO: start manually
-        StartRecord();
+        preIndex_ = index;
+
+        UpdateMicInfo();
+
+        if (isAutoStart)
+        {
+            StartRecord();
+        }
     }
 
     void OnDisable()
@@ -45,8 +52,17 @@ public class uLipSyncMicInput : MonoBehaviour
         StopRecordInternal();
     }
 
+    void OnApplicationPause()
+    {
+        StopRecordInternal();
+        source.Stop();
+        Destroy(clip);
+    }
+
     void Update()
     {
+        UpdateDevice();
+
         if (!isPlaying && isReady && isRecording)
         {
             StartRecordInternal();
@@ -58,23 +74,26 @@ public class uLipSyncMicInput : MonoBehaviour
         }
     }
 
-    void OnApplicationPause()
+    public void UpdateMicInfo()
     {
-        StopRecordInternal();
-        source.Stop();
-        Destroy(clip);
-    }
-
-    void InitMicInfo()
-    {
-        var mics = MicrophoneUtil.GetList();
+        var mics = MicUtil.GetDeviceList();
         if (mics.Count <= 0) return;
 
-        if (micIndex < 0 || micIndex >= mics.Count) micIndex = 0;
+        if (index < 0 || index >= mics.Count) index = 0;
 
-        mic = mics[micIndex];
+        device = mics[index];
 
         isReady = true;
+    }
+
+    void UpdateDevice()
+    {
+        if (preIndex_ != index)
+        {
+            preIndex_ = index;
+            StopRecordInternal();
+            UpdateMicInfo();
+        }
     }
 
     public void StartRecord()
@@ -94,8 +113,8 @@ public class uLipSyncMicInput : MonoBehaviour
 
     void StartRecordInternal()
     {
-        clip = Microphone.Start(mic.name, true, 10, maxFreq);
-        while (Microphone.GetPosition(mic.name) <= 0) ;
+        clip = Microphone.Start(device.name, true, 10, maxFreq);
+        while (Microphone.GetPosition(device.name) <= 0) ;
         source.loop = true;
         source.Play();
     }
