@@ -18,27 +18,25 @@ public class LipSync : MonoBehaviour
     JobHandle jobHandle_;
     object lockObject_ = new object();
     int index_ = 0;
-    int sampleRate_ = 48000;
 #if UNITY_EDITOR
-    NativeArray<float> lpcSpectralEnvelopeForEditor_;
-    public NativeArray<float> lpcSpectralEnvelopeForEditor { get { return lpcSpectralEnvelopeForEditor_; } }
+    NativeArray<float> lpcSpectralEnvelopeForEditorOnly_;
+    public NativeArray<float> lpcSpectralEnvelopeForEditorOnly 
+    { 
+        get { return lpcSpectralEnvelopeForEditorOnly_; } 
+    }
 #endif
-
     public int sampleCount { get { return config ? config.sampleCount : 1024; } }
-    public float deltaFreq { get { return (float)sampleRate_ / sampleCount; } }
-
-    CalcFormantsResult resultA_ = new CalcFormantsResult();
-    public CalcFormantsResult result { get { return resultA_; } }
+    CalcFormantsResult lastResult_ = new CalcFormantsResult();
+    public CalcFormantsResult result { get { return lastResult_; } }
 
     void OnEnable()
     {
-        sampleRate_ = AudioSettings.outputSampleRate;
         rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
         inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         result_ = new NativeArray<CalcFormantsResult>(1, Allocator.Persistent);
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
 #endif
     }
 
@@ -50,7 +48,7 @@ public class LipSync : MonoBehaviour
         lpcSpectralEnvelope_.Dispose();
         result_.Dispose();
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditor_.Dispose();
+        lpcSpectralEnvelopeForEditorOnly_.Dispose();
 #endif
     }
 
@@ -66,17 +64,17 @@ public class LipSync : MonoBehaviour
     void GetResultAndInvokeCallback()
     {
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditor_.CopyFrom(lpcSpectralEnvelope_);
+        lpcSpectralEnvelopeForEditorOnly_.CopyFrom(lpcSpectralEnvelope_);
 #endif
 
         if (onLipSyncUpdate == null) return;
 
-        resultA_ = result_[0];
+        lastResult_ = result_[0];
         var info = new LipSyncInfo()
         {
             volume = result.volume,
             formant = result.formant,
-            vowel = Util.GetVowel(result.formant, config),
+            vowel = LipSyncUtil.GetVowel(result.formant, config),
         };
         onLipSyncUpdate.Invoke(info);
     }
@@ -95,7 +93,7 @@ public class LipSync : MonoBehaviour
             input = inputData_,
             startIndex = index,
             lpcOrder = config.lpcOrder,
-            deltaFreq = deltaFreq,
+            sampleRate = AudioSettings.outputSampleRate,
             H = lpcSpectralEnvelope_,
             result = result_,
             volumeThresh = config.volumeThresh,
@@ -110,14 +108,14 @@ public class LipSync : MonoBehaviour
         {
             lock (lockObject_)
             {
-                int n = input.Length;
-                for (int i = 0; i < n; i += channels) 
+                int n = rawData_.Length;
+                for (int i = 0; i < input.Length; i += channels) 
                 {
                     rawData_[index_] = input[i];
                     index_ = (index_ + 1) % n;
                 }
             }
-        }
+    }
 
         if (muteInputSound)
         {

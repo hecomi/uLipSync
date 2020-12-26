@@ -137,7 +137,7 @@ public class LipSyncEditor : Editor
         float height = yMax - yMin;
 
         var result = lipSync.result;
-        int vowelIndex = (int)Util.GetVowel(result.formant, config);
+        int vowelIndex = (int)LipSyncUtil.GetVowel(result.formant, config);
 
         var colors = new Color[] 
         {
@@ -228,11 +228,11 @@ public class LipSyncEditor : Editor
             new Color(1f, 1f, 1f, 0.5f), 
             margin,
             range,
-            new Vector2(3f, 1f));
+            new Vector2(8f, 1f));
 
         if (!Application.isPlaying) return;
 
-        var H = lipSync.lpcSpectralEnvelopeForEditor;
+        var H = lipSync.lpcSpectralEnvelopeForEditorOnly;
 
         float xMin = area.x + margin.left;
         float xMax = area.xMax - margin.right;
@@ -242,7 +242,7 @@ public class LipSyncEditor : Editor
         float height = yMax - yMin;
 
         float maxH = Algorithm.GetMaxValue(ref H);
-        float df = lipSync.deltaFreq;
+        float df = AudioSettings.outputSampleRate / H.Length;
         int n = Mathf.CeilToInt(range.x / df);
         var points = new Vector3[n];
         float min = Mathf.Log10(1e-3f);

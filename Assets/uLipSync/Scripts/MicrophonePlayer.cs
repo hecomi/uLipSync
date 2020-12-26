@@ -11,12 +11,9 @@ public class MicrophonePlayer : MonoBehaviour
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
-    public string micName { get; private set; } = "";
-
-    int minFreq_;
-    int maxFreq_;
-    public int micFreq { get { return minFreq_; } }
-    public int maxFreq { get { return maxFreq_; } }
+    MicrophoneInfo mic { get; set; } = new MicrophoneInfo();
+    public int micFreq { get { return mic.minFreq; } }
+    public int maxFreq { get { return mic.maxFreq; } }
 
     bool isPlaying 
     { 
@@ -70,22 +67,12 @@ public class MicrophonePlayer : MonoBehaviour
 
     void InitMicInfo()
     {
-        if (Microphone.devices.Length <= 0)
-        {
-            Debug.LogWarning("Microphone is not connected!");
-            return;
-        }
-        else
-        {
-            int maxIndex = Microphone.devices.Length - 1;
-            if (micIndex > maxIndex)
-            {
-                micIndex = maxIndex;
-            }
-            micName = Microphone.devices[micIndex];
-        }
+        var mics = MicrophoneUtil.GetMicrophoneList();
+        if (mics.Count <= 0) return;
 
-        Microphone.GetDeviceCaps(micName, out minFreq_, out maxFreq_);
+        if (micIndex < 0 || micIndex >= mics.Count) micIndex = 0;
+
+        mic = mics[micIndex];
 
         isReady = true;
     }
@@ -107,8 +94,8 @@ public class MicrophonePlayer : MonoBehaviour
 
     void StartRecordInternal()
     {
-        clip = Microphone.Start(micName, true, 10, maxFreq);
-        while (Microphone.GetPosition(micName) <= 0) ;
+        clip = Microphone.Start(mic.name, true, 10, maxFreq);
+        while (Microphone.GetPosition(mic.name) <= 0) ;
         source.loop = true;
         source.Play();
     }

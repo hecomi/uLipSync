@@ -18,7 +18,7 @@ public struct CalcFormantsJob : IJob
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
     [ReadOnly] public int lpcOrder;
-    [ReadOnly] public float deltaFreq;
+    [ReadOnly] public float sampleRate;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> H;
     [WriteOnly] public NativeArray<CalcFormantsResult> result;
@@ -131,6 +131,7 @@ public struct CalcFormantsJob : IJob
 
         // get first and second formants
         var formant = new FormantPair();
+        float deltaFreq = sampleRate / N;
         bool foundFirst = false;
         for (int i = 1; i < N - 1; ++i)
         {

@@ -5,7 +5,7 @@ namespace uLipSync
 {
 
 [BurstCompile]
-public static class Util
+public static class LipSyncUtil
 {
     public static Vowel GetVowel(FormantPair formant, Config config)
     {
