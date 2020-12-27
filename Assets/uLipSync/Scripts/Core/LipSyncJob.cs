@@ -22,6 +22,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int lpcOrder;
     [ReadOnly] public float sampleRate;
     [ReadOnly] public float volumeThresh;
+    [ReadOnly] public float minLog10H;
     public NativeArray<float> H;
     public NativeArray<float> dH;
     public NativeArray<float> ddH;
@@ -163,7 +164,7 @@ public struct LipSyncJob : IJob
                 var freq = deltaFreq * i;
                 if (freq < 200) continue;
 
-                if (H[i] > H[i - 1] && H[i] > H[i + 1])
+                if (H[i] > H[i - 1] && H[i] > H[i + 1] && math.log10(H[i]) > minLog10H)
                 {
                     if (res.f1 == 0f)
                     {
@@ -194,7 +195,7 @@ public struct LipSyncJob : IJob
                 var freq = deltaFreq * (i - 1);
                 if (freq < 200) continue;
 
-                if (ddH[i] < ddH[i - 1] && ddH[i] < ddH[i + 1] && ddH[i] < 0f)
+                if (ddH[i] < ddH[i - 1] && ddH[i] < ddH[i + 1] && math.log10(H[i]) > minLog10H)
                 {
                     if (res.f1 == 0f)
                     {

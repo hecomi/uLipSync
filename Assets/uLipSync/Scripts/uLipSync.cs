@@ -171,7 +171,14 @@ public class uLipSync : MonoBehaviour
         for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
         {
             var key = (Vowel)i;
-            result_.vowels[key] = rawResult_.vowels[key] / sum;
+            if (sum > Mathf.Epsilon)
+            {
+                result_.vowels[key] = rawResult_.vowels[key] / sum;
+            }
+            else
+            {
+                result_.vowels[key] = 0f;
+            }
         }
     }
 
@@ -195,6 +202,7 @@ public class uLipSync : MonoBehaviour
             ddH = ddLpcSpectralEnvelope_,
             result = jobResult_,
             volumeThresh = minVolume,
+            minLog10H = profile.minLog10H,
         };
 
         jobHandle_ = job.Schedule();

@@ -27,6 +27,8 @@ public static class LipSyncUtil
         float diffO = FormantPair.Dist(formant, profile.formantO);
 
         float minDiff = math.min(diffA, math.min(diffI, math.min(diffU, math.min(diffE, diffO))));
+        info.diff = minDiff;
+
         if (minDiff < profile.maxError)
         {
             if      (diffA == minDiff) { info.vowel = Vowel.A; }
@@ -46,8 +48,8 @@ public static class LipSyncUtil
         var result13 = GetVowel(new FormantPair(f1, f3), config);
         var minDiff = math.min(math.min(result12.diff, result23.diff), result13.diff);
         return 
-            (result12.diff == minDiff) ? result12 :
-            (result23.diff == minDiff) ? result23 :
+            math.abs(result12.diff - minDiff) < 1f ? result12 :
+            math.abs(result23.diff - minDiff) < 1f ? result23 :
             result13;
     }
 }
