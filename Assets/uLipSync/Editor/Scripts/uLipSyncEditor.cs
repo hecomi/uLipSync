@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 namespace uLipSync
 {
@@ -8,7 +9,26 @@ namespace uLipSync
 public class uLipSyncEditor : Editor
 {
     uLipSync lipSync { get { return target as uLipSync; } }
-    Config config { get { return lipSync.config; } }
+    Profile profile { get { return lipSync.profile; } }
+
+    void OnEnable()
+    {
+        if (lipSync.config == null)
+        {
+            var configPath = AssetDatabase.FindAssets("Default-Config")
+                .Select(x => AssetDatabase.GUIDToAssetPath(x))
+                .FirstOrDefault();
+            lipSync.config = AssetDatabase.LoadAssetAtPath<Config>(configPath);
+        }
+
+        if (lipSync.profile == null)
+        {
+            var profilePath = AssetDatabase.FindAssets("Profile-Man")
+                .Select(x => AssetDatabase.GUIDToAssetPath(x))
+                .FirstOrDefault();
+            lipSync.profile = AssetDatabase.LoadAssetAtPath<Profile>(profilePath);
+        }
+    }
 
     public override void OnInspectorGUI()
     {
@@ -40,7 +60,7 @@ public class uLipSyncEditor : Editor
             range,
             new Vector2(6f, 4f));
 
-        if (!config) return; 
+        if (!profile) return; 
 
         float xMin = area.x + margin.left;
         float xMax = area.xMax - margin.right;
@@ -50,7 +70,7 @@ public class uLipSyncEditor : Editor
         float height = yMax - yMin;
 
         var result = lipSync.result;
-        int vowelIndex = (int)LipSyncUtil.GetVowel(result.formant, config).vowel;
+        int vowelIndex = (int)LipSyncUtil.GetVowel(result.formant, profile).vowel;
 
         var colors = new Color[] 
         {
@@ -63,11 +83,11 @@ public class uLipSyncEditor : Editor
 
         var formants = new FormantPair[]
         {
-            config.formantA,
-            config.formantI,
-            config.formantU,
-            config.formantE,
-            config.formantO,
+            profile.formantA,
+            profile.formantI,
+            profile.formantU,
+            profile.formantE,
+            profile.formantO,
         };
 
         var vowelLabels = new string[]
@@ -86,8 +106,8 @@ public class uLipSyncEditor : Editor
             var f = formants[i];
             float x = xMin + dx * f.f1;
             float y = yMin + (height - dy * f.f2);
-            float rx = config.maxError * dx;
-            float ry = config.maxError * dy;
+            float rx = profile.maxError * dx;
+            float ry = profile.maxError * dy;
             var center = new Vector3(x, y, 0f);
             var color = colors[i];
             Handles.color = color;
