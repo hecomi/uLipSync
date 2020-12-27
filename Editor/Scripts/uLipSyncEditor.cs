@@ -113,7 +113,7 @@ public class uLipSyncEditor : Editor
             var color = colors[i];
             Handles.color = color;
             Handles.DrawSolidDisc(center, Vector3.forward, 5f);
-            float factor = result.vowels[(Vowel)i] * result.volume;
+            float factor = result.vowels[(Vowel)i];
             color.a = Mathf.Lerp(0.15f, 0.5f, factor);
             Handles.color = color;
             DrawEllipse(center, rx, ry, new Rect(xMin, yMin, width, height));

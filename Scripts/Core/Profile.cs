@@ -12,6 +12,7 @@ public class Profile : ScriptableObject
     public FormantPair formantE = new FormantPair(468f, 2109f);
     public FormantPair formantO = new FormantPair(492f, 773f);
     public float maxError = 500f; // Hz
+    public float minLog10H = -1f; // Hz
 }
 
 }
