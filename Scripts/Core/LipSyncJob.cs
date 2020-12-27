@@ -178,7 +178,7 @@ public struct LipSyncJob : IJob
 
             for (int i = 1; i < N - 1; ++i)
             {
-                var freq = deltaFreq * i;
+                var freq = deltaFreq * (i - 1);
                 if (freq < 200) continue;
 
                 if (ddH[i] < ddH[i - 1] && ddH[i] < ddH[i + 1] && ddH[i] < 0f)

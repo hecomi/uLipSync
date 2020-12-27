@@ -14,20 +14,20 @@ public struct VowelInfo
 [BurstCompile]
 public static class LipSyncUtil
 {
-    public static VowelInfo GetVowel(FormantPair formant, Config config)
+    public static VowelInfo GetVowel(FormantPair formant, Profile profile)
     {
         var info = new VowelInfo();
         info.vowel = Vowel.None;
         info.formant = formant;
 
-        float diffA = FormantPair.Dist(formant, config.formantA);
-        float diffI = FormantPair.Dist(formant, config.formantI);
-        float diffU = FormantPair.Dist(formant, config.formantU);
-        float diffE = FormantPair.Dist(formant, config.formantE);
-        float diffO = FormantPair.Dist(formant, config.formantO);
+        float diffA = FormantPair.Dist(formant, profile.formantA);
+        float diffI = FormantPair.Dist(formant, profile.formantI);
+        float diffU = FormantPair.Dist(formant, profile.formantU);
+        float diffE = FormantPair.Dist(formant, profile.formantE);
+        float diffO = FormantPair.Dist(formant, profile.formantO);
 
         float minDiff = math.min(diffA, math.min(diffI, math.min(diffU, math.min(diffE, diffO))));
-        if (minDiff < config.maxError)
+        if (minDiff < profile.maxError)
         {
             if      (diffA == minDiff) { info.vowel = Vowel.A; }
             else if (diffI == minDiff) { info.vowel = Vowel.I; }
@@ -39,7 +39,7 @@ public static class LipSyncUtil
         return info;
     }
 
-    public static VowelInfo GetVowel(float f1, float f2, float f3, Config config)
+    public static VowelInfo GetVowel(float f1, float f2, float f3, Profile config)
     {
         var result12 = GetVowel(new FormantPair(f1, f2), config);
         var result23 = GetVowel(new FormantPair(f2, f3), config);

@@ -7,8 +7,10 @@ namespace uLipSync
 
 public class uLipSync : MonoBehaviour
 {
+    public Profile profile;
     public Config config;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
+    [Min(0f)] public float volumeThresh = 1e-4f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
     NativeArray<float> rawData_;
@@ -22,7 +24,7 @@ public class uLipSync : MonoBehaviour
     object lockObject_ = new object();
 
     int index_ = 0;
-    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
+    public int sampleCount { get { return profile ? config.sampleCount : 1024; } }
 
     LipSyncInfo lastResult_ = new LipSyncInfo();
     public LipSyncInfo result 
@@ -115,8 +117,8 @@ public class uLipSync : MonoBehaviour
 
         if (onLipSyncUpdate == null) return;
 
-        var vowelInfo = LipSyncUtil.GetVowel(result_[0].f1, result_[0].f2, result_[0].f3, config);
-        var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(result_[1].f1, result_[1].f2, result_[1].f3, config);
+        var vowelInfo = LipSyncUtil.GetVowel(result_[0].f1, result_[0].f2, result_[0].f3, profile);
+        var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(result_[1].f1, result_[1].f2, result_[1].f3, profile);
         if (vowelInfo.diff < vowelInfoBySecondDerivative.diff)
         {
             result = new LipSyncInfo()
@@ -158,7 +160,7 @@ public class uLipSync : MonoBehaviour
             dH = dLpcSpectralEnvelope_,
             ddH = ddLpcSpectralEnvelope_,
             result = result_,
-            volumeThresh = config.volumeThresh,
+            volumeThresh = volumeThresh,
         };
 
         jobHandle_ = job.Schedule();
