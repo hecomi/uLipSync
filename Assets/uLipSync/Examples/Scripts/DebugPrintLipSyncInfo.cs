@@ -12,8 +12,17 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
     {
         if (info.volume > threshVolume) 
         {
-            Debug.LogFormat("VOWEL: {0}, VOL: {1}, FORMANT: {2}, {3}",
-                info.vowel, info.volume, info.formant.f1, info.formant.f2);
+            Debug.LogFormat("MAIN VOWEL: {0}, [ A:{1} I:{2}, U:{3} E:{4} O:{5} N:{6} ], VOL: {7}, FORMANT: {8}, {9}",
+                info.mainVowel, 
+                info.volume, 
+                info.vowels[Vowel.A],
+                info.vowels[Vowel.I],
+                info.vowels[Vowel.U],
+                info.vowels[Vowel.E],
+                info.vowels[Vowel.O],
+                info.vowels[Vowel.None],
+                info.formant.f1, 
+                info.formant.f2);
         }
     }
 }

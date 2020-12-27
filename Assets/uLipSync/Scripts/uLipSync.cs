@@ -10,7 +10,9 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public Config config;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
-    [Min(0f)] public float volumeThresh = 1e-4f;
+    [Range(0f, 1f)] public float filter = 0.7f;
+    [Range(0f, 1f)] public float maxVolume = 0.01f;
+    [Range(0f, 1f)] public float minVolume = 0.0001f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
     NativeArray<float> rawData_;
@@ -18,7 +20,7 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> lpcSpectralEnvelope_;
     NativeArray<float> dLpcSpectralEnvelope_;
     NativeArray<float> ddLpcSpectralEnvelope_;
-    NativeArray<LipSyncJob.Result> result_;
+    NativeArray<LipSyncJob.Result> jobResult_;
 
     JobHandle jobHandle_;
     object lockObject_ = new object();
@@ -26,11 +28,11 @@ public class uLipSync : MonoBehaviour
     int index_ = 0;
     public int sampleCount { get { return profile ? config.sampleCount : 1024; } }
 
-    LipSyncInfo lastResult_ = new LipSyncInfo();
+    LipSyncInfo rawResult_ = new LipSyncInfo();
+    LipSyncInfo result_ = new LipSyncInfo();
     public LipSyncInfo result 
     { 
-        get { return lastResult_; } 
-        private set { lastResult_ = value; }
+        get { return result_; } 
     }
 
 #if UNITY_EDITOR
@@ -75,7 +77,7 @@ public class uLipSync : MonoBehaviour
         lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         dLpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
         ddLpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        result_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
+        jobResult_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
         ddLpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(ddLpcSpectralEnvelope_.Length, Allocator.Persistent); 
@@ -90,7 +92,7 @@ public class uLipSync : MonoBehaviour
         lpcSpectralEnvelope_.Dispose();
         dLpcSpectralEnvelope_.Dispose();
         ddLpcSpectralEnvelope_.Dispose();
-        result_.Dispose();
+        jobResult_.Dispose();
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_.Dispose();
         ddLpcSpectralEnvelopeForEditorOnly_.Dispose();
@@ -117,28 +119,60 @@ public class uLipSync : MonoBehaviour
 
         if (onLipSyncUpdate == null) return;
 
-        var vowelInfo = LipSyncUtil.GetVowel(result_[0].f1, result_[0].f2, result_[0].f3, profile);
-        var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(result_[1].f1, result_[1].f2, result_[1].f3, profile);
+        var vowelInfo = LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile);
+        var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile);
         if (vowelInfo.diff < vowelInfoBySecondDerivative.diff)
         {
-            result = new LipSyncInfo()
-            {
-                volume = result_[0].volume,
-                formant = vowelInfo.formant,
-                vowel = vowelInfo.vowel,
-            };
+            UpdateLipSyncInfo(
+                jobResult_[0].volume, 
+                vowelInfo.formant, 
+                vowelInfo.vowel);
         }
         else
         {
-            result = new LipSyncInfo()
-            {
-                volume = result_[1].volume,
-                formant = vowelInfoBySecondDerivative.formant,
-                vowel = vowelInfoBySecondDerivative.vowel,
-            };
+            UpdateLipSyncInfo(
+                jobResult_[1].volume, 
+                vowelInfoBySecondDerivative.formant, 
+                vowelInfoBySecondDerivative.vowel);
         }
 
         onLipSyncUpdate.Invoke(result);
+    }
+
+    void UpdateLipSyncInfo(float volume, FormantPair formant, Vowel vowel)
+    {
+        float a = 1f - filter;
+
+        float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
+        rawResult_.volume = normalizedVolume;
+        result_.volume += (normalizedVolume - result_.volume) * a;
+
+        rawResult_.formant = result_.formant = formant;
+
+        if (volume < minVolume) return;
+
+        float max = 0f;
+        float sum = 0f;
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        {
+            var key = (Vowel)i;
+            float target = key == vowel ? 1f : 0f;
+            float value = rawResult_.vowels[key];
+            value += (target - value) * a;
+            if (value > max)
+            {
+                rawResult_.mainVowel = key;
+                max = value;
+            }
+            rawResult_.vowels[key] = value;
+            sum += value;
+        }
+
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        {
+            var key = (Vowel)i;
+            result_.vowels[key] = rawResult_.vowels[key] / sum;
+        }
     }
 
     void ScheduleJob()
@@ -159,8 +193,8 @@ public class uLipSync : MonoBehaviour
             H = lpcSpectralEnvelope_,
             dH = dLpcSpectralEnvelope_,
             ddH = ddLpcSpectralEnvelope_,
-            result = result_,
-            volumeThresh = volumeThresh,
+            result = jobResult_,
+            volumeThresh = minVolume,
         };
 
         jobHandle_ = job.Schedule();

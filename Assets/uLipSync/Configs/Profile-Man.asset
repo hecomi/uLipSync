@@ -10,12 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
-  m_Name: Preset-Man
+  m_Name: Profile-Man
   m_EditorClassIdentifier: 
-  lpcOrder: 64
-  sampleCount: 1024
-  maxError: 500
-  volumeThresh: 0.001
   formantA:
     f1: 726
     f2: 1171
@@ -31,3 +27,4 @@ MonoBehaviour:
   formantO:
     f1: 492
     f2: 773
+  maxError: 500
