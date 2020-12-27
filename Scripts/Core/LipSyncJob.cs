@@ -6,22 +6,26 @@ using Unity.Burst;
 namespace uLipSync
 {
 
-public struct CalcFormantsResult
-{
-    public FormantPair formant;
-    public float volume;
-}
-
 [BurstCompile]
-public struct CalcFormantsJob : IJob
+public struct LipSyncJob : IJob
 {
+    public struct Result
+    {
+        public float f1;
+        public float f2;
+        public float f3;
+        public float volume;
+    }
+
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
     [ReadOnly] public int lpcOrder;
     [ReadOnly] public float sampleRate;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> H;
-    [WriteOnly] public NativeArray<CalcFormantsResult> result;
+    public NativeArray<float> dH;
+    public NativeArray<float> ddH;
+    [WriteOnly] public NativeArray<Result> result;
 
     public void Execute()
     {
@@ -96,7 +100,6 @@ public struct CalcFormantsJob : IJob
         }
 
         // calculate frequency characteristics
-        var Htmp = new NativeArray<float>(N, Allocator.Temp);
         for (int n = 0; n < N; ++n)
         {
             float nr = 0f, ni = 0f, dr = 0f, di = 0f;
@@ -113,48 +116,91 @@ public struct CalcFormantsJob : IJob
             float denominator = math.sqrt(math.pow(dr, 2f) + math.pow(di, 2f));
             if (denominator > math.EPSILON)
             {
-                Htmp[n] = numerator / denominator;
+                H[n] = numerator / denominator;
             }
         }
+        Algorithm.Normalize(ref H);
 
-        Algorithm.Normalize(ref Htmp);
-        for (int i = 0; i < N; ++i)
+        float deltaFreq = sampleRate / N;
+
+        for (int i = 1; i < N; ++i)
         {
-            H[i] += (Htmp[i] - H[i]) * 0.35f;
+            dH[i] = (H[i] - H[i - 1]) / deltaFreq;
         }
+        dH[0] = dH[1];
+
+        for (int i = 1; i < N; ++i)
+        {
+            ddH[i] = (dH[i] - dH[i - 1]) / deltaFreq;
+        }
+        ddH[0] = ddH[1];
 
         data.Dispose();
         r.Dispose();
         a.Dispose();
         e.Dispose();
-        Htmp.Dispose();
 
-        // get first and second formants
-        var formant = new FormantPair();
-        float deltaFreq = sampleRate / N;
-        bool foundFirst = false;
-        for (int i = 1; i < N - 1; ++i)
+        // get first and second formants by peak
         {
-            if (H[i] > H[i - 1] && H[i] > H[i + 1])
+            var res = new Result();
+            res.volume = volume;
+
+            for (int i = 1; i < N - 1; ++i)
             {
-                if (!foundFirst)
+                var freq = deltaFreq * i;
+                if (freq < 200) continue;
+
+                if (H[i] > H[i - 1] && H[i] > H[i + 1])
                 {
-                    formant.f1 = i * deltaFreq;
-                    foundFirst = true;
-                }
-                else
-                {
-                    formant.f2 = i * deltaFreq;
-                    break;
+                    if (res.f1 == 0f)
+                    {
+                        res.f1 = freq;
+                    }
+                    else if (res.f2 == 0f)
+                    {
+                        res.f2 = freq;
+                    }
+                    else
+                    {
+                        res.f3 = freq;
+                        break;
+                    }
                 }
             }
+
+            result[0] = res;
         }
 
-        result[0] = new CalcFormantsResult()
+        // get formants by the second derivative of H
         {
-            volume = volume,
-            formant = formant,
-        };
+            var res = new Result();
+            res.volume = volume;
+
+            for (int i = 1; i < N - 1; ++i)
+            {
+                var freq = deltaFreq * i;
+                if (freq < 200) continue;
+
+                if (ddH[i] < ddH[i - 1] && ddH[i] < ddH[i + 1] && ddH[i] < 0f)
+                {
+                    if (res.f1 == 0f)
+                    {
+                        res.f1 = freq;
+                    }
+                    else if (res.f2 == 0f)
+                    {
+                        res.f2 = freq;
+                    }
+                    else
+                    {
+                        res.f3 = freq;
+                        break;
+                    }
+                }
+            }
+
+            result[1] = res;
+        }
     }
 }
 

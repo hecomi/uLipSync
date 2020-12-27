@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lpcOrder: 64
   sampleCount: 1024
+  maxError: 500
+  volumeThresh: 0.001
   formantA:
     f1: 726
     f2: 1171
@@ -29,5 +31,3 @@ MonoBehaviour:
   formantO:
     f1: 492
     f2: 773
-  maxError: 500
-  volumeThresh: 0.0005
