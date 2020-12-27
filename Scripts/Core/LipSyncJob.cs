@@ -25,7 +25,7 @@ public struct LipSyncJob : IJob
     public NativeArray<float> H;
     public NativeArray<float> dH;
     public NativeArray<float> ddH;
-    [WriteOnly] public NativeArray<Result> result;
+    public NativeArray<Result> result;
 
     public void Execute()
     {
@@ -33,7 +33,20 @@ public struct LipSyncJob : IJob
 
         // skip if volume is smaller than threshold
         float volume = Algorithm.GetRMSVolume(ref input);
-        if (volume < volumeThresh) return;
+        if (volume < volumeThresh)
+        {
+            var res = new Result();
+            res.volume = volume;
+            res.f1 = result[0].f1;
+            res.f2 = result[0].f2;
+            res.f3 = result[0].f3;
+            result[0] = res;
+            res.f1 = result[1].f1;
+            res.f2 = result[1].f2;
+            res.f3 = result[1].f3;
+            result[1] = res;
+            return;
+        }
 
         // copy input ring buffer to a temporary array
         var data = new NativeArray<float>(N, Allocator.Temp);

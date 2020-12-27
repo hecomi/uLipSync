@@ -70,7 +70,8 @@ public class uLipSyncEditor : Editor
         float height = yMax - yMin;
 
         var result = lipSync.result;
-        int vowelIndex = (int)LipSyncUtil.GetVowel(result.formant, profile).vowel;
+        var vowel = LipSyncUtil.GetVowel(result.formant, profile).vowel;
+        int vowelIndex = (int)vowel;
 
         var colors = new Color[] 
         {
@@ -112,7 +113,8 @@ public class uLipSyncEditor : Editor
             var color = colors[i];
             Handles.color = color;
             Handles.DrawSolidDisc(center, Vector3.forward, 5f);
-            color.a = (i == vowelIndex) ? 0.5f : 0.15f;
+            float factor = result.vowels[(Vowel)i] * result.volume;
+            color.a = Mathf.Lerp(0.15f, 0.5f, factor);
             Handles.color = color;
             DrawEllipse(center, rx, ry, new Rect(xMin, yMin, width, height));
             EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 20f, 20f), vowelLabels[i]);

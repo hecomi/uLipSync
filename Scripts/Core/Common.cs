@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -32,11 +33,20 @@ public struct FormantPair
     }
 }
 
-public struct LipSyncInfo
+public class LipSyncInfo
 {
-    public float volume;
-    public Vowel vowel;
-    public FormantPair formant;
+    public float volume = 0f;
+    public Vowel mainVowel = Vowel.None;
+    public Dictionary<Vowel, float> vowels = new Dictionary<Vowel, float>()
+    {
+        { Vowel.A, 0f },
+        { Vowel.I, 0f },
+        { Vowel.U, 0f },
+        { Vowel.E, 0f },
+        { Vowel.O, 0f },
+        { Vowel.None, 1f },
+    };
+    public FormantPair formant = new FormantPair();
 }
 
 [System.Serializable]

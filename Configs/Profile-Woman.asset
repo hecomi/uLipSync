@@ -10,10 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
-  m_Name: Preset-Woman
+  m_Name: Profile-Woman
   m_EditorClassIdentifier: 
-  lpcOrder: 64
-  sampleCount: 2048
   formantA:
     f1: 960
     f2: 1500
@@ -30,4 +28,3 @@ MonoBehaviour:
     f1: 539
     f2: 1218
   maxError: 500
-  volumeThresh: 0.001
