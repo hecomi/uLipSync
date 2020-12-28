@@ -13,18 +13,25 @@ MonoBehaviour:
   m_Name: Profile-Man
   m_EditorClassIdentifier: 
   formantA:
-    f1: 726
-    f2: 1171
+    f1: 833
+    f2: 1163
   formantI:
-    f1: 281
-    f2: 2343
+    f1: 290
+    f2: 2423
   formantU:
-    f1: 328
-    f2: 1570
+    f1: 348
+    f2: 1402
   formantE:
-    f1: 468
-    f2: 2109
+    f1: 435
+    f2: 2241
   formantO:
-    f1: 492
-    f2: 773
+    f1: 360
+    f2: 639
   maxError: 500
+  minLog10H: -1.5
+  micIndex: 4
+  audioClipForCalibA: {fileID: 0}
+  audioClipForCalibI: {fileID: 0}
+  audioClipForCalibU: {fileID: 0}
+  audioClipForCalibE: {fileID: 0}
+  audioClipForCalibO: {fileID: 0}

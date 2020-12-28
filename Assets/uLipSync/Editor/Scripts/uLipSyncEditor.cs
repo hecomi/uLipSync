@@ -39,114 +39,9 @@ public class uLipSyncEditor : Editor
         lipSync.foldOutVisualizer = EditorGUILayout.Foldout(lipSync.foldOutVisualizer, "Visualizer");
         if (lipSync.foldOutVisualizer)
         {
-            DrawFormants();
+            EditorUtil.DrawFormants(profile, lipSync.result);
             DrawLPCSpectralEnvelope();
         }
-    }
-
-    void DrawFormants()
-    {
-        var origColor = Handles.color;
-
-        var area = GUILayoutUtility.GetRect(Screen.width, 400f);
-        var margin = new EditorUtil.Margin(10, 10f, 30f, 40f);
-        var range = new Vector2(1200f, 4000f);
-
-        EditorUtil.DrawGrid(
-            area,
-            Color.white, 
-            new Color(1f, 1f, 1f, 0.5f), 
-            margin,
-            range,
-            new Vector2(6f, 4f));
-
-        if (!profile) return; 
-
-        float xMin = area.x + margin.left;
-        float xMax = area.xMax - margin.right;
-        float yMin = area.y + margin.top;
-        float yMax = area.yMax - margin.bottom;
-        float width = xMax - xMin;
-        float height = yMax - yMin;
-
-        var result = lipSync.result;
-        var vowel = LipSyncUtil.GetVowel(result.formant, profile).vowel;
-        int vowelIndex = (int)vowel;
-
-        var colors = new Color[] 
-        {
-            new Color(1f, 0f, 0f, 1f),
-            new Color(0f, 1f, 0f, 1f),
-            new Color(0f, 0f, 1f, 1f),
-            new Color(1f, 1f, 0f, 1f),
-            new Color(0f, 1f, 1f, 1f),
-        };
-
-        var formants = new FormantPair[]
-        {
-            profile.formantA,
-            profile.formantI,
-            profile.formantU,
-            profile.formantE,
-            profile.formantO,
-        };
-
-        var vowelLabels = new string[]
-        {
-            "A",
-            "I",
-            "U",
-            "E",
-            "O",
-        };
-
-        float dx = width / range.x; 
-        float dy = height / range.y;
-        for (int i = 0; i < formants.Length; ++i)
-        {
-            var f = formants[i];
-            float x = xMin + dx * f.f1;
-            float y = yMin + (height - dy * f.f2);
-            float rx = profile.maxError * dx;
-            float ry = profile.maxError * dy;
-            var center = new Vector3(x, y, 0f);
-            var color = colors[i];
-            Handles.color = color;
-            Handles.DrawSolidDisc(center, Vector3.forward, 5f);
-            float factor = result.vowels[(Vowel)i];
-            color.a = Mathf.Lerp(0.15f, 0.5f, factor);
-            Handles.color = color;
-            DrawEllipse(center, rx, ry, new Rect(xMin, yMin, width, height));
-            EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 20f, 20f), vowelLabels[i]);
-        }
-
-        {
-            float x = xMin + result.formant.f1 * dx;
-            float y = yMin + (height - result.formant.f2 * dy);
-            float size = Mathf.Lerp(2f, 20f, Mathf.Min(result.volume / 0.1f, 1f));
-            var center = new Vector3(x, y, 0f);
-            Handles.color = Color.white;
-            Handles.DrawWireDisc(center, Vector3.forward, size);
-        }
-
-        Handles.color = origColor;
-    }
-
-    void DrawEllipse(Vector3 center, float rx, float ry, Rect area)
-    {
-        var points = new Vector3[64];
-        var n = points.Length;
-        for (int i = 0; i < n; ++i)
-        {
-            float ang = 2 * Mathf.PI * i / n;
-            float x = rx * Mathf.Cos(ang);
-            float y = ry * Mathf.Sin(ang);
-            var pos = center + new Vector3(x, y, 0f);
-            pos.x = Mathf.Max(Mathf.Min(pos.x, area.xMax), area.xMin);
-            pos.y = Mathf.Max(Mathf.Min(pos.y, area.yMax), area.yMin);
-            points[i] = pos;
-        }
-        Handles.DrawAAConvexPolygon(points);
     }
 
     void DrawLPCSpectralEnvelope()
@@ -176,8 +71,9 @@ public class uLipSyncEditor : Editor
 
         var H = lipSync.lpcSpectralEnvelopeForEditorOnly;
         float maxH = Algorithm.GetMaxValue(ref H);
-        float df = AudioSettings.outputSampleRate / H.Length;
-        int n = Mathf.CeilToInt(range.x / df);
+        float df = (float)AudioSettings.outputSampleRate / H.Length;
+        float fn = range.x / df;
+        int n = Mathf.CeilToInt(fn);
         var points = new Vector3[n];
         float min = Mathf.Log10(1e-3f);
         for (int i = 0; i < n && i < H.Length; ++i)

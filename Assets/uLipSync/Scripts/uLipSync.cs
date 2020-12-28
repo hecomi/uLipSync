@@ -29,11 +29,7 @@ public class uLipSync : MonoBehaviour
     public int sampleCount { get { return profile ? config.sampleCount : 1024; } }
 
     LipSyncInfo rawResult_ = new LipSyncInfo();
-    LipSyncInfo result_ = new LipSyncInfo();
-    public LipSyncInfo result 
-    { 
-        get { return result_; } 
-    }
+    public LipSyncInfo result { get; private set; } = new LipSyncInfo();
 
 #if UNITY_EDITOR
     NativeArray<float> lpcSpectralEnvelopeForEditorOnly_;
@@ -119,9 +115,17 @@ public class uLipSync : MonoBehaviour
 
         if (onLipSyncUpdate == null) return;
 
-        var vowelInfo = LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile);
-        var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile);
-        if (vowelInfo.diff < vowelInfoBySecondDerivative.diff)
+        VowelInfo vowelInfo;
+        if (config.checkThirdFormant)
+        {
+            vowelInfo = LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile);
+        }
+        else
+        {
+            vowelInfo = LipSyncUtil.GetVowel(new FormantPair(jobResult_[0].f1, jobResult_[0].f2), profile);
+        }
+
+        if (!config.useSecondDerivative)
         {
             UpdateLipSyncInfo(
                 jobResult_[0].volume, 
@@ -130,10 +134,21 @@ public class uLipSync : MonoBehaviour
         }
         else
         {
-            UpdateLipSyncInfo(
-                jobResult_[1].volume, 
-                vowelInfoBySecondDerivative.formant, 
-                vowelInfoBySecondDerivative.vowel);
+            var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile);
+            if (vowelInfo.diff < vowelInfoBySecondDerivative.diff)
+            {
+                UpdateLipSyncInfo(
+                    jobResult_[0].volume, 
+                    vowelInfo.formant, 
+                    vowelInfo.vowel);
+            }
+            else
+            {
+                UpdateLipSyncInfo(
+                    jobResult_[1].volume, 
+                    vowelInfoBySecondDerivative.formant, 
+                    vowelInfoBySecondDerivative.vowel);
+            }
         }
 
         onLipSyncUpdate.Invoke(result);
@@ -145,15 +160,17 @@ public class uLipSync : MonoBehaviour
 
         float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
         rawResult_.volume = normalizedVolume;
-        result_.volume += (normalizedVolume - result_.volume) * a;
+        result.volume += (normalizedVolume - result.volume) * a;
 
-        rawResult_.formant = result_.formant = formant;
+        rawResult_.formant = result.formant = formant;
 
         if (volume < minVolume) return;
 
+        if (vowel == Vowel.None) return;
+
         float max = 0f;
         float sum = 0f;
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        for (int i = (int)Vowel.A; i <= (int)Vowel.None; ++i)
         {
             var key = (Vowel)i;
             float target = key == vowel ? 1f : 0f;
@@ -168,16 +185,18 @@ public class uLipSync : MonoBehaviour
             sum += value;
         }
 
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        result.mainVowel = rawResult_.mainVowel;
+
+        for (int i = (int)Vowel.A; i <= (int)Vowel.None; ++i)
         {
             var key = (Vowel)i;
             if (sum > Mathf.Epsilon)
             {
-                result_.vowels[key] = rawResult_.vowels[key] / sum;
+                result.vowels[key] = rawResult_.vowels[key] / sum;
             }
             else
             {
-                result_.vowels[key] = 0f;
+                result.vowels[key] = 0f;
             }
         }
     }
@@ -203,6 +222,7 @@ public class uLipSync : MonoBehaviour
             result = jobResult_,
             volumeThresh = minVolume,
             minLog10H = profile.minLog10H,
+            filterH = config.filterH,
         };
 
         jobHandle_ = job.Schedule();
