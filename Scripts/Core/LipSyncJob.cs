@@ -23,6 +23,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public float sampleRate;
     [ReadOnly] public float volumeThresh;
     [ReadOnly] public float minLog10H;
+    [ReadOnly] public float filterH;
     public NativeArray<float> H;
     public NativeArray<float> dH;
     public NativeArray<float> ddH;
@@ -114,6 +115,7 @@ public struct LipSyncJob : IJob
         }
 
         // calculate frequency characteristics
+        var Htmp = new NativeArray<float>(H.Length, Allocator.Temp);
         for (int n = 0; n < N; ++n)
         {
             float nr = 0f, ni = 0f, dr = 0f, di = 0f;
@@ -130,10 +132,16 @@ public struct LipSyncJob : IJob
             float denominator = math.sqrt(math.pow(dr, 2f) + math.pow(di, 2f));
             if (denominator > math.EPSILON)
             {
-                H[n] = numerator / denominator;
+                Htmp[n] = numerator / denominator;
             }
         }
-        Algorithm.Normalize(ref H);
+        Algorithm.Normalize(ref Htmp);
+
+        float filter = 1f - math.clamp(filterH, 0f, 1f);
+        for (int i = 0; i < N; ++i)
+        {
+            H[i] += (Htmp[i] - H[i]) * filter;
+        }
 
         float deltaFreq = sampleRate / N;
 
@@ -153,6 +161,7 @@ public struct LipSyncJob : IJob
         r.Dispose();
         a.Dispose();
         e.Dispose();
+        Htmp.Dispose();
 
         // get first and second formants by peak
         {
@@ -164,7 +173,9 @@ public struct LipSyncJob : IJob
                 var freq = deltaFreq * i;
                 if (freq < 200) continue;
 
-                if (H[i] > H[i - 1] && H[i] > H[i + 1] && math.log10(H[i]) > minLog10H)
+                if (H[i] > H[i - 1] && 
+                    H[i] > H[i + 1] && 
+                    math.log10(H[i]) > minLog10H)
                 {
                     if (res.f1 == 0f)
                     {
@@ -195,7 +206,10 @@ public struct LipSyncJob : IJob
                 var freq = deltaFreq * (i - 1);
                 if (freq < 200) continue;
 
-                if (ddH[i] < ddH[i - 1] && ddH[i] < ddH[i + 1] && math.log10(H[i]) > minLog10H)
+                if (ddH[i] < ddH[i - 1] && 
+                    ddH[i] < ddH[i + 1] && 
+                    math.log10(ddH[i]) < -2 &&
+                    math.log10(H[i]) > minLog10H)
                 {
                     if (res.f1 == 0f)
                     {

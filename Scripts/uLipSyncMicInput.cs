@@ -8,7 +8,7 @@ public class uLipSyncMicInput : MonoBehaviour
 {
     public int index = 0;
     private int preIndex_ = 0;
-    public bool isAutoStart = true;
+    public bool isAutoStart = false;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
@@ -33,7 +33,7 @@ public class uLipSyncMicInput : MonoBehaviour
         get {  return clip ? clip.frequency : 44100; }
     }
 
-    void OnEnable()
+    protected void OnEnable()
     {
         source = GetComponent<AudioSource>();
 
@@ -122,7 +122,7 @@ public class uLipSyncMicInput : MonoBehaviour
     void StopRecordInternal()
     {
         source.Stop();
-        Destroy(clip);
+        DestroyImmediate(clip);
     }
 }
 

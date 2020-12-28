@@ -412,7 +412,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  foldOutVisualizer: 1
+  foldOutVisualizer: 0
 --- !u!4 &2066038223
 Transform:
   m_ObjectHideFlags: 0
@@ -439,7 +439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: 5
+  index: 4
   isAutoStart: 1
 --- !u!82 &2066038225
 AudioSource:
