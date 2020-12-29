@@ -30,5 +30,6 @@ sysinfo.txt
 .DS_Store
 /Assets/AssetStoreTools*
 /Assets/Extensions*
+/Assets/UnityChan*
 /uDesktopDuplication.log
 .vs
