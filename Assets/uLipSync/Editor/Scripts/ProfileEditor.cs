@@ -32,51 +32,60 @@ public class ProfileEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        EditorGUILayout.LabelField("Formant", EditorStyles.boldLabel);
-        ++EditorGUI.indentLevel;
-        DrawFormant(ref profile.formantA, "A");
-        DrawFormant(ref profile.formantI, "I");
-        DrawFormant(ref profile.formantU, "U");
-        DrawFormant(ref profile.formantE, "E");
-        DrawFormant(ref profile.formantO, "O");
-        EditorGUILayout.Space();
-        DrawFormantResetButtons();
-        --EditorGUI.indentLevel;
+        Draw(true, true);
+    }
 
-        EditorGUILayout.Space();
+    public void Draw(bool drawTips, bool drawVisualizer)
+    {
+        serializedObject.Update();
 
-        EditorGUILayout.LabelField("Calibration", EditorStyles.boldLabel);
-        DrawMicSelector();
-        EditorGUILayout.Space();
-        DrawAudioClipAndRecordAndStopButtons("A", ref profile.audioClipForCalibA);
-        DrawAudioClipAndRecordAndStopButtons("I", ref profile.audioClipForCalibI);
-        DrawAudioClipAndRecordAndStopButtons("U", ref profile.audioClipForCalibU);
-        DrawAudioClipAndRecordAndStopButtons("E", ref profile.audioClipForCalibE);
-        DrawAudioClipAndRecordAndStopButtons("O", ref profile.audioClipForCalibO);
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Calibration", GUILayout.Width(120)))
+        if (EditorUtil.SimpleFoldout("Formant", ref profile.foldOutFormant))
         {
+            ++EditorGUI.indentLevel;
+            DrawFormant(ref profile.formantA, "A");
+            DrawFormant(ref profile.formantI, "I");
+            DrawFormant(ref profile.formantU, "U");
+            DrawFormant(ref profile.formantE, "E");
+            DrawFormant(ref profile.formantO, "O");
+            EditorGUILayout.Separator();
+            DrawFormantResetButtons();
+            --EditorGUI.indentLevel;
 
+            EditorGUILayout.Separator();
         }
-        EditorGUILayout.EndHorizontal();
 
-        EditorGUILayout.Space();
+        if (drawTips)
+        {
+            if (EditorUtil.SimpleFoldout("Tips", ref profile.foldOutTips))
+            {
+                DrawTips();
 
-        EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
-        EditorUtil.DrawProperty(serializedObject, "maxError");
-        EditorUtil.DrawProperty(serializedObject, "minLog10H");
+                EditorGUILayout.Separator();
+            }
+        }
 
-        EditorGUILayout.Space();
+        if (drawVisualizer)
+        {
+            if (EditorUtil.SimpleFoldout("Visualizer", ref profile.foldOutVisualizer))
+            {
+                ++EditorGUI.indentLevel;
+                EditorUtil.DrawFormants(profile);
+                --EditorGUI.indentLevel;
 
-        EditorGUILayout.LabelField("Visualizer", EditorStyles.boldLabel);
-        EditorUtil.DrawFormants(profile);
+                EditorGUILayout.Separator();
+            }
+        }
 
-        EditorGUILayout.LabelField("Tips", EditorStyles.boldLabel);
-        DrawTips();
+        profile.foldOutSettings = EditorGUILayout.Foldout(profile.foldOutSettings, "Settings", EditorStyles.foldoutHeader);
+        if (profile.foldOutSettings)
+        {
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.minLog10H));
+            --EditorGUI.indentLevel;
+        }
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     void DrawFormant(ref FormantPair formant, string name)
@@ -113,36 +122,6 @@ public class ProfileEditor : Editor
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawMicSelector()
-    {
-        EditorUtil.DrawMicSelector(ref profile.micIndex);
-    }
-
-    void DrawAudioClipAndRecordAndStopButtons(string vowel, ref AudioClip clip)
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        EditorGUILayout.LabelField(vowel, GUILayout.Width(20));
-
-        var newClip = EditorGUILayout.ObjectField(clip, typeof(AudioClip), false) as AudioClip;
-        if (newClip != clip)
-        {
-            Undo.RecordObject(target, $"Changed audio clip");
-            clip = newClip;
-        }
-
-        if (GUILayout.Button("Record", EditorStyles.miniButtonLeft)) 
-        {
-            StartRecord();
-        }
-        if (GUILayout.Button("Stop", EditorStyles.miniButtonRight)) 
-        {
-            StopRecord(ref clip, $"Vowel {vowel}");
-        }
-
-        EditorGUILayout.EndHorizontal();
-    }
-
     void DrawTips()
     {
         var man = averageFormantMan;
@@ -167,37 +146,6 @@ public class ProfileEditor : Editor
         profile.formantU = formant[Vowel.U];
         profile.formantE = formant[Vowel.E];
         profile.formantO = formant[Vowel.O];
-    }
-
-    void StartRecord()
-    {
-        if (calibrator)
-        {
-            Debug.LogWarning("Already recording!");
-            return;
-        }
-
-        var go = new GameObject("== Calibrator ==");
-        calibrator = go.AddComponent<MicInputCalibrator>();
-        calibrator.isAutoStart = false;
-        calibrator.index = profile.micIndex;
-        calibrator.StartRecord();
-    }
-
-    void StopRecord(ref AudioClip clip, string clipName)
-    {
-        if (!calibrator)
-        {
-            Debug.LogWarning("Not recording!");
-            return;
-        }
-
-        var data = new float[calibrator.clip.samples];
-        calibrator.clip.GetData(data, 0);
-        clip = AudioClip.Create(clipName, calibrator.clip.samples, 1, calibrator.clip.frequency, false);
-        clip.SetData(data, 0);
-        calibrator.StopRecord();
-        DestroyImmediate(calibrator.gameObject);
     }
 }
 

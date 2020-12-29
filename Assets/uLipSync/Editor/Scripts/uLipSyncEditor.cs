@@ -11,6 +11,9 @@ public class uLipSyncEditor : Editor
     uLipSync lipSync { get { return target as uLipSync; } }
     Profile profile { get { return lipSync.profile; } }
 
+    Editor profileEditor_;
+    Editor configEditor_;
+
     void OnEnable()
     {
         if (lipSync.config == null)
@@ -32,15 +35,111 @@ public class uLipSyncEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        serializedObject.Update();
 
-        if (!lipSync) return;
+        DrawProfile();
+        DrawConfig();
+        DrawCallback();
+        DrawParameter();
+        DrawVisualizer();
 
-        lipSync.foldOutVisualizer = EditorGUILayout.Foldout(lipSync.foldOutVisualizer, "Visualizer");
-        if (lipSync.foldOutVisualizer)
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    public override bool RequiresConstantRepaint()
+    {
+        return lipSync.foldOutVisualizer;
+    }
+
+    void DrawProfile()
+    {
+        if (EditorUtil.Foldout("Profile", ref lipSync.foldOutProfile))
         {
-            EditorUtil.DrawFormants(profile, lipSync.result);
-            DrawLPCSpectralEnvelope();
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.profile));
+            if (lipSync.profile) 
+            {
+                CreateCachedEditor(lipSync.profile, typeof(ProfileEditor), ref profileEditor_);
+                var editor = profileEditor_ as ProfileEditor;
+                if (editor)
+                {
+                    editor.Draw(true, false);
+                }
+            }
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+    }
+
+    void DrawConfig()
+    {
+        if (EditorUtil.Foldout("Config", ref lipSync.foldOutConfig))
+        {
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.config));
+            if (lipSync.config)
+            {
+                CreateCachedEditor(lipSync.config, typeof(ConfigEditor), ref configEditor_);
+                if (configEditor_)
+                {
+                    configEditor_.OnInspectorGUI();
+                }
+            }
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+    }
+
+    void DrawCallback()
+    {
+        if (EditorUtil.Foldout("Callback", ref lipSync.foldOutCallback))
+        {
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.onLipSyncUpdate));
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+    }
+
+    void DrawParameter()
+    {
+        if (EditorUtil.Foldout("Parameter", ref lipSync.foldOutParameter))
+        {
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.filter));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.minVolume));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.maxVolume));
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+    }
+
+    void DrawVisualizer()
+    {
+        if (EditorUtil.Foldout("Visualizer", ref lipSync.foldOutVisualizer))
+        {
+            ++EditorGUI.indentLevel;
+
+            if (EditorUtil.SimpleFoldout("Formant Map", ref lipSync.foldOutFormantMap))
+            {
+                ++EditorGUI.indentLevel;
+                EditorUtil.DrawFormants(profile, lipSync.result);
+                --EditorGUI.indentLevel;
+            }
+
+            EditorGUILayout.Separator();
+
+            if (EditorUtil.SimpleFoldout("LPC Spectral Envelope", ref lipSync.foldOutLPC))
+            {
+                ++EditorGUI.indentLevel;
+                DrawLPCSpectralEnvelope();
+                --EditorGUI.indentLevel;
+            }
+
+            EditorGUILayout.Separator();
+
+            --EditorGUI.indentLevel;
         }
     }
 
@@ -48,7 +147,8 @@ public class uLipSyncEditor : Editor
     {
         var origColor = Handles.color;
 
-        var area = GUILayoutUtility.GetRect(Screen.width, 400f);
+        var area = GUILayoutUtility.GetRect(Screen.width, 300f);
+        area = EditorGUI.IndentedRect(area);
         var margin = new EditorUtil.Margin(10, 10f, 30f, 40f);
         var range = new Vector2(4000f, 1f);
 

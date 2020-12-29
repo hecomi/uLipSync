@@ -42,7 +42,13 @@ public class uLipSync : MonoBehaviour
     { 
         get { return ddLpcSpectralEnvelopeForEditorOnly_; } 
     }
+    [HideInInspector] public bool foldOutProfile = true;
+    [HideInInspector] public bool foldOutConfig = false;
+    [HideInInspector] public bool foldOutParameter = true;
+    [HideInInspector] public bool foldOutCallback = true;
     [HideInInspector] public bool foldOutVisualizer = false;
+    [HideInInspector] public bool foldOutFormantMap = false;
+    [HideInInspector] public bool foldOutLPC = false;
 #endif
 
     void OnEnable()
@@ -125,7 +131,7 @@ public class uLipSync : MonoBehaviour
             vowelInfo = LipSyncUtil.GetVowel(new FormantPair(jobResult_[0].f1, jobResult_[0].f2), profile);
         }
 
-        if (!config.useSecondDerivative)
+        if (!config.checkSecondDerivative)
         {
             UpdateLipSyncInfo(
                 jobResult_[0].volume, 

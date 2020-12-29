@@ -15,12 +15,10 @@ public class Profile : ScriptableObject
     public float minLog10H = -1f; // Hz
 
 #if UNITY_EDITOR
-    public int micIndex;
-    public AudioClip audioClipForCalibA;
-    public AudioClip audioClipForCalibI;
-    public AudioClip audioClipForCalibU;
-    public AudioClip audioClipForCalibE;
-    public AudioClip audioClipForCalibO;
+    [HideInInspector] public bool foldOutFormant = true;
+    [HideInInspector] public bool foldOutTips = true;
+    [HideInInspector] public bool foldOutVisualizer = true;
+    [HideInInspector] public bool foldOutSettings = true;
 #endif
 }
 
