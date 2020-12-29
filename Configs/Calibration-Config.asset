@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6354581a42fc7c4cbaf0ace102eac7d, type: 3}
   m_Name: Calibration-Config
   m_EditorClassIdentifier: Assembly-CSharp:uLipSync:CalculationConfig
-  lpcOrder: 64
+  lpcOrder: 80
   sampleCount: 8192
-  useSecondDerivative: 0
+  checkSecondDerivative: 0
   checkThirdFormant: 0
-  filterH: 0.8
+  filterH: 0.5

@@ -23,6 +23,40 @@ public static class EditorUtil
         }
     }
 
+    public static bool Foldout(string title, ref bool display)
+    {
+        var style = new GUIStyle("ShurikenModuleTitle");
+        style.font = new GUIStyle(EditorStyles.label).font;
+        style.border = new RectOffset(15, 7, 4, 4);
+        style.fixedHeight = 22;
+        style.contentOffset = new Vector2(20f, -2f);
+
+        var rect = GUILayoutUtility.GetRect(16f, 22f, style);
+        GUI.Box(rect, title, style);
+
+        var e = Event.current;
+
+        var toggleRect = new Rect(rect.x + 4f, rect.y + 2f, 13f, 13f);
+        if (e.type == EventType.Repaint) 
+        {
+            EditorStyles.foldout.Draw(toggleRect, false, false, display, false);
+        }
+
+        if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition)) 
+        {
+            display = !display;
+            e.Use();
+        }
+
+        return display;
+    }
+
+    public static bool SimpleFoldout(string title, ref bool display)
+    {
+        display = EditorGUILayout.Foldout(display, title, EditorStyles.foldoutHeader);
+        return display;
+    }
+
     public static void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)
     {
         var origColor = Handles.color;
@@ -85,14 +119,14 @@ public static class EditorUtil
         for (int i = 0; i <= div.y; ++i) 
         {
             float y = yRange * ((div.y - i) / div.y);
-            var rect = new Rect(area.x, area.y + y, margin.left, 20f);
+            var rect = new Rect(margin.left / 2, area.y + y, 100f, 20f);
             EditorGUI.LabelField(rect, (range.y * i / div.y).ToString());
         }
 
         for (int i = 0; i <= div.x; ++i) 
         {
             float x = margin.left + xRange * (i / div.x);
-            var rect = new Rect(x, yMax, 40f, 20f);
+            var rect = new Rect(x, yMax, 100f, 20f);
             EditorGUI.LabelField(rect, (range.x * i / div.x).ToString());
         }
 
@@ -120,11 +154,12 @@ public static class EditorUtil
     {
         var origColor = Handles.color;
 
-        var area = GUILayoutUtility.GetRect(Screen.width, 400f);
-        var margin = new EditorUtil.Margin(10, 10f, 30f, 40f);
+        var area = GUILayoutUtility.GetRect(Screen.width, 300f);
+        area = EditorGUI.IndentedRect(area);
+        var margin = new Margin(10, 10f, 30f, 40f);
         var range = new Vector2(1200f, 4000f);
 
-        EditorUtil.DrawGrid(
+        DrawGrid(
             area,
             Color.white, 
             new Color(1f, 1f, 1f, 0.5f), 
@@ -185,7 +220,7 @@ public static class EditorUtil
             color.a = Mathf.Lerp(0.15f, 0.5f, factor);
             Handles.color = color;
             DrawEllipse(center, rx, ry, new Rect(xMin, yMin, width, height));
-            EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 20f, 20f), vowelLabels[i]);
+            EditorGUI.LabelField(new Rect(x + 5f, y - 20f, 50f, 20f), vowelLabels[i]);
         }
 
         if (result != null)

@@ -12,15 +12,12 @@ public class uLipSyncMicInput : MonoBehaviour
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
+    public bool isStartRequested { get; private set; } = false;
+    public bool isStopRequested { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
     public MicDevice device { get; private set; } = new MicDevice();
     public int micFreq { get { return device.minFreq; } }
     public int maxFreq { get { return device.maxFreq; } }
-
-    bool isPlaying 
-    { 
-        get { return source && source.isPlaying; } 
-    }
 
     public AudioClip clip
     {
@@ -28,9 +25,14 @@ public class uLipSyncMicInput : MonoBehaviour
         set { if (source) source.clip = value; }
     }
 
+    public bool isPlaying
+    {
+        get { return source ? source.isPlaying : false; }
+    }
+
     public float freq
     {
-        get {  return clip ? clip.frequency : 44100; }
+        get { return clip ? clip.frequency : 44100; }
     }
 
     protected void OnEnable()
@@ -63,13 +65,15 @@ public class uLipSyncMicInput : MonoBehaviour
     {
         UpdateDevice();
 
-        if (!isPlaying && isReady && isRecording)
+        if (isStartRequested)
         {
+            isStartRequested = false;
             StartRecordInternal();
         }
 
-        if (isPlaying && !isRecording)
+        if (isStopRequested)
         {
+            isStopRequested = false;
             StopRecordInternal();
         }
     }
@@ -88,41 +92,63 @@ public class uLipSyncMicInput : MonoBehaviour
 
     void UpdateDevice()
     {
-        if (preIndex_ != index)
-        {
-            preIndex_ = index;
-            StopRecordInternal();
-            UpdateMicInfo();
-        }
+        if (preIndex_ == index) return;
+
+        preIndex_ = index;
+        StopRecordInternal();
+        UpdateMicInfo();
     }
 
     public void StartRecord()
     {
         if (!isReady)
         {
-            Debug.LogError("Mic has not been initialized yet!");
+            Debug.LogError("Microphone has not been initialized yet!");
             return;
         }
-        isRecording = true;
+        isStartRequested = true;
+        isStopRequested = false;
     }
 
     public void StopRecord()
     {
-        isRecording = false;
+        isStopRequested = true;
+        isStartRequested = false;
     }
 
     void StartRecordInternal()
     {
-        clip = Microphone.Start(device.name, true, 10, maxFreq);
+        clip = Microphone.Start(device.name, true, 1, maxFreq);
         while (Microphone.GetPosition(device.name) <= 0) ;
         source.loop = true;
         source.Play();
+
+        isRecording = true;
     }
 
     void StopRecordInternal()
     {
-        source.Stop();
-        DestroyImmediate(clip);
+        if (source.isPlaying)
+        {
+            source.Stop();
+            DestroyImmediate(clip);
+        }
+
+        isRecording = false;
+    }
+
+    public void StopRecordAndCreateAudioClip()
+    {
+        var data = new float[clip.samples * clip.channels];
+        clip.GetData(data, 0);
+        var newClip = AudioClip.Create("Recorded Data", clip.samples, clip.channels, clip.frequency, false);
+        newClip.SetData(data, 0);
+
+        StopRecordInternal();
+
+        clip = newClip;
+        source.loop = true;
+        source.Play();
     }
 }
 

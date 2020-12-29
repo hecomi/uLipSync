@@ -14,7 +14,11 @@ public class uLipSyncMicInputEditor : Editor
         mic.UpdateMicInfo();
         DrawDevices();
         DrawProps();
-        DrawButtons();
+
+        if (Application.isPlaying)
+        {
+            DrawButtons();
+        }
     }
 
     void DrawDevices()
@@ -35,19 +39,20 @@ public class uLipSyncMicInputEditor : Editor
 
     void DrawButtons()
     {
-        if (!Application.isPlaying) return;
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
 
-        var buttonStyle = EditorStyles.miniButton;
-        var str = "Start";
-        if (mic.isRecording) 
+        if (mic.isRecording && GUILayout.Button("Record & Play (last 1 sec)", GUILayout.Width(180)))
         {
-            buttonStyle.normal.textColor = Color.gray;
-            buttonStyle.focused.textColor = Color.gray;
-            buttonStyle.hover.textColor = Color.gray;
-            buttonStyle.active.textColor = Color.gray;
-            str = "Stop";
+            mic.StopRecordAndCreateAudioClip();
         }
-        if (GUILayout.Button(str, buttonStyle))
+
+        if (!mic.isRecording && mic.isPlaying && GUILayout.Button("Stop", GUILayout.Width(120)))
+        {
+            mic.source.Stop();
+        }
+
+        if (GUILayout.Button(!mic.isRecording ? "Start Mic" : "Stop Mic", GUILayout.Width(120)))
         {
             if (mic.isRecording)
             {
@@ -58,6 +63,8 @@ public class uLipSyncMicInputEditor : Editor
                 mic.StartRecord();
             }
         }
+
+        EditorGUILayout.EndHorizontal();
     }
 }
 

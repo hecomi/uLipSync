@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp:uLipSync:CalculationConfig
   lpcOrder: 64
   sampleCount: 1024
-  useSecondDerivative: 1
-  checkThirdFormant: 1
+  checkSecondDerivative: 1
+  checkThirdFormant: 0
   filterH: 0
