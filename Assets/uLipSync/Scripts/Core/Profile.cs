@@ -15,10 +15,10 @@ public class Profile : ScriptableObject
     public float minLog10H = -1f; // Hz
 
 #if UNITY_EDITOR
-    [HideInInspector] public bool foldOutFormant = true;
-    [HideInInspector] public bool foldOutTips = true;
-    [HideInInspector] public bool foldOutVisualizer = true;
-    [HideInInspector] public bool foldOutSettings = true;
+    public static bool foldOutFormant = true;
+    public static bool foldOutTips = true;
+    public static bool foldOutVisualizer = true;
+    public static bool foldOutSettings = true;
 #endif
 }
 

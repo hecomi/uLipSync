@@ -23,13 +23,21 @@ public static class EditorUtil
         }
     }
 
-    public static bool Foldout(string title, ref bool display)
+    private static string GetFoldOutKey(string title)
+    {
+        return $"uLipSync-FoldOut-{title}";
+    }
+
+    public static bool Foldout(string title, bool initialState)
     {
         var style = new GUIStyle("ShurikenModuleTitle");
         style.font = new GUIStyle(EditorStyles.label).font;
         style.border = new RectOffset(15, 7, 4, 4);
         style.fixedHeight = 22;
         style.contentOffset = new Vector2(20f, -2f);
+
+        var key = GetFoldOutKey(title);
+        bool display = EditorPrefs.GetBool(key, initialState);
 
         var rect = GUILayoutUtility.GetRect(16f, 22f, style);
         GUI.Box(rect, title, style);
@@ -44,17 +52,20 @@ public static class EditorUtil
 
         if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition)) 
         {
-            display = !display;
+            EditorPrefs.SetBool(key, !display);
             e.Use();
         }
 
         return display;
     }
 
-    public static bool SimpleFoldout(string title, ref bool display)
+    public static bool SimpleFoldout(string title, bool initialState)
     {
-        display = EditorGUILayout.Foldout(display, title, EditorStyles.foldoutHeader);
-        return display;
+        var key = GetFoldOutKey(title);
+        bool display = EditorPrefs.GetBool(key, initialState);
+        bool newDisplay = EditorGUILayout.Foldout(display, title, EditorStyles.foldoutHeader);
+        if (newDisplay != display) EditorPrefs.SetBool(key, newDisplay);
+        return newDisplay;
     }
 
     public static void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)
