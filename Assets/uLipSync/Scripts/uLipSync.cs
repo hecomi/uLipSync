@@ -42,13 +42,13 @@ public class uLipSync : MonoBehaviour
     { 
         get { return ddLpcSpectralEnvelopeForEditorOnly_; } 
     }
-    [HideInInspector] public bool foldOutProfile = true;
-    [HideInInspector] public bool foldOutConfig = false;
-    [HideInInspector] public bool foldOutParameter = true;
-    [HideInInspector] public bool foldOutCallback = true;
-    [HideInInspector] public bool foldOutVisualizer = false;
-    [HideInInspector] public bool foldOutFormantMap = false;
-    [HideInInspector] public bool foldOutLPC = false;
+    public bool foldOutProfile = true;
+    public bool foldOutConfig = false;
+    public bool foldOutParameter = true;
+    public bool foldOutCallback = true;
+    public bool foldOutVisualizer = false;
+    public bool foldOutFormantMap = false;
+    public bool foldOutLPC = false;
 #endif
 
     void OnEnable()

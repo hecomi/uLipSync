@@ -4,7 +4,7 @@ namespace uLipSync
 {
 
 [ExecuteInEditMode]
-public class MicInputCalibrator : uLipSyncMicInput
+public class MicInputCalibrator : uLipSyncMicrophone
 {
     new void OnEnable()
     {

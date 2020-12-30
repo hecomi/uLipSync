@@ -16,22 +16,20 @@ MonoBehaviour:
     f1: 833
     f2: 1163
   formantI:
-    f1: 290
+    f1: 246
     f2: 2423
   formantU:
-    f1: 348
+    f1: 392
     f2: 1562
   formantE:
     f1: 493
-    f2: 2241
+    f2: 2154
   formantO:
-    f1: 440
-    f2: 639
+    f1: 406
+    f2: 697
   maxError: 500
   minLog10H: -1.5
-  micIndex: 4
-  audioClipForCalibA: {fileID: 0}
-  audioClipForCalibI: {fileID: 0}
-  audioClipForCalibU: {fileID: 0}
-  audioClipForCalibE: {fileID: 0}
-  audioClipForCalibO: {fileID: 0}
+  foldOutFormant: 1
+  foldOutTips: 1
+  foldOutVisualizer: 0
+  foldOutSettings: 0
