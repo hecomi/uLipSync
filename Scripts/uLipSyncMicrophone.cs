@@ -4,7 +4,7 @@ namespace uLipSync
 {
 
 [RequireComponent(typeof(AudioSource))]
-public class uLipSyncMicInput : MonoBehaviour
+public class uLipSyncMicrophone : MonoBehaviour
 {
     public int index = 0;
     private int preIndex_ = 0;

@@ -412,7 +412,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  foldOutProfile: 1
+  foldOutConfig: 1
+  foldOutParameter: 1
+  foldOutCallback: 1
   foldOutVisualizer: 0
+  foldOutFormantMap: 0
+  foldOutLPC: 0
 --- !u!4 &2066038223
 Transform:
   m_ObjectHideFlags: 0
@@ -550,3 +556,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   threshVolume: 0.01
+  outputLog: 1

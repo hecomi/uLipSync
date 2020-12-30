@@ -4,10 +4,10 @@ using UnityEditor;
 namespace uLipSync
 {
 
-[CustomEditor(typeof(uLipSyncMicInput))]
+[CustomEditor(typeof(uLipSyncMicrophone))]
 public class uLipSyncMicInputEditor : Editor
 {
-    uLipSyncMicInput mic { get { return target as uLipSyncMicInput; } }
+    uLipSyncMicrophone mic { get { return target as uLipSyncMicrophone; } }
 
     public override void OnInspectorGUI()
     {
