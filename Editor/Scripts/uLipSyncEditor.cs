@@ -153,11 +153,58 @@ public class uLipSyncEditor : Editor
         if (EditorUtil.Foldout("Parameter", true))
         {
             ++EditorGUI.indentLevel;
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.openFilter));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.closeFilter));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.minVolume));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.maxVolume));
+
+            if (EditorUtil.SimpleFoldout("Volume", true))
+            {
+                ++EditorGUI.indentLevel;
+
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.PrefixLabel("Normalized Volume");
+                    var rect = EditorGUILayout.GetControlRect(true);
+                    rect.y += rect.height * 0.3f;
+                    rect.height *= 0.4f;
+                    Handles.DrawSolidRectangleWithOutline(rect, new Color(0f, 0f, 0f, 0.2f), new Color(0f, 0f, 0f, 0.5f));
+                    rect.width -= 2;
+                    rect.width *= Mathf.Clamp(lipSync.result.volume, 0f, 1f);
+                    rect.height -= 2;
+                    rect.y += 1;
+                    rect.x += 1;
+                    Handles.DrawSolidRectangleWithOutline(rect, Color.green, new Color(0f, 0f, 0f, 0f));
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                EditorUtil.DrawProperty(serializedObject, nameof(lipSync.autoVolume));
+
+                if (lipSync.autoVolume)
+                {
+                    EditorUtil.DrawProperty(serializedObject, nameof(lipSync.minVolume));
+                    EditorUtil.DrawProperty(serializedObject, nameof(lipSync.autoVolumeAmp));
+                    EditorUtil.DrawProperty(serializedObject, nameof(lipSync.autoVolumeFilter));
+                }
+                else
+                {
+                    EditorUtil.DrawProperty(serializedObject, nameof(lipSync.minVolume));
+                    EditorUtil.DrawProperty(serializedObject, nameof(lipSync.maxVolume));
+                }
+
+                --EditorGUI.indentLevel;
+            }
+            if (EditorUtil.SimpleFoldout("Smoothness", true))
+            {
+                ++EditorGUI.indentLevel;
+                EditorUtil.DrawProperty(serializedObject, nameof(lipSync.openSmoothness));
+                EditorUtil.DrawProperty(serializedObject, nameof(lipSync.closeSmoothness));
+                EditorUtil.DrawProperty(serializedObject, nameof(lipSync.vowelTransitionSmoothness));
+                --EditorGUI.indentLevel;
+            }
+            if (EditorUtil.SimpleFoldout("Output", true))
+            {
+                ++EditorGUI.indentLevel;
+                EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
+                --EditorGUI.indentLevel;
+            }
+
             --EditorGUI.indentLevel;
             EditorGUILayout.Separator();
         }

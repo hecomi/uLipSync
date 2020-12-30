@@ -16,7 +16,13 @@ public class ConfigEditor : Editor
         EditorUtil.DrawProperty(serializedObject, nameof(config.sampleCount));
         EditorUtil.DrawProperty(serializedObject, nameof(config.checkSecondDerivative));
         EditorUtil.DrawProperty(serializedObject, nameof(config.checkThirdFormant));
-        EditorUtil.DrawProperty(serializedObject, nameof(config.filterH));
+
+        var newFilterH = EditorGUILayout.Slider("Filter H", config.filterH, 0f, 1f);
+        if (newFilterH != config.filterH)
+        {
+            Undo.RecordObject(config, "Change FilterH");
+            config.filterH = newFilterH;
+        }
 
         serializedObject.ApplyModifiedProperties();
     }

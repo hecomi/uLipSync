@@ -58,7 +58,6 @@ public class uLipSyncMicrophone : MonoBehaviour
     {
         StopRecordInternal();
         source.Stop();
-        Destroy(clip);
     }
 
     void Update()
@@ -131,7 +130,6 @@ public class uLipSyncMicrophone : MonoBehaviour
         if (source.isPlaying)
         {
             source.Stop();
-            DestroyImmediate(clip);
         }
 
         isRecording = false;
