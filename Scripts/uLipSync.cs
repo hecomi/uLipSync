@@ -10,7 +10,8 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public Config config;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
-    [Range(0f, 1f)] public float filter = 0.7f;
+    [Range(0f, 1f)] public float openFilter = 0.6f;
+    [Range(0f, 1f)] public float closeFilter = 0.85f;
     [Range(0f, 1f)] public float maxVolume = 0.01f;
     [Range(0f, 1f)] public float minVolume = 0.0001f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
@@ -162,10 +163,12 @@ public class uLipSync : MonoBehaviour
 
     void UpdateLipSyncInfo(float volume, FormantPair formant, Vowel vowel)
     {
-        float a = 1f - filter;
+        float af = 1f - openFilter;
+        float ab = 1f - closeFilter;
 
         float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
         rawResult_.volume = normalizedVolume;
+        float a = normalizedVolume > result.volume ? af : ab;
         result.volume += (normalizedVolume - result.volume) * a;
 
         rawResult_.formant = result.formant = formant;
