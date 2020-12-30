@@ -38,11 +38,16 @@ public class uLipSyncEditor : Editor
         DrawVisualizer();
 
         serializedObject.ApplyModifiedProperties();
+
+        RequireRepaintIfNeeded();
     }
 
-    public override bool RequiresConstantRepaint()
+    void RequireRepaintIfNeeded()
     {
-        return uLipSync.foldOutVisualizer;
+        if (Application.isPlaying && EditorUtil.IsFoldOutOpened("Visualizer"))
+        {
+            Repaint();
+        }
     }
 
     void DrawProfile()
