@@ -16,20 +16,14 @@ public class uLipSyncEditor : Editor
 
     void OnEnable()
     {
-        if (lipSync.config == null)
-        {
-            var configPath = AssetDatabase.FindAssets("Default-Config")
-                .Select(x => AssetDatabase.GUIDToAssetPath(x))
-                .FirstOrDefault();
-            lipSync.config = AssetDatabase.LoadAssetAtPath<Config>(configPath);
-        }
-
         if (lipSync.profile == null)
         {
-            var profilePath = AssetDatabase.FindAssets("Profile-Man")
-                .Select(x => AssetDatabase.GUIDToAssetPath(x))
-                .FirstOrDefault();
-            lipSync.profile = AssetDatabase.LoadAssetAtPath<Profile>(profilePath);
+            lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileWoman);
+        }
+
+        if (lipSync.config == null)
+        {
+            lipSync.config = EditorUtil.FindAsset<Config>(Common.defaultConfig);
         }
     }
 
@@ -56,7 +50,10 @@ public class uLipSyncEditor : Editor
         if (EditorUtil.Foldout("Profile", true))
         {
             ++EditorGUI.indentLevel;
+
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.profile));
+            DrawSetProfileButtons();
+
             if (lipSync.profile) 
             {
                 CreateCachedEditor(lipSync.profile, typeof(ProfileEditor), ref profileEditor_);
@@ -66,9 +63,30 @@ public class uLipSyncEditor : Editor
                     editor.Draw(true, false);
                 }
             }
+
             --EditorGUI.indentLevel;
+
             EditorGUILayout.Separator();
         }
+    }
+
+    void DrawSetProfileButtons()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Man", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
+        {
+            lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileMan);
+        }
+        if (GUILayout.Button("Woman", EditorStyles.miniButtonMid, GUILayout.Width(80)))
+        {
+            lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileWoman);
+        }
+        if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(80)))
+        {
+            lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.assetName}-Profile-New");
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
     void DrawConfig()
@@ -76,7 +94,10 @@ public class uLipSyncEditor : Editor
         if (EditorUtil.Foldout("Config", false))
         {
             ++EditorGUI.indentLevel;
+
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.config));
+            DrawSetConfigButtons();
+
             if (lipSync.config)
             {
                 CreateCachedEditor(lipSync.config, typeof(ConfigEditor), ref configEditor_);
@@ -85,9 +106,30 @@ public class uLipSyncEditor : Editor
                     configEditor_.OnInspectorGUI();
                 }
             }
+
             --EditorGUI.indentLevel;
+
             EditorGUILayout.Separator();
         }
+    }
+
+    void DrawSetConfigButtons()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Default", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
+        {
+            lipSync.config = EditorUtil.FindAsset<Config>(Common.defaultConfig);
+        }
+        if (GUILayout.Button("Calibration", EditorStyles.miniButtonMid, GUILayout.Width(80)))
+        {
+            lipSync.config = EditorUtil.FindAsset<Config>(Common.calibrationConfig);
+        }
+        if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(80)))
+        {
+            lipSync.config = EditorUtil.CreateAssetInRoot<Config>($"{Common.assetName}-Config-New");
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
     void DrawCallback()

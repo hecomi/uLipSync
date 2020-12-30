@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
-  m_Name: Profile-Woman
+  m_Name: uLipSync-Profile-Man
   m_EditorClassIdentifier: 
   formantA:
-    f1: 888
-    f2: 1363
+    f1: 833
+    f2: 1163
   formantI:
-    f1: 325
-    f2: 2725
+    f1: 290
+    f2: 2423
   formantU:
-    f1: 375
-    f2: 1675
+    f1: 348
+    f2: 1562
   formantE:
-    f1: 483
-    f2: 2317
+    f1: 493
+    f2: 2241
   formantO:
-    f1: 483
-    f2: 925
+    f1: 440
+    f2: 639
   maxError: 500
-  minLog10H: -4
+  minLog10H: -1.5

@@ -3,7 +3,7 @@
 namespace uLipSync
 {
 
-[CreateAssetMenu(menuName = "uLipSync/Config")]
+[CreateAssetMenu(menuName = Common.assetName + "/Config")]
 public class Config : ScriptableObject
 {
     [Min(16)] public int lpcOrder = 64;
