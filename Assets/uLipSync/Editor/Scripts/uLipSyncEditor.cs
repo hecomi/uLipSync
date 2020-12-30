@@ -107,7 +107,8 @@ public class uLipSyncEditor : Editor
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.filter));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.openFilter));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.closeFilter));
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.minVolume));
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.maxVolume));
             --EditorGUI.indentLevel;

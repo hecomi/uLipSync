@@ -6,8 +6,8 @@ namespace uLipSync
 [CreateAssetMenu(menuName = "uLipSync/Config")]
 public class Config : ScriptableObject
 {
-    public int lpcOrder = 64;
-    public int sampleCount = 1024;
+    [Min(16)] public int lpcOrder = 64;
+    [Min(256)] public int sampleCount = 1024;
     public bool checkSecondDerivative = true;
     public bool checkThirdFormant = true;
     public float filterH = 0f;
