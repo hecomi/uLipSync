@@ -67,8 +67,7 @@ public class ProfileEditor : Editor
             }
         }
 
-        Profile.foldOutSettings = EditorGUILayout.Foldout(Profile.foldOutSettings, "Settings", EditorStyles.foldoutHeader);
-        if (Profile.foldOutSettings)
+        if (EditorUtil.SimpleFoldout("Settings", true))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));

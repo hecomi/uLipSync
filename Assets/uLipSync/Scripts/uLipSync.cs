@@ -43,13 +43,6 @@ public class uLipSync : MonoBehaviour
     { 
         get { return ddLpcSpectralEnvelopeForEditorOnly_; } 
     }
-    public static bool foldOutProfile = true;
-    public static bool foldOutConfig = false;
-    public static bool foldOutParameter = true;
-    public static bool foldOutCallback = true;
-    public static bool foldOutVisualizer = false;
-    public static bool foldOutFormantMap = false;
-    public static bool foldOutLPC = false;
 #endif
 
     void OnEnable()

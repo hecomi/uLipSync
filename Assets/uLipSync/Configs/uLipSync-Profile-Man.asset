@@ -28,4 +28,4 @@ MonoBehaviour:
     f1: 440
     f2: 639
   maxError: 500
-  minLog10H: -1.5
+  minLog10H: -4

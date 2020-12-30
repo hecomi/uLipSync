@@ -28,6 +28,11 @@ public static class EditorUtil
         return $"{Common.assetName}-FoldOut-{title}";
     }
 
+    public static bool IsFoldOutOpened(string title)
+    {
+        return EditorPrefs.HasKey(GetFoldOutKey(title));
+    }
+
     public static bool Foldout(string title, bool initialState)
     {
         var style = new GUIStyle("ShurikenModuleTitle");
