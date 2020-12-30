@@ -3,14 +3,14 @@
 namespace uLipSync
 {
 
-[CreateAssetMenu(menuName = "uLipSync/Profile")]
+[CreateAssetMenu(menuName = Common.assetName + "/Profile")]
 public class Profile : ScriptableObject
 {
-    public FormantPair formantA = new FormantPair(726f, 1171f);
-    public FormantPair formantI = new FormantPair(281f, 2343f);
-    public FormantPair formantU = new FormantPair(328f, 1570f);
-    public FormantPair formantE = new FormantPair(468f, 2109f);
-    public FormantPair formantO = new FormantPair(492f, 773f);
+    public FormantPair formantA = Common.averageFormantMan[Vowel.A];
+    public FormantPair formantI = Common.averageFormantMan[Vowel.I];
+    public FormantPair formantU = Common.averageFormantMan[Vowel.U];
+    public FormantPair formantE = Common.averageFormantMan[Vowel.E];
+    public FormantPair formantO = Common.averageFormantMan[Vowel.O];
     public float maxError = 500f; // Hz
     public float minLog10H = -1f; // Hz
 

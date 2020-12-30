@@ -10,26 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce2952042dcc62e46922f633ddba4aad, type: 3}
-  m_Name: Profile-Mine
+  m_Name: uLipSync-Profile-Woman
   m_EditorClassIdentifier: 
   formantA:
-    f1: 833
-    f2: 1163
+    f1: 888
+    f2: 1363
   formantI:
-    f1: 246
-    f2: 2423
+    f1: 325
+    f2: 2725
   formantU:
-    f1: 392
-    f2: 1562
+    f1: 375
+    f2: 1675
   formantE:
-    f1: 493
-    f2: 2154
+    f1: 483
+    f2: 2317
   formantO:
-    f1: 406
-    f2: 697
+    f1: 483
+    f2: 925
   maxError: 500
-  minLog10H: -1.5
-  foldOutFormant: 1
-  foldOutTips: 1
-  foldOutVisualizer: 0
-  foldOutSettings: 0
+  minLog10H: -4

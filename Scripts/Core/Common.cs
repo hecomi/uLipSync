@@ -49,6 +49,34 @@ public class LipSyncInfo
     public FormantPair formant = new FormantPair();
 }
 
+public static class Common
+{
+    public const string assetName = "uLipSync";
+
+    public const string defaultProfileMan = assetName + "-Profile-Man";
+    public const string defaultProfileWoman = assetName + "-Profile-Woman";
+    public const string defaultConfig = assetName + "-Config-Default";
+    public const string calibrationConfig = assetName + "-Config-Calibration";
+
+    // Ref: http://bousure639.gjgd.net/Entry/164/
+    public static Dictionary<Vowel, FormantPair> averageFormantMan = new Dictionary<Vowel, FormantPair>()
+    {
+        { Vowel.A, new FormantPair(775, 1163) },
+        { Vowel.I, new FormantPair(263, 2263) },
+        { Vowel.U, new FormantPair(363, 1300) },
+        { Vowel.E, new FormantPair(475, 1738) },
+        { Vowel.O, new FormantPair(550, 838) },
+    };
+    public static Dictionary<Vowel, FormantPair> averageFormantWoman = new Dictionary<Vowel, FormantPair>()
+    {
+        { Vowel.A, new FormantPair(888, 1363) },
+        { Vowel.I, new FormantPair(325, 2725) },
+        { Vowel.U, new FormantPair(375, 1675) },
+        { Vowel.E, new FormantPair(483, 2317) },
+        { Vowel.O, new FormantPair(483, 925) },
+    };
+}
+
 [System.Serializable]
 public class LipSyncUpdateEvent : UnityEvent<LipSyncInfo> 
 {

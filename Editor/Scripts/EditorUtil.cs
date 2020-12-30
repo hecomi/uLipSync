@@ -25,7 +25,7 @@ public static class EditorUtil
 
     private static string GetFoldOutKey(string title)
     {
-        return $"uLipSync-FoldOut-{title}";
+        return $"{Common.assetName}-FoldOut-{title}";
     }
 
     public static bool Foldout(string title, bool initialState)
@@ -66,6 +66,22 @@ public static class EditorUtil
         bool newDisplay = EditorGUILayout.Foldout(display, title, EditorStyles.foldoutHeader);
         if (newDisplay != display) EditorPrefs.SetBool(key, newDisplay);
         return newDisplay;
+    }
+
+    public static T CreateAssetInRoot<T>(string name) where T : ScriptableObject
+    {
+        var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{name}.asset");
+        var obj = ScriptableObject.CreateInstance<T>();
+        AssetDatabase.CreateAsset(obj, path);
+        return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
+
+    public static T FindAsset<T>(string name) where T : ScriptableObject
+    {
+        var path = AssetDatabase.FindAssets(name)
+            .Select(x => AssetDatabase.GUIDToAssetPath(x))
+            .FirstOrDefault();
+        return AssetDatabase.LoadAssetAtPath<T>(path);
     }
 
     public static void DrawGrid(Rect area, Color axisColor, Color gridColor, Margin margin, Vector2 range, Vector2 div)

@@ -10,26 +10,6 @@ public class ProfileEditor : Editor
 {
     Profile profile { get { return target as Profile; } }
 
-    // Ref: http://bousure639.gjgd.net/Entry/164/
-    Dictionary<Vowel, FormantPair> averageFormantMan = new Dictionary<Vowel, FormantPair>()
-    {
-        { Vowel.A, new FormantPair(775, 1163) },
-        { Vowel.I, new FormantPair(263, 2263) },
-        { Vowel.U, new FormantPair(363, 1300) },
-        { Vowel.E, new FormantPair(475, 1738) },
-        { Vowel.O, new FormantPair(550, 838) },
-    };
-    Dictionary<Vowel, FormantPair> averageFormantWoman = new Dictionary<Vowel, FormantPair>()
-    {
-        { Vowel.A, new FormantPair(888, 1363) },
-        { Vowel.I, new FormantPair(325, 2725) },
-        { Vowel.U, new FormantPair(375, 1675) },
-        { Vowel.E, new FormantPair(483, 2317) },
-        { Vowel.O, new FormantPair(483, 925) },
-    };
-
-    MicInputCalibrator calibrator;
-
     public override void OnInspectorGUI()
     {
         Draw(true, true);
@@ -39,29 +19,40 @@ public class ProfileEditor : Editor
     {
         serializedObject.Update();
 
+        bool isDefaultAsset = 
+            profile.name == Common.defaultProfileMan ||
+            profile.name == Common.defaultProfileWoman;
+
         if (EditorUtil.SimpleFoldout("Formant", true))
         {
             ++EditorGUI.indentLevel;
-            DrawFormant(ref profile.formantA, "A");
-            DrawFormant(ref profile.formantI, "I");
-            DrawFormant(ref profile.formantU, "U");
-            DrawFormant(ref profile.formantE, "E");
-            DrawFormant(ref profile.formantO, "O");
+            DrawFormant(ref profile.formantA, "A", isDefaultAsset);
+            DrawFormant(ref profile.formantI, "I", isDefaultAsset);
+            DrawFormant(ref profile.formantU, "U", isDefaultAsset);
+            DrawFormant(ref profile.formantE, "E", isDefaultAsset);
+            DrawFormant(ref profile.formantO, "O", isDefaultAsset);
             EditorGUILayout.Separator();
-            DrawFormantResetButtons();
+            if (isDefaultAsset)
+            {
+                EditorGUILayout.HelpBox("Cannot change parameters in a default asset.", MessageType.None);
+            }
+            else
+            {
+                DrawFormantResetButtons();
+
+                if (drawTips)
+                {
+                    if (EditorUtil.SimpleFoldout("Tips", true))
+                    {
+                        DrawTips();
+
+                        EditorGUILayout.Separator();
+                    }
+                }
+            }
             --EditorGUI.indentLevel;
 
             EditorGUILayout.Separator();
-        }
-
-        if (drawTips)
-        {
-            if (EditorUtil.SimpleFoldout("Tips", true))
-            {
-                DrawTips();
-
-                EditorGUILayout.Separator();
-            }
         }
 
         if (drawVisualizer)
@@ -88,10 +79,10 @@ public class ProfileEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    void DrawFormant(ref FormantPair formant, string name)
+    void DrawFormant(ref FormantPair formant, string name, bool isDefaultAsset)
     {
         var f1 = EditorGUILayout.Slider($"{name} - F1", formant.f1, 0f, 4000f);
-        if (f1 != formant.f1)
+        if (f1 != formant.f1 && !isDefaultAsset)
         {
             Undo.RecordObject(target, $"Changed {name} F1");
             if (f1 > formant.f2) f1 = formant.f2;
@@ -99,7 +90,7 @@ public class ProfileEditor : Editor
         }
 
         var f2 = EditorGUILayout.Slider($"{name} - F2", formant.f2, 0f, 4000f);
-        if (f2 != formant.f2)
+        if (f2 != formant.f2 && !isDefaultAsset)
         {
             Undo.RecordObject(target, $"Changed {name} F2");
             if (f2 < formant.f1) f2 = formant.f1;
@@ -111,31 +102,31 @@ public class ProfileEditor : Editor
     {
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Reset (Man)", GUILayout.Width(120)))
+        if (GUILayout.Button("Reset (Man)", EditorStyles.miniButtonLeft, GUILayout.Width(120)))
         {
-            ResetFormant(averageFormantMan);
+            ResetFormant(Common.averageFormantMan);
         }
-        if (GUILayout.Button("Reset (Woman)", GUILayout.Width(120)))
+        if (GUILayout.Button("Reset (Woman)", EditorStyles.miniButtonRight, GUILayout.Width(120)))
         {
-            ResetFormant(averageFormantWoman);
+            ResetFormant(Common.averageFormantWoman);
         }
         EditorGUILayout.EndHorizontal();
     }
 
     void DrawTips()
     {
-        var man = averageFormantMan;
-        var woman = averageFormantWoman;
+        var man = Common.averageFormantMan;
+        var woman = Common.averageFormantWoman;
         EditorGUILayout.HelpBox(
-            "Average formant frequencies:\n" +
-            "----------------------------\n" +
-            "Man\t\t\t\tWoman:\n" +
-            $"A:\tF1: {man[Vowel.A].f1} / F2: {man[Vowel.A].f2}\t\tF1: {woman[Vowel.A].f1} / F2: {woman[Vowel.A].f2}\n" +
-            $"I:\tF1: {man[Vowel.I].f1} / F2: {man[Vowel.I].f2}\t\tF1: {woman[Vowel.I].f1} / F2: {woman[Vowel.I].f2}\n" +
-            $"U:\tF1: {man[Vowel.U].f1} / F2: {man[Vowel.U].f2}\t\tF1: {woman[Vowel.U].f1} / F2: {woman[Vowel.U].f2}\n" +
-            $"E:\tF1: {man[Vowel.E].f1} / F2: {man[Vowel.E].f2}\t\tF1: {woman[Vowel.E].f1} / F2: {woman[Vowel.E].f2}\n" +
-            $"O:\tF1: {man[Vowel.O].f1} / F2: {man[Vowel.O].f2}\t\tF1: {woman[Vowel.O].f1} / F2: {woman[Vowel.O].f2}",
-            MessageType.Info);
+            " Average formant frequencies:\n" +
+            " ----------------------------\n" +
+            " Man\t\t\t\tWoman:\n" +
+            $" A:\tF1: {man[Vowel.A].f1} / F2: {man[Vowel.A].f2}\t\tF1: {woman[Vowel.A].f1} / F2: {woman[Vowel.A].f2}\n" +
+            $" I:\tF1: {man[Vowel.I].f1} / F2: {man[Vowel.I].f2}\t\tF1: {woman[Vowel.I].f1} / F2: {woman[Vowel.I].f2}\n" +
+            $" U:\tF1: {man[Vowel.U].f1} / F2: {man[Vowel.U].f2}\t\tF1: {woman[Vowel.U].f1} / F2: {woman[Vowel.U].f2}\n" +
+            $" E:\tF1: {man[Vowel.E].f1} / F2: {man[Vowel.E].f2}\t\tF1: {woman[Vowel.E].f1} / F2: {woman[Vowel.E].f2}\n" +
+            $" O:\tF1: {man[Vowel.O].f1} / F2: {man[Vowel.O].f2}\t\tF1: {woman[Vowel.O].f1} / F2: {woman[Vowel.O].f2}",
+            MessageType.None);
     }
 
     void ResetFormant(Dictionary<Vowel, FormantPair> formant)
