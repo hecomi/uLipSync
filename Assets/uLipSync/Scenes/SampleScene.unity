@@ -391,10 +391,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5772f6d6ed7ed44999db00fc5a46f88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 37d8bd96d2e899140843028c65a1c78d, type: 2}
+  profile: {fileID: 11400000, guid: 3bbfac2e14d5358458a9978b1da65fb6, type: 2}
   config: {fileID: 11400000, guid: cdec430819f76c84eb53bfeedf883d31, type: 2}
   outputSoundGain: 1
-  filter: 0.7
+  openFilter: 0.75
+  closeFilter: 0.9
+  autoVolume: 1
   maxVolume: 0.01
   minVolume: 0.0001
   onLipSyncUpdate:
@@ -412,13 +414,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  foldOutProfile: 1
-  foldOutConfig: 1
-  foldOutParameter: 1
-  foldOutCallback: 1
-  foldOutVisualizer: 0
-  foldOutFormantMap: 0
-  foldOutLPC: 0
 --- !u!4 &2066038223
 Transform:
   m_ObjectHideFlags: 0
@@ -445,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: 4
+  index: 0
   isAutoStart: 1
 --- !u!82 &2066038225
 AudioSource:

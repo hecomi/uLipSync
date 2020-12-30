@@ -15,5 +15,5 @@ MonoBehaviour:
   lpcOrder: 80
   sampleCount: 8192
   checkSecondDerivative: 0
-  checkThirdFormant: 0
-  filterH: 0.5
+  checkThirdFormant: 1
+  filterH: 0

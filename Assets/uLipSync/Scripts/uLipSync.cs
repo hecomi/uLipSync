@@ -10,10 +10,14 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public Config config;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
-    [Range(0f, 1f)] public float openFilter = 0.75f;
-    [Range(0f, 1f)] public float closeFilter = 0.9f;
+    [Range(0f, 1f)] public float openSmoothness = 0.75f;
+    [Range(0f, 1f)] public float closeSmoothness = 0.9f;
+    [Range(0f, 1f)] public float vowelTransitionSmoothness = 0.8f;
     [Range(0f, 1f)] public float maxVolume = 0.01f;
     [Range(0f, 1f)] public float minVolume = 0.0001f;
+    public bool autoVolume = true;
+    [Range(0f, 1f)] public float autoVolumeAmp = 0.2f;
+    [Range(0f, 1f)] public float autoVolumeFilter = 0.9f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
     NativeArray<float> rawData_;
@@ -48,6 +52,7 @@ public class uLipSync : MonoBehaviour
     void OnEnable()
     {
         AllocateBuffers();
+        InitAutoVolume();
     }
 
     void OnDisable()
@@ -64,6 +69,7 @@ public class uLipSync : MonoBehaviour
         ScheduleJob();
 
         UpdateBuffers();
+        UpdateAutoVolume();
     }
 
     void AllocateBuffers()
@@ -156,13 +162,15 @@ public class uLipSync : MonoBehaviour
 
     void UpdateLipSyncInfo(float volume, FormantPair formant, Vowel vowel)
     {
-        float af = 1f - openFilter;
-        float ab = 1f - closeFilter;
+        float sf = 1f - openSmoothness;
+        float sb = 1f - closeSmoothness;
+        float preVolume = result.volume;
+
+        rawResult_.volume = volume;
 
         float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
-        rawResult_.volume = normalizedVolume;
-        float a = normalizedVolume > result.volume ? af : ab;
-        result.volume += (normalizedVolume - result.volume) * a;
+        float smooth = normalizedVolume > preVolume ? sf : sb;
+        result.volume += (normalizedVolume - preVolume) * smooth;
 
         rawResult_.formant = result.formant = formant;
 
@@ -177,7 +185,7 @@ public class uLipSync : MonoBehaviour
             var key = (Vowel)i;
             float target = key == vowel ? 1f : 0f;
             float value = rawResult_.vowels[key];
-            value += (target - value) * a;
+            value += (target - value) * (1f - vowelTransitionSmoothness);
             if (value > max)
             {
                 rawResult_.mainVowel = key;
@@ -201,6 +209,22 @@ public class uLipSync : MonoBehaviour
                 result.vowels[key] = 0f;
             }
         }
+    }
+
+    void InitAutoVolume()
+    {
+        if (!autoVolume) return;
+        
+        maxVolume = minVolume + 0.001f;
+    }
+
+    void UpdateAutoVolume()
+    {
+        if (!autoVolume) return;
+
+        maxVolume *= autoVolumeFilter;
+        maxVolume = Mathf.Max(maxVolume, rawResult_.volume * autoVolumeAmp);
+        maxVolume = Mathf.Max(maxVolume, minVolume + 0.001f);
     }
 
     void ScheduleJob()

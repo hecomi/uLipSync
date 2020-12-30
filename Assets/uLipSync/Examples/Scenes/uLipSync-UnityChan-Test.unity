@@ -494,8 +494,12 @@ MonoBehaviour:
   outputSoundGain: 1
   openFilter: 0.75
   closeFilter: 0.9
+  volumeFilter: 0.7
   maxVolume: 0.05
   minVolume: 0.001
+  autoVolume: 1
+  autoVolumeAmp: 0.2
+  autoVolumeFilter: 0.9
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -511,6 +515,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &496503022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496503018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 0
+  isAutoStart: 1
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0
