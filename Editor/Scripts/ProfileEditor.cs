@@ -39,7 +39,7 @@ public class ProfileEditor : Editor
     {
         serializedObject.Update();
 
-        if (EditorUtil.SimpleFoldout("Formant", ref profile.foldOutFormant))
+        if (EditorUtil.SimpleFoldout("Formant", true))
         {
             ++EditorGUI.indentLevel;
             DrawFormant(ref profile.formantA, "A");
@@ -56,7 +56,7 @@ public class ProfileEditor : Editor
 
         if (drawTips)
         {
-            if (EditorUtil.SimpleFoldout("Tips", ref profile.foldOutTips))
+            if (EditorUtil.SimpleFoldout("Tips", true))
             {
                 DrawTips();
 
@@ -66,7 +66,7 @@ public class ProfileEditor : Editor
 
         if (drawVisualizer)
         {
-            if (EditorUtil.SimpleFoldout("Visualizer", ref profile.foldOutVisualizer))
+            if (EditorUtil.SimpleFoldout("Visualizer", true))
             {
                 ++EditorGUI.indentLevel;
                 EditorUtil.DrawFormants(profile);
@@ -76,8 +76,8 @@ public class ProfileEditor : Editor
             }
         }
 
-        profile.foldOutSettings = EditorGUILayout.Foldout(profile.foldOutSettings, "Settings", EditorStyles.foldoutHeader);
-        if (profile.foldOutSettings)
+        Profile.foldOutSettings = EditorGUILayout.Foldout(Profile.foldOutSettings, "Settings", EditorStyles.foldoutHeader);
+        if (Profile.foldOutSettings)
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));

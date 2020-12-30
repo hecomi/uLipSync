@@ -48,12 +48,12 @@ public class uLipSyncEditor : Editor
 
     public override bool RequiresConstantRepaint()
     {
-        return lipSync.foldOutVisualizer;
+        return uLipSync.foldOutVisualizer;
     }
 
     void DrawProfile()
     {
-        if (EditorUtil.Foldout("Profile", ref lipSync.foldOutProfile))
+        if (EditorUtil.Foldout("Profile", true))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.profile));
@@ -73,7 +73,7 @@ public class uLipSyncEditor : Editor
 
     void DrawConfig()
     {
-        if (EditorUtil.Foldout("Config", ref lipSync.foldOutConfig))
+        if (EditorUtil.Foldout("Config", false))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.config));
@@ -92,7 +92,7 @@ public class uLipSyncEditor : Editor
 
     void DrawCallback()
     {
-        if (EditorUtil.Foldout("Callback", ref lipSync.foldOutCallback))
+        if (EditorUtil.Foldout("Callback", true))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.onLipSyncUpdate));
@@ -103,7 +103,7 @@ public class uLipSyncEditor : Editor
 
     void DrawParameter()
     {
-        if (EditorUtil.Foldout("Parameter", ref lipSync.foldOutParameter))
+        if (EditorUtil.Foldout("Parameter", true))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
@@ -117,11 +117,11 @@ public class uLipSyncEditor : Editor
 
     void DrawVisualizer()
     {
-        if (EditorUtil.Foldout("Visualizer", ref lipSync.foldOutVisualizer))
+        if (EditorUtil.Foldout("Visualizer", false))
         {
             ++EditorGUI.indentLevel;
 
-            if (EditorUtil.SimpleFoldout("Formant Map", ref lipSync.foldOutFormantMap))
+            if (EditorUtil.SimpleFoldout("Formant Map", true))
             {
                 ++EditorGUI.indentLevel;
                 EditorUtil.DrawFormants(profile, lipSync.result);
@@ -130,7 +130,7 @@ public class uLipSyncEditor : Editor
 
             EditorGUILayout.Separator();
 
-            if (EditorUtil.SimpleFoldout("LPC Spectral Envelope", ref lipSync.foldOutLPC))
+            if (EditorUtil.SimpleFoldout("LPC Spectral Envelope", true))
             {
                 ++EditorGUI.indentLevel;
                 DrawLPCSpectralEnvelope();
