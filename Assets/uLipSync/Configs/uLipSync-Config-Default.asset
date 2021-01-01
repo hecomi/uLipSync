@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6354581a42fc7c4cbaf0ace102eac7d, type: 3}
   m_Name: uLipSync-Config-Default
   m_EditorClassIdentifier: Assembly-CSharp:uLipSync:CalculationConfig
+  sampleCount: 512
   lpcOrder: 64
-  sampleCount: 1024
-  checkSecondDerivative: 0
-  checkThirdFormant: 0
+  maxFrequency: 4000
+  frequencyResolution: 256
+  checkSecondDerivative: 1
+  checkThirdFormant: 1
   filterH: 0

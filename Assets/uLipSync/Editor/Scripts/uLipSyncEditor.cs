@@ -266,7 +266,7 @@ public class uLipSyncEditor : Editor
 
         var H = lipSync.lpcSpectralEnvelopeForEditorOnly;
         float maxH = Algorithm.GetMaxValue(ref H);
-        float df = (float)AudioSettings.outputSampleRate / H.Length;
+        float df = (float)lipSync.maxFreq / H.Length;
         float fn = range.x / df;
         int n = Mathf.CeilToInt(fn);
         var points = new Vector3[n];
