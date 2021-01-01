@@ -54,12 +54,6 @@ public class uLipSyncMicrophone : MonoBehaviour
         StopRecordInternal();
     }
 
-    void OnApplicationPause()
-    {
-        StopRecordInternal();
-        source.Stop();
-    }
-
     void Update()
     {
         UpdateDevice();
@@ -117,6 +111,8 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void StartRecordInternal()
     {
+        if (!source) return;
+
         clip = Microphone.Start(device.name, true, 1, maxFreq);
         while (Microphone.GetPosition(device.name) <= 0) ;
         source.loop = true;
@@ -127,6 +123,8 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void StopRecordInternal()
     {
+        if (!source) return;
+
         if (source.isPlaying)
         {
             source.Stop();

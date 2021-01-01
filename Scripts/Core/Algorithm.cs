@@ -58,7 +58,7 @@ public static class Algorithm
     public static void Normalize(ref NativeArray<float> array)
     {
         float max = GetMaxValue(ref array);
-        if (max < math.EPSILON) return;
+        if (math.abs(max) < math.EPSILON) return;
         for (int i = 0; i < array.Length; ++i)
         {
             array[i] /= max;

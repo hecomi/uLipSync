@@ -31,7 +31,11 @@ public class uLipSync : MonoBehaviour
     object lockObject_ = new object();
 
     int index_ = 0;
-    public int sampleCount { get { return profile ? config.sampleCount : 1024; } }
+
+    public int lpcOrder { get { return config ? config.lpcOrder : 64; } }
+    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
+    public int maxFreq { get { return config ? config.maxFrequency : 3000; } }
+    public int freqResolution { get { return config ? config.frequencyResolution : 256; } }
 
     LipSyncInfo rawResult_ = new LipSyncInfo();
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
@@ -76,9 +80,9 @@ public class uLipSync : MonoBehaviour
     {
         rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
         inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        lpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        dLpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        ddLpcSpectralEnvelope_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        lpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
+        dLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
+        ddLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
         jobResult_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
@@ -103,12 +107,14 @@ public class uLipSync : MonoBehaviour
 
     void UpdateBuffers()
     {
-        if (sampleCount == rawData_.Length || sampleCount == 0) return;
-
-        lock (lockObject_)
+        if (sampleCount != rawData_.Length ||
+            freqResolution != lpcSpectralEnvelope_.Length)
         {
-            DisposeBuffers();
-            AllocateBuffers();
+            lock (lockObject_)
+            {
+                DisposeBuffers();
+                AllocateBuffers();
+            }
         }
     }
 
@@ -240,8 +246,9 @@ public class uLipSync : MonoBehaviour
         {
             input = inputData_,
             startIndex = index,
-            lpcOrder = config.lpcOrder,
+            lpcOrder = lpcOrder,
             sampleRate = AudioSettings.outputSampleRate,
+            maxFreq = maxFreq,
             H = lpcSpectralEnvelope_,
             dH = dLpcSpectralEnvelope_,
             ddH = ddLpcSpectralEnvelope_,

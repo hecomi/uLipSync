@@ -491,10 +491,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 300ffae37e5c9e047b64a418c8e35677, type: 2}
   config: {fileID: 11400000, guid: cdec430819f76c84eb53bfeedf883d31, type: 2}
-  outputSoundGain: 1
-  openFilter: 0.75
-  closeFilter: 0.9
-  volumeFilter: 0.7
+  outputSoundGain: 0.219
+  openSmoothness: 0.5
+  closeSmoothness: 0.7
+  vowelTransitionSmoothness: 0.8
   maxVolume: 0.05
   minVolume: 0.001
   autoVolume: 1
@@ -522,7 +522,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 496503018}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f24f90331c09e854586fe2cd12e69544, type: 3}
   m_Name: 
