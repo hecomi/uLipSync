@@ -14,6 +14,11 @@ public class uLipSyncEditor : Editor
     Editor profileEditor_;
     Editor configEditor_;
 
+    static bool showLpc = true;
+    static bool showDLpc = false;
+    static bool showFft = false;
+    static bool showFormant = true;
+
     void OnEnable()
     {
         if (lipSync.profile == null)
@@ -245,7 +250,7 @@ public class uLipSyncEditor : Editor
         var area = GUILayoutUtility.GetRect(Screen.width, 300f);
         area = EditorGUI.IndentedRect(area);
         var margin = new EditorUtil.Margin(10, 10f, 30f, 40f);
-        var range = new Vector2(4000f, 1f);
+        var range = new Vector2(lipSync.maxFreq, 1f);
 
         EditorUtil.DrawGrid(
             area,
@@ -265,43 +270,76 @@ public class uLipSyncEditor : Editor
         float height = yMax - yMin;
 
         var H = lipSync.lpcSpectralEnvelopeForEditorOnly;
-        float maxH = Algorithm.GetMaxValue(ref H);
         float df = (float)lipSync.maxFreq / H.Length;
-        float fn = range.x / df;
-        int n = Mathf.CeilToInt(fn);
-        var points = new Vector3[n];
-        float min = Mathf.Log10(1e-3f);
-        for (int i = 0; i < n && i < H.Length; ++i)
+        float nf = range.x / df;
+        int n = (int)nf;
+
+        if (showFft)
         {
-            float val = H[i] / maxH;
-            val = Mathf.Log10(10f * val);
-            val = (val - min) / (1f - min);
-            val = Mathf.Max(val, 0f);
-            float x = xMin + width * i / (n - 1);
-            float y = yMax - height * val;
-            points[i] = new Vector3(x, y, 0f);
+            var spectrum = lipSync.fftDataEditor;
+            float maxSpectrum = Algorithm.GetMaxValue(ref spectrum);
+            float dfFft = (float)AudioSettings.outputSampleRate / spectrum.Length;
+            float nfFft = range.x / dfFft;
+            int nFft = (int)nfFft;
+            var pointsFft = new Vector3[nFft];
+            float min = Mathf.Log10(1e-3f);
+            for (int i = 0; i < nFft && i < spectrum.Length; ++i)
+            {
+                float val = spectrum[i] / maxSpectrum;
+                val = Mathf.Log10(10f * val);
+                val = (val - min) / (1f - min);
+                val = Mathf.Max(val, 0f);
+                float x = xMin + width * dfFft * i / lipSync.maxFreq;
+                float y = yMax - height * val;
+                pointsFft[i] = new Vector3(x, y, 0f);
+            }
+
+            Handles.color = Color.gray;
+            Handles.DrawAAPolyLine(3f, pointsFft);
         }
 
-        Handles.color = Color.red;
-        Handles.DrawAAPolyLine(5f, points);
-
-        var ddH = lipSync.ddLpcSpectralEnvelopeForEditorOnly;
-        float maxDdH = Algorithm.GetMaxValue(ref ddH);
-        min = Mathf.Log10(1e-8f);
-        for (int i = 0; i < n && i < ddH.Length; ++i)
+        if (showDLpc)
         {
-            float val = ddH[i] / maxDdH;
-            val = Mathf.Log10(10f * val);
-            val = (val - min) / (1f - min);
-            val = Mathf.Max(val, 0f);
-            float x = xMin + width * i / (n - 1);
-            float y = yMax - height * val;
-            points[i] = new Vector3(x, y, 0f);
+            var ddH = lipSync.ddLpcSpectralEnvelopeForEditorOnly;
+            float maxDdH = Algorithm.GetMaxValue(ref ddH);
+            var points = new Vector3[n];
+            float min = Mathf.Log10(1e-8f);
+            for (int i = 0; i < n && i < ddH.Length; ++i)
+            {
+                float val = ddH[i] / maxDdH;
+                val = Mathf.Log10(10f * val);
+                val = (val - min) / (1f - min);
+                val = Mathf.Max(val, 0f);
+                float x = xMin + width * df * i / lipSync.maxFreq;
+                float y = yMax - height * val;
+                points[i] = new Vector3(x, y, 0f);
+            }
+
+            Handles.color = new Color(0f, 0f, 1f, 0.2f);
+            Handles.DrawAAPolyLine(3f, points);
         }
 
-        Handles.color = new Color(0f, 0f, 1f, 0.2f);
-        Handles.DrawAAPolyLine(3f, points);
+        if (showLpc)
+        {
+            float maxH = Algorithm.GetMaxValue(ref H);
+            var points = new Vector3[n];
+            float min = Mathf.Log10(1e-3f);
+            for (int i = 0; i < n && i < H.Length; ++i)
+            {
+                float val = H[i] / maxH;
+                val = Mathf.Log10(10f * val);
+                val = (val - min) / (1f - min);
+                val = Mathf.Max(val, 0f);
+                float x = xMin + width * df * i / lipSync.maxFreq;
+                float y = yMax - height * val;
+                points[i] = new Vector3(x, y, 0f);
+            }
 
+            Handles.color = Color.red;
+            Handles.DrawAAPolyLine(5f, points);
+        }
+
+        if (showFormant)
         {
             var result = lipSync.result;
             float xF1 = xMin + width * (result.formant.f1 / df) / n;
@@ -315,6 +353,15 @@ public class uLipSyncEditor : Editor
             EditorGUI.LabelField(new Rect(xF1 + 10f, yMin + 10f, 200f, 20f), $"f1: {(int)result.formant.f1} Hz");
             EditorGUI.LabelField(new Rect(xF2 + 10f, yMin + 30f, 200f, 20f), $"f2: {(int)result.formant.f2} Hz");
         }
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        showLpc = EditorGUILayout.ToggleLeft("LPC", showLpc, GUILayout.MaxWidth(100));
+        showDLpc = EditorGUILayout.ToggleLeft("dLPC", showDLpc, GUILayout.MaxWidth(100));
+        showFft = EditorGUILayout.ToggleLeft("FFT", showFft, GUILayout.MaxWidth(100));
+        showFormant = EditorGUILayout.ToggleLeft("Formant", showFormant, GUILayout.MaxWidth(100));
+        GUILayout.FlexibleSpace();
+        EditorGUILayout.EndHorizontal();
 
         Handles.color = origColor;
     }

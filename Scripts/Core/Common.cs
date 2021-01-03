@@ -15,6 +15,13 @@ public enum Vowel
     None,
 }
 
+public enum WindowFunc
+{
+    Hann,
+    BlackmanHarris,
+    Gaussian4_5,
+}
+
 [System.Serializable]
 public struct FormantPair
 {

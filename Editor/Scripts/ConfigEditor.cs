@@ -16,6 +16,7 @@ public class ConfigEditor : Editor
         EditorUtil.DrawProperty(serializedObject, nameof(config.lpcOrder));
         EditorUtil.DrawProperty(serializedObject, nameof(config.frequencyResolution));
         EditorUtil.DrawProperty(serializedObject, nameof(config.maxFrequency));
+        EditorUtil.DrawProperty(serializedObject, nameof(config.windowFunc));
         EditorUtil.DrawProperty(serializedObject, nameof(config.checkSecondDerivative));
         EditorUtil.DrawProperty(serializedObject, nameof(config.checkThirdFormant));
 
