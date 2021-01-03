@@ -322,7 +322,7 @@ public class uLipSyncEditor : Editor
         {
             float maxH = Algorithm.GetMaxValue(ref H);
             var points = new Vector3[n];
-            float min = Mathf.Log10(1e-3f);
+            float min = Mathf.Log10(1e-2f);
             for (int i = 0; i < n && i < H.Length; ++i)
             {
                 float val = H[i] / maxH;

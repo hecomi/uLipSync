@@ -33,8 +33,6 @@ public struct LipSyncJob : IJob
 
     public void Execute()
     {
-        int N = H.Length;
-
         float volume = Algorithm.GetRMSVolume(ref input);
         if (volume < volumeThresh)
         {
@@ -55,7 +53,7 @@ public struct LipSyncJob : IJob
         }
 
         // copy input ring buffer to a temporary array
-        var data = new NativeArray<float>(N, Allocator.Temp);
+        var data = new NativeArray<float>(input.Length, Allocator.Temp);
         Algorithm.CopyRingBuffer(ref input, ref data, startIndex);
 
         // multiply window function
@@ -63,10 +61,10 @@ public struct LipSyncJob : IJob
 
         // auto correlational function
         var r = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
+        Algorithm.ZeroClear(ref r);
         for (int l = 0; l < lpcOrder + 1; ++l)
         {
-            r[l] = 0f;
-            for (int n = 0; n < N - l; ++n)
+            for (int n = 0; n < input.Length - l; ++n)
             {
                 r[l] += data[n] * data[n + l];
             }
@@ -77,11 +75,9 @@ public struct LipSyncJob : IJob
         // calculate LPC factors using Levinson-Durbin algorithm
         var a = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
         var e = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
-        for (int i = 0; i < lpcOrder + 1; ++i)
-        {
-            a[i] = e[i] = 0f;
-        }
-        a[0] = e[0] = 1f;
+        Algorithm.ZeroClear(ref a);
+        Algorithm.ZeroClear(ref e);
+        a[0] = 1f;
         a[1] = -r[1] / r[0];
         e[1] = r[0] + r[1] * a[1];
         for (int k = 1; k < lpcOrder; ++k)
@@ -98,13 +94,12 @@ public struct LipSyncJob : IJob
 
             U[0] = 1f;
             V[0] = 0f;
-            for (int i = 1; i < k + 1; ++i)
-            {
-                U[i] = a[i];
-                V[k + 1 - i] = a[i];
-            }
             U[k + 1] = 0f;
             V[k + 1] = 1f;
+            for (int i = 1; i < k + 1; ++i)
+            {
+                U[i] = V[k + 1 - i] = a[i];
+            }
 
             for (int i = 0; i < k + 2; ++i)
             {
@@ -122,20 +117,22 @@ public struct LipSyncJob : IJob
         // calculate frequency characteristics
         int Nf = (int)((float)H.Length * sampleRate / maxFreq);
         var Htmp = new NativeArray<float>(H.Length, Allocator.Temp);
+        Algorithm.ZeroClear(ref Htmp);
         for (int n = 0; n < H.Length; ++n)
         {
             float nr = 0f, ni = 0f, dr = 0f, di = 0f;
             for (int i = 0; i < lpcOrder + 1; ++i)
             {
-                float re = math.cos(-2f * math.PI * i * n / Nf);
-                float im = math.sin(-2f * math.PI * i * n / Nf);
+                float theta = -2f * math.PI * i * n / Nf;
+                float re = math.cos(theta);
+                float im = math.sin(theta);
                 nr += e[lpcOrder - i] * re;
                 ni += e[lpcOrder - i] * im;
                 dr += a[lpcOrder - i] * re;
                 di += a[lpcOrder - i] * im;
             }
-            float numerator = math.sqrt(math.pow(nr, 2f) + math.pow(ni, 2f));
-            float denominator = math.sqrt(math.pow(dr, 2f) + math.pow(di, 2f));
+            float numerator = math.sqrt(math.abs(e[e.Length - 1]));// math.sqrt(nr * nr + ni * ni);
+            float denominator = math.sqrt(dr * dr + di * di);
             if (denominator > math.EPSILON)
             {
                 Htmp[n] = numerator / denominator;
@@ -146,7 +143,7 @@ public struct LipSyncJob : IJob
         e.Dispose();
 
         float filter = 1f - math.clamp(filterH, 0f, 1f);
-        for (int i = 0; i < N; ++i)
+        for (int i = 0; i < H.Length; ++i)
         {
             H[i] += (Htmp[i] - H[i]) * filter;
         }
@@ -156,7 +153,7 @@ public struct LipSyncJob : IJob
         dH[0] = H[1] - H[0];
         dH[1] = H[2] - H[1];
         ddH[0] = dH[1] - dH[0];
-        for (int i = 1; i < N; ++i)
+        for (int i = 1; i < dH.Length; ++i)
         {
             dH[i] = H[i] - H[i - 1];
             ddH[i] = dH[i] - dH[i - 1];
@@ -204,7 +201,7 @@ public struct LipSyncJob : IJob
             var res = new Result();
             res.volume = volume;
 
-            for (int i = 1; i < N - 1; ++i)
+            for (int i = 1; i < ddH.Length - 1; ++i)
             {
                 var freq = deltaFreq * (i - 1);
                 if (freq < 100) continue;
