@@ -70,7 +70,8 @@ public class ProfileEditor : Editor
         if (EditorUtil.SimpleFoldout("Settings", true))
         {
             ++EditorGUI.indentLevel;
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.useErrorRange));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxErrorRange));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.minLog10H));
             --EditorGUI.indentLevel;
         }

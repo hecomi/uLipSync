@@ -35,7 +35,7 @@ public static class EditorUtil
 
     public static bool IsFoldOutOpened(string title)
     {
-        return EditorPrefs.HasKey(GetFoldOutKey(title));
+        return EditorPrefs.GetBool(GetFoldOutKey(title));
     }
 
     public static bool Foldout(string title, bool initialState)
@@ -247,8 +247,8 @@ public static class EditorUtil
             var f = formants[i];
             float x = xMin + dx * f.f1;
             float y = yMin + (height - dy * f.f2);
-            float rx = profile.maxError * dx;
-            float ry = profile.maxError * dy;
+            float rx = profile.maxErrorRange * dx;
+            float ry = profile.maxErrorRange * dy;
             var center = new Vector3(x, y, 0f);
             var color = colors[i];
             Handles.color = color;

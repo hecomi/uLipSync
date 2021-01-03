@@ -29,7 +29,7 @@ public static class LipSyncUtil
         float minDiff = math.min(diffA, math.min(diffI, math.min(diffU, math.min(diffE, diffO))));
         info.diff = minDiff;
 
-        if (minDiff < profile.maxError)
+        if (!profile.useErrorRange || minDiff < profile.maxErrorRange)
         {
             if      (diffA == minDiff) { info.vowel = Vowel.A; }
             else if (diffI == minDiff) { info.vowel = Vowel.I; }
