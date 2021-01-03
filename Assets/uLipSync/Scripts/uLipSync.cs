@@ -147,41 +147,27 @@ public class uLipSync : MonoBehaviour
     {
         if (onLipSyncUpdate == null) return;
 
-        VowelInfo vowelInfo;
-        if (config.checkThirdFormant)
+        var vowelInfo = config.checkThirdFormant ?
+            LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile) :
+            LipSyncUtil.GetVowel(new FormantPair(jobResult_[0].f1, jobResult_[0].f2), profile);
+
+        float volume = jobResult_[0].volume;
+        FormantPair formant = vowelInfo.formant;
+        Vowel vowel = vowelInfo.vowel;
+
+        if (config.checkSecondDerivative)
         {
-            vowelInfo = LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile);
-        }
-        else
-        {
-            vowelInfo = LipSyncUtil.GetVowel(new FormantPair(jobResult_[0].f1, jobResult_[0].f2), profile);
+            var vowelInfoBySecondDerivative = config.checkThirdFormant ?
+                LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile) :
+                LipSyncUtil.GetVowel(new FormantPair(jobResult_[1].f1, jobResult_[1].f2), profile);
+            if (vowelInfo.diff > vowelInfoBySecondDerivative.diff)
+            {
+                formant = vowelInfoBySecondDerivative.formant;
+                vowel = vowelInfoBySecondDerivative.vowel;
+            }
         }
 
-        if (!config.checkSecondDerivative)
-        {
-            UpdateLipSyncInfo(
-                jobResult_[0].volume, 
-                vowelInfo.formant, 
-                vowelInfo.vowel);
-        }
-        else
-        {
-            var vowelInfoBySecondDerivative = LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile);
-            if (vowelInfo.diff < vowelInfoBySecondDerivative.diff)
-            {
-                UpdateLipSyncInfo(
-                    jobResult_[0].volume, 
-                    vowelInfo.formant, 
-                    vowelInfo.vowel);
-            }
-            else
-            {
-                UpdateLipSyncInfo(
-                    jobResult_[1].volume, 
-                    vowelInfoBySecondDerivative.formant, 
-                    vowelInfoBySecondDerivative.vowel);
-            }
-        }
+        UpdateLipSyncInfo(volume, formant, vowel);
 
         onLipSyncUpdate.Invoke(result);
     }
