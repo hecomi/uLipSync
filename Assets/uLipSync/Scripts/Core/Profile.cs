@@ -11,8 +11,9 @@ public class Profile : ScriptableObject
     public FormantPair formantU = Common.averageFormantMan[Vowel.U];
     public FormantPair formantE = Common.averageFormantMan[Vowel.E];
     public FormantPair formantO = Common.averageFormantMan[Vowel.O];
-    public float maxError = 500f; // Hz
-    public float minLog10H = -1f; // Hz
+    public bool useErrorRange = false;
+    public float maxErrorRange = 500f; // Hz
+    public float minLog10H = -1f;
 }
 
 }

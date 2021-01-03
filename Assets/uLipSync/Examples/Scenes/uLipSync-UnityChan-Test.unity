@@ -489,12 +489,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5772f6d6ed7ed44999db00fc5a46f88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 3bbfac2e14d5358458a9978b1da65fb6, type: 2}
+  profile: {fileID: 11400000, guid: 300ffae37e5c9e047b64a418c8e35677, type: 2}
   config: {fileID: 11400000, guid: cdec430819f76c84eb53bfeedf883d31, type: 2}
-  outputSoundGain: 0.075
-  openSmoothness: 0.5
-  closeSmoothness: 0.7
-  vowelTransitionSmoothness: 0.7
+  outputSoundGain: 1
+  openSmoothness: 0.8
+  closeSmoothness: 0.85
+  vowelTransitionSmoothness: 0.9
   maxVolume: 0.05
   minVolume: 0.001
   autoVolume: 1
