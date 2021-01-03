@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Burst;
+using Unity.Mathematics;
 
 namespace uLipSync
 {
@@ -46,10 +48,18 @@ public class uLipSync : MonoBehaviour
     { 
         get { return lpcSpectralEnvelopeForEditorOnly_; } 
     }
+
     NativeArray<float> ddLpcSpectralEnvelopeForEditorOnly_;
     public NativeArray<float> ddLpcSpectralEnvelopeForEditorOnly 
     { 
         get { return ddLpcSpectralEnvelopeForEditorOnly_; } 
+    }
+
+    NativeArray<float> fftDataJob_;
+    NativeArray<float> fftDataEditor_;
+    public NativeArray<float> fftDataEditor
+    { 
+        get { return fftDataEditor_; } 
     }
 #endif
 
@@ -68,8 +78,8 @@ public class uLipSync : MonoBehaviour
     {
         if (!jobHandle_.IsCompleted) return;
 
-        jobHandle_.Complete();
-        GetResultAndInvokeCallback();
+        GetResult();
+        InvokeCallback();
         ScheduleJob();
 
         UpdateBuffers();
@@ -87,6 +97,8 @@ public class uLipSync : MonoBehaviour
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
         ddLpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(ddLpcSpectralEnvelope_.Length, Allocator.Persistent); 
+        fftDataJob_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+        fftDataEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
 #endif
     }
 
@@ -102,6 +114,8 @@ public class uLipSync : MonoBehaviour
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_.Dispose();
         ddLpcSpectralEnvelopeForEditorOnly_.Dispose();
+        fftDataJob_.Dispose();
+        fftDataEditor_.Dispose();
 #endif
     }
 
@@ -118,13 +132,19 @@ public class uLipSync : MonoBehaviour
         }
     }
 
-    void GetResultAndInvokeCallback()
+    void GetResult()
     {
+        jobHandle_.Complete();
+
 #if UNITY_EDITOR
         lpcSpectralEnvelopeForEditorOnly_.CopyFrom(lpcSpectralEnvelope_);
         ddLpcSpectralEnvelopeForEditorOnly_.CopyFrom(ddLpcSpectralEnvelope_);
+        fftDataEditor_.CopyFrom(fftDataJob_);
 #endif
+    }
 
+    void InvokeCallback()
+    {
         if (onLipSyncUpdate == null) return;
 
         VowelInfo vowelInfo;
@@ -242,13 +262,14 @@ public class uLipSync : MonoBehaviour
             index = index_;
         }
 
-        var job = new LipSyncJob()
+        var lipSyncJob = new LipSyncJob()
         {
             input = inputData_,
             startIndex = index,
             lpcOrder = lpcOrder,
             sampleRate = AudioSettings.outputSampleRate,
             maxFreq = maxFreq,
+            windowFunc = config.windowFunc,
             H = lpcSpectralEnvelope_,
             dH = dLpcSpectralEnvelope_,
             ddH = ddLpcSpectralEnvelope_,
@@ -258,9 +279,22 @@ public class uLipSync : MonoBehaviour
             filterH = config.filterH,
         };
 
-        jobHandle_ = job.Schedule();
+        jobHandle_ = lipSyncJob.Schedule();
+
+#if UNITY_EDITOR
+        var fftJob = new FftJob()
+        {
+            input = inputData_,
+            startIndex = index,
+            spectrum = fftDataJob_,
+            volumeThresh = minVolume,
+        };
+
+        jobHandle_ = fftJob.Schedule(jobHandle_);
+#endif
     }
 
+    [BurstCompile]
 	void OnAudioFilterRead(float[] input, int channels)
 	{
         if (rawData_ != null)
@@ -277,7 +311,7 @@ public class uLipSync : MonoBehaviour
             }
         }
 
-        if (Mathf.Abs(outputSoundGain - 1f) > Mathf.Epsilon)
+        if (math.abs(outputSoundGain - 1f) > math.EPSILON)
         {
             for (int i = 0; i < input.Length; ++i) 
             {

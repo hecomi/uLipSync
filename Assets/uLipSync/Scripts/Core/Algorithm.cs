@@ -58,10 +58,51 @@ public static class Algorithm
     public static void Normalize(ref NativeArray<float> array)
     {
         float max = GetMaxValue(ref array);
-        if (math.abs(max) < math.EPSILON) return;
+        if (max < math.EPSILON) return;
         for (int i = 0; i < array.Length; ++i)
         {
             array[i] /= max;
+        }
+    }
+
+    [BurstCompile]
+    public static void ApplyWindow(ref NativeArray<float> array, WindowFunc windowFunc)
+    {
+        int N = array.Length;
+
+        switch (windowFunc)
+        {
+            case WindowFunc.Hann: 
+            {
+                for (int i = 0; i < N; ++i)
+                {
+                    float x = (float)i / (N - 1);
+                    array[i] *= 0.5f - 0.5f * math.cos(2f * math.PI * x);
+                }
+                break;
+            }
+            case WindowFunc.BlackmanHarris: 
+            {
+                for (int i = 0; i < N; ++i)
+                {
+                    float x = (float)i / (N - 1);
+                    array[i] *= 
+                        0.35875f 
+                        - 0.48829f * math.cos(2f * math.PI * x)
+                        + 0.14128f * math.cos(4f * math.PI * x)
+                        - 0.01168f * math.cos(6f * math.PI * x);
+                }
+                break;
+            }
+            case WindowFunc.Gaussian4_5: 
+            {
+                for (int i = 0; i < N; ++i)
+                {
+                    float x = (float)i / (N - 1);
+                    array[i] *= math.exp(-math.pow(x / 4.5f, 2f));
+                }
+                break;
+            }
         }
     }
 }

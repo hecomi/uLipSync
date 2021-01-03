@@ -25,6 +25,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int maxFreq;
     [ReadOnly] public float minLog10H;
     [ReadOnly] public float filterH;
+    [ReadOnly] public WindowFunc windowFunc;
     public NativeArray<float> H;
     public NativeArray<float> dH;
     public NativeArray<float> ddH;
@@ -39,14 +40,17 @@ public struct LipSyncJob : IJob
         {
             var res = new Result();
             res.volume = volume;
+
             res.f1 = result[0].f1;
             res.f2 = result[0].f2;
             res.f3 = result[0].f3;
             result[0] = res;
+
             res.f1 = result[1].f1;
             res.f2 = result[1].f2;
             res.f3 = result[1].f3;
             result[1] = res;
+
             return;
         }
 
@@ -54,11 +58,8 @@ public struct LipSyncJob : IJob
         var data = new NativeArray<float>(N, Allocator.Temp);
         Algorithm.CopyRingBuffer(ref input, ref data, startIndex);
 
-        // multiply hanning window function
-        for (int i = 0; i < N; ++i)
-        {
-            data[i] *= 0.5f - 0.5f * math.cos(2f * math.PI * i / (N - 1));
-        }
+        // multiply window function
+        Algorithm.ApplyWindow(ref data, windowFunc);
 
         // auto correlational function
         var r = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);

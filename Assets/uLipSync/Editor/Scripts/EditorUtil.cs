@@ -23,9 +23,14 @@ public static class EditorUtil
         }
     }
 
+    public static string GetKey(string title, string category)
+    {
+        return $"{Common.assetName}-{category}-{title}";
+    }
+
     private static string GetFoldOutKey(string title)
     {
-        return $"{Common.assetName}-FoldOut-{title}";
+        return GetKey(title, "FoldOut");
     }
 
     public static bool IsFoldOutOpened(string title)
