@@ -56,7 +56,6 @@ public static class Algorithm
     {
         int sn = src.Length;
         int dn = dst.Length;
-        if (sn != dn) return;
         for (int i = 0; i < dn; ++i)
         {
             dst[i] = src[(startSrcIndex + i) % sn];

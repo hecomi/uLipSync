@@ -88,35 +88,41 @@ public class uLipSync : MonoBehaviour
 
     void AllocateBuffers()
     {
-        rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
-        inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        lpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-        dLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-        ddLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-        jobResult_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
+        lock (lockObject_)
+        {
+            rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
+            inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+            lpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
+            dLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
+            ddLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
+            jobResult_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
-        ddLpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(ddLpcSpectralEnvelope_.Length, Allocator.Persistent); 
-        fftDataJob_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-        fftDataEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+            lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
+            ddLpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(ddLpcSpectralEnvelope_.Length, Allocator.Persistent); 
+            fftDataJob_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
+            fftDataEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
 #endif
+        }
     }
 
     void DisposeBuffers()
     {
-        jobHandle_.Complete();
-        rawData_.Dispose();
-        inputData_.Dispose();
-        lpcSpectralEnvelope_.Dispose();
-        dLpcSpectralEnvelope_.Dispose();
-        ddLpcSpectralEnvelope_.Dispose();
-        jobResult_.Dispose();
+        lock (lockObject_)
+        {
+            jobHandle_.Complete();
+            rawData_.Dispose();
+            inputData_.Dispose();
+            lpcSpectralEnvelope_.Dispose();
+            dLpcSpectralEnvelope_.Dispose();
+            ddLpcSpectralEnvelope_.Dispose();
+            jobResult_.Dispose();
 #if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditorOnly_.Dispose();
-        ddLpcSpectralEnvelopeForEditorOnly_.Dispose();
-        fftDataJob_.Dispose();
-        fftDataEditor_.Dispose();
+            lpcSpectralEnvelopeForEditorOnly_.Dispose();
+            ddLpcSpectralEnvelopeForEditorOnly_.Dispose();
+            fftDataJob_.Dispose();
+            fftDataEditor_.Dispose();
 #endif
+        }
     }
 
     void UpdateBuffers()
@@ -273,6 +279,7 @@ public class uLipSync : MonoBehaviour
             input = inputData_,
             startIndex = index,
             spectrum = fftDataJob_,
+            windowFunc = config.windowFunc,
             volumeThresh = minVolume,
         };
 
@@ -287,12 +294,10 @@ public class uLipSync : MonoBehaviour
         {
             lock (lockObject_)
             {
-                int n = rawData_.Length;
-                index_ = index_ % n;
+                index_ = index_ % rawData_.Length;
                 for (int i = 0; i < input.Length; i += channels) 
                 {
-                    rawData_[index_] = input[i];
-                    index_ = (index_ + 1) % n;
+                    rawData_[index_++ % rawData_.Length] = input[i];
                 }
             }
         }
