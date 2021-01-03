@@ -12,6 +12,7 @@ public struct FftJob : IJob
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
     [ReadOnly] public float volumeThresh;
+    [ReadOnly] public WindowFunc windowFunc;
     public NativeArray<float> spectrum;
 
     public void Execute()
@@ -28,11 +29,8 @@ public struct FftJob : IJob
         var data = new NativeArray<float>(N, Allocator.Temp);
         Algorithm.CopyRingBuffer(ref input, ref data, startIndex);
 
-        // multiply hanning window function
-        for (int i = 0; i < N; ++i)
-        {
-            data[i] *= 0.5f - 0.5f * math.cos(2f * math.PI * i / (N - 1));
-        }
+        // multiply window function
+        Algorithm.ApplyWindow(ref data, windowFunc);
 
         // Cooley-tukey FFT
         var spectrumComplex = new NativeArray<float2>(N, Allocator.Temp);
@@ -57,11 +55,13 @@ public struct FftJob : IJob
 
         var even = new NativeArray<float2>(N / 2, Allocator.Temp);
         var odd = new NativeArray<float2>(N / 2, Allocator.Temp);
+
         for (int i = 0; i < N / 2; ++i)
         {
             even[i] = spectrum[i * 2];
             odd[i] = spectrum[i * 2 + 1];
         }
+
         Fft(ref even, N / 2);
         Fft(ref odd, N / 2);
 

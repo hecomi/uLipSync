@@ -36,19 +36,11 @@ public struct LipSyncJob : IJob
         float volume = Algorithm.GetRMSVolume(ref input);
         if (volume < volumeThresh)
         {
-            var res = new Result();
-            res.volume = volume;
-
-            res.f1 = result[0].f1;
-            res.f2 = result[0].f2;
-            res.f3 = result[0].f3;
-            result[0] = res;
-
-            res.f1 = result[1].f1;
-            res.f2 = result[1].f2;
-            res.f3 = result[1].f3;
-            result[1] = res;
-
+            var res1 = result[0];
+            var res2 = result[1];
+            res1.volume = res2.volume = volume;
+            result[0] = res1;
+            result[1] = res2;
             return;
         }
 
@@ -118,6 +110,7 @@ public struct LipSyncJob : IJob
         int Nf = (int)((float)H.Length * sampleRate / maxFreq);
         var Htmp = new NativeArray<float>(H.Length, Allocator.Temp);
         Algorithm.ZeroClear(ref Htmp);
+        float numerator = math.sqrt(math.abs(e[e.Length - 1]));
         for (int n = 0; n < H.Length; ++n)
         {
             float nr = 0f, ni = 0f, dr = 0f, di = 0f;
@@ -131,7 +124,6 @@ public struct LipSyncJob : IJob
                 dr += a[lpcOrder - i] * re;
                 di += a[lpcOrder - i] * im;
             }
-            float numerator = math.sqrt(math.abs(e[e.Length - 1]));// math.sqrt(nr * nr + ni * ni);
             float denominator = math.sqrt(dr * dr + di * di);
             if (denominator > math.EPSILON)
             {

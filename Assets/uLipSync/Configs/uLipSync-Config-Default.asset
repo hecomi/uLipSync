@@ -15,8 +15,8 @@ MonoBehaviour:
   sampleCount: 1024
   lpcOrder: 64
   maxFrequency: 4000
-  frequencyResolution: 256
+  frequencyResolution: 512
   windowFunc: 1
-  checkSecondDerivative: 1
+  checkSecondDerivative: 0
   checkThirdFormant: 1
   filterH: 0
