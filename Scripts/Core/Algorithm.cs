@@ -9,6 +9,15 @@ namespace uLipSync
 public static class Algorithm
 {
     [BurstCompile]
+    public static void ZeroClear(ref NativeArray<float> array)
+    {
+        for (int i = 0; i < array.Length; ++i)
+        {
+            array[i] = 0f;
+        }
+    }
+
+    [BurstCompile]
     public static float GetMaxValue(ref NativeArray<float> array)
     {
         float max = 0f;
@@ -47,10 +56,10 @@ public static class Algorithm
     {
         int sn = src.Length;
         int dn = dst.Length;
+        if (sn != dn) return;
         for (int i = 0; i < dn; ++i)
         {
-            int index = (startSrcIndex + i) % sn;
-            dst[i] = src[index];
+            dst[i] = src[(startSrcIndex + i) % sn];
         }
     }
 
