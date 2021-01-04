@@ -33,7 +33,7 @@ Get started
 Copmonents
 ----------
 ### `uLipSync`
-This is a core component to calculate lipsync. `uLipSync` gets sound buffers from `MonoBehaviour.OnAudioFilterRead()` so you have to attach this component to the same GameObject that has `AudioSource` to play voice. In `LateUpdate()` phase, this component schedules a job to calculate lipsync parameters, then retrives the result in the next `LateUpdate()` timing. All calculation is optimized by Burst compiler.
+This is a core component to calculate lipsync. `uLipSync` gets sound buffers from `MonoBehaviour.OnAudioFilterRead()` so you have to attach this component to the same GameObject that has `AudioSource` to play voice. In `LateUpdate()` phase, this component schedules a job to calculate lipsync parameters, then retrives the result in the future `LateUpdate()` timing when the calculation finishes (typically, the calculation is ~1ms so next frame). All calculation is optimized by Burst compiler.
 
 ### `uLipSyncBlendShape`
 Update BlendShapes of `SkinnedMeshRenderer` by registering `OnLipSyncUpdate()` to the event handler of `uLipSync` components as described in the above section.
@@ -75,6 +75,7 @@ Parameters
     - Change the volume of output sound
     - If you use `uLipSync` with microphone and don't want to output microphone sound in Unity, please set the gain zero.
 
+
 Profile
 -------
 
@@ -104,22 +105,105 @@ The preset `Man` and `Woman` profiles have typical frequencies of all vowels for
   - **Min Log 10H**
     - Do not use the formant if the spectrum value is lower than this threshold
 
-Config
-------
-
 
 Callback
 --------
 
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Section-Callback.png" width="640" />
+
+When lipsync process finishes, the result is notified by this event. The event handler should have a `LipSyncInfo` argument like this:
+
+```c
+using UnityEngine;
+using uLipSync;
+
+public class DebugPrintLipSyncInfo : MonoBehaviour
+{
+    public float threshVolume = 0.01f;
+    public bool outputLog = true;
+
+    public void OnLipSyncUpdate(LipSyncInfo info)
+    {
+        if (info.volume > threshVolume && outputLog) 
+        {
+            Debug.LogFormat("MAIN VOWEL: {0}, [ A:{1} I:{2}, U:{3} E:{4} O:{5} N:{6} ], VOL: {7}, FORMANT: {8}, {9}",
+                info.mainVowel, 
+                info.volume, 
+                info.vowels[Vowel.A],
+                info.vowels[Vowel.I],
+                info.vowels[Vowel.U],
+                info.vowels[Vowel.E],
+                info.vowels[Vowel.O],
+                info.vowels[Vowel.None],
+                info.formant.f1, 
+                info.formant.f2);
+        }
+    }
+}
+```
+
+
+Config
+------
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Section-Config.png" width="640" />
+
+The lipsync process calculates LPC spectral envelope, and parameters for the calculation is defined in this section. You can create your parameter set in the same way as `Profile`. I recommend you NOT to change the default settings if you don't know the details of the calculation.
+
+- **Config**
+  - **Default**
+    - A recommended setting
+  - **Calibration**
+    - Needs long time (~ 1 sec) but you can see formants more clearly so that you can check frequencies of formants.
+  - **Create**
+    - Create a new `Config` asset
+- **Sample Count**
+  - The number of sound data
+- **Lpc Order**
+  - LPC (Linear predictive coding) order
+- **Frequency Resolution**
+  - The division number of LPC spectral envelope (0 Hz ~ Max Frequency)
+- **Max Frequency**
+  - The maximum frequency to check formants (The highest formant is the 2nd one of vowel I, it's about 3000 Hz)
+- **Window Func**
+  - Window function to calculate the spectral envelope
+    - Hann: Hanning window
+    - Blackman-Harris: Blackman-Harris window
+    - Gauss_4_5: Gauss window (sigma = 4.5)
+- **Check Second Derivative**
+  - To guess formants, the second derivative of the spectral envelope are considered. This is useful when the second formant of O is unclear, but sometimes has a bad influence on other vowels.
+- **Check Third Formant**
+  - Consider also the third formant to guess vowels. This is useful when an undesired peak appears but also has bad effect sometimes.
+- **Filter H**
+  - The spectral envelope changes slowly to avoid the noise. This is useful when you want to check formant peaks when adjusting formant values in profile.
 
 
 Visualizer
 ----------
 
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/visualizer.gif" width="640" />
+
+Visualizer is useful when you want to check whether the input sound is correctly analyzed with given profile.
+
+- **Draw On Every Frame**
+  - To update graphs in realtime, editor script needs to call `Repaint()` every frame. This causes performance issues in the game, so I recommend to check this only when you really want to see them in realtime.
+- **Formant Map**
+  - X-axis is the 1st formant frequency, and Y-axis is the 2nd formant one.
+  - In runtime, white circle indicates the latest result and the ellipse of the vowel gets brighter by it.
+- **LPC Spectral Envelope**
+  - Draws a graph of LPC spectral envelope and you can see some related information by selecting following checkboxes:
+  - **LPC**
+    - LPC spectral envelope
+  - **dLPC**
+    - The second derivative of the envelope
+  - **FFT**
+    - FFT result
+  - **Formant**
+    - Current 
 
 UnityChan
 ---------
-Examples of this asset includes Unity-chan assets (Release packages don't include them).
+Examples include Unity-chan assets (Release packages don't include them).
 
 © Unity Technologies Japan/UCL
 
