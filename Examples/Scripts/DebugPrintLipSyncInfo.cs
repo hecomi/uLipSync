@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
-
-namespace uLipSync.Samples
-{
+using uLipSync;
 
 public class DebugPrintLipSyncInfo : MonoBehaviour
 {
-    [Range(0f, 1f), Tooltip("RMS Volume")]
     public float threshVolume = 0.01f;
     public bool outputLog = true;
 
@@ -26,6 +23,4 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
                 info.formant.f2);
         }
     }
-}
-
 }
