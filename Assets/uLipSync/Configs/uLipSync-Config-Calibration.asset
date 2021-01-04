@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: uLipSync-Config-Calibration
   m_EditorClassIdentifier: Assembly-CSharp:uLipSync:CalculationConfig
   sampleCount: 8192
-  lpcOrder: 80
+  lpcOrder: 64
   maxFrequency: 4000
   frequencyResolution: 256
+  windowFunc: 0
   checkSecondDerivative: 0
   checkThirdFormant: 0
-  filterH: 0.8
+  filterH: 0

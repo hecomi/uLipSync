@@ -16,7 +16,7 @@ MonoBehaviour:
   lpcOrder: 64
   maxFrequency: 4000
   frequencyResolution: 128
-  windowFunc: 1
+  windowFunc: 0
   checkSecondDerivative: 0
   checkThirdFormant: 1
   filterH: 0
