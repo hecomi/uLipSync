@@ -7,6 +7,12 @@ uLipSync
 - No native plugin / No dependency
 
 
+Demo
+----
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Unity-Chan.gif" width="640" />
+
+
 Get started
 -----------
 1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it into your project.
