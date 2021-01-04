@@ -1,15 +1,31 @@
 uLipSync
 ========
 
-**uLipSync** is an Unity asset to do a realtime lipsync.
+**uLipSync** is an Unity asset to do a realtime lipsync (now supports only **A**, **I**, **U**, **E**, and **O**).
 
 - Fast calculation using Job and Burst compiler
-- No native plugin
+- No native plugin / No dependency
 
 
 Get started
 -----------
-(writing...)
+1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it into your project.
+2. Attach `uLipSync` component to the GameObject that has `AudioSource` and plays voice sounds.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-Default-UI.png" width="640" />
+
+3. Attach `uLipSyncBlendshape` component to the GameObject of your character.
+4. Set parameters of the component. Checking `Find From Children` helps you find the target `SkinnedMeshRenderer` and blendshapes of the character's mouth.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-BlendShape.png" width="640" />
+
+5. Register `uLipSyncBlendshape.OnLipSyncUpdate` to `uLipSync` in Callback section.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Register-Callback.png" width="640" />
+
+6. Choose a profile from `Man` or `Woman` in LipSync Profile section.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Profiles.png" width="640" />
 
 
 Details
