@@ -13,6 +13,14 @@ Demo
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Unity-Chan.gif" width="640" />
 
 
+Environment
+-----------
+- I've created this asset using Unity 2020.1.17f1 on Windows 10 (not tested with other versions and operation systems yet) 
+- **Burst** and **Mathematics** should be installed in the Package Manager
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Package.png" width="640" />
+
+
 Get started
 -----------
 1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it into your project.
