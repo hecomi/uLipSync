@@ -17,6 +17,7 @@ public class uLipSyncEditor : Editor
     static bool showDLpc = false;
     static bool showFft = false;
     static bool showFormant = true;
+    static bool drawOnEveryFrame = true;
 
     void OnEnable()
     {
@@ -48,7 +49,9 @@ public class uLipSyncEditor : Editor
 
     void RequireRepaintIfNeeded()
     {
-        if (Application.isPlaying && EditorUtil.IsFoldOutOpened("Visualizer"))
+        if (drawOnEveryFrame &&
+            Application.isPlaying && 
+            EditorUtil.IsFoldOutOpened("Visualizer"))
         {
             Repaint();
         }
@@ -56,7 +59,7 @@ public class uLipSyncEditor : Editor
 
     void DrawProfile()
     {
-        if (EditorUtil.Foldout("Profile", true))
+        if (EditorUtil.Foldout("LipSync Profile", true))
         {
             ++EditorGUI.indentLevel;
 
@@ -100,7 +103,7 @@ public class uLipSyncEditor : Editor
 
     void DrawConfig()
     {
-        if (EditorUtil.Foldout("Config", false))
+        if (EditorUtil.Foldout("Calculation Config", false))
         {
             ++EditorGUI.indentLevel;
 
@@ -154,7 +157,7 @@ public class uLipSyncEditor : Editor
 
     void DrawParameter()
     {
-        if (EditorUtil.Foldout("Parameter", true))
+        if (EditorUtil.Foldout("Parameters", true))
         {
             ++EditorGUI.indentLevel;
 
@@ -219,6 +222,8 @@ public class uLipSyncEditor : Editor
         if (EditorUtil.Foldout("Visualizer", false))
         {
             ++EditorGUI.indentLevel;
+
+            drawOnEveryFrame = EditorGUILayout.Toggle("Draw On Every Frame", drawOnEveryFrame);
 
             if (EditorUtil.SimpleFoldout("Formant Map", true))
             {
