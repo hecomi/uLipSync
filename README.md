@@ -7,6 +7,23 @@ uLipSync
 - No native plugin
 
 
+Get started
+-----------
+(writing...)
+
+
+Details
+-------
+(writing...)
+
+
+UnityChan
+---------
+Examples of this asset includes Unity-chan assets (Release packages don't include them).
+
+© Unity Technologies Japan/UCL
+
+
 License
 -------
 The MIT License (MIT)
