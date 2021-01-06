@@ -78,12 +78,12 @@ Parameters
   - **Auto Volume Filter**
     - Decrease max volume by this filter every frame (MaxVolume *= filter)
 - **Smoothness**
-  - **Opne Smoothness**
-    - Speed to open mouse (instant 0.0 <-> 1.0 smooth)
-  - **Opne Smoothness**
-    - Speed to close mouse (instant 0.0 <-> 1.0 smooth)
-  - **Opne Smoothness**
-    - Speed to change the shape of mouse (instant 0.0 <-> 1.0 smooth)
+  - **Open Smoothness**
+    - Speed to open mouth (instant 0.0 <-> 1.0 smooth)
+  - **Close Smoothness**
+    - Speed to close mouth (instant 0.0 <-> 1.0 smooth)
+  - **Vowel Transition Smoothness**
+    - Speed to change the shape of mouth (instant 0.0 <-> 1.0 smooth)
 - **Output**
   - **Output Sound Gain**
     - Change the volume of output sound
