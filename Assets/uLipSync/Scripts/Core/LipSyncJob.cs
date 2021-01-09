@@ -53,7 +53,6 @@ public struct LipSyncJob : IJob
 
         // auto correlational function
         var r = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
-        Algorithm.ZeroClear(ref r);
         for (int l = 0; l < lpcOrder + 1; ++l)
         {
             for (int n = 0; n < input.Length - l; ++n)
@@ -67,8 +66,6 @@ public struct LipSyncJob : IJob
         // calculate LPC factors using Levinson-Durbin algorithm
         var a = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
         var e = new NativeArray<float>(lpcOrder + 1, Allocator.Temp);
-        Algorithm.ZeroClear(ref a);
-        Algorithm.ZeroClear(ref e);
         a[0] = 1f;
         a[1] = -r[1] / r[0];
         e[1] = r[0] + r[1] * a[1];
@@ -109,7 +106,6 @@ public struct LipSyncJob : IJob
         // calculate frequency characteristics
         int Nf = (int)((float)H.Length * sampleRate / maxFreq);
         var Htmp = new NativeArray<float>(H.Length, Allocator.Temp);
-        Algorithm.ZeroClear(ref Htmp);
         float numerator = math.sqrt(math.abs(e[e.Length - 1]));
         for (int n = 0; n < H.Length; ++n)
         {
