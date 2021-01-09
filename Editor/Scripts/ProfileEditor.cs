@@ -34,7 +34,8 @@ public class ProfileEditor : Editor
             EditorGUILayout.Separator();
             if (isDefaultAsset)
             {
-                EditorGUILayout.HelpBox("Cannot change parameters in a default asset.", MessageType.None);
+                EditorGUILayout.Separator();
+                EditorGUILayout.HelpBox("Cannot change parameters in a default asset.", MessageType.Info);
             }
             else
             {
