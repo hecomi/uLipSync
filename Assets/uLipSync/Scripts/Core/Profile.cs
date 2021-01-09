@@ -13,7 +13,7 @@ public class Profile : ScriptableObject
     public FormantPair formantO = Common.averageFormantMan[Vowel.O];
     public bool useErrorRange = false;
     public float maxErrorRange = 500f; // Hz
-    public float minLog10H = -1f;
+    public float minLog10H = -4f;
 }
 
 }

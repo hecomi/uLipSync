@@ -12,9 +12,9 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public Config config;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
-    [Range(0f, 1f)] public float openSmoothness = 0.75f;
-    [Range(0f, 1f)] public float closeSmoothness = 0.9f;
-    [Range(0f, 1f)] public float vowelTransitionSmoothness = 0.8f;
+    [Range(0f, 1f)] public float openSmoothness = 0.8f;
+    [Range(0f, 1f)] public float closeSmoothness = 0.85f;
+    [Range(0f, 1f)] public float vowelTransitionSmoothness = 0.9f;
     [Range(0f, 1f)] public float maxVolume = 0.01f;
     [Range(0f, 1f)] public float minVolume = 0.0001f;
     public bool autoVolume = true;
