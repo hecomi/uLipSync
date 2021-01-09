@@ -492,9 +492,9 @@ MonoBehaviour:
   profile: {fileID: 11400000, guid: 300ffae37e5c9e047b64a418c8e35677, type: 2}
   config: {fileID: 11400000, guid: cdec430819f76c84eb53bfeedf883d31, type: 2}
   outputSoundGain: 1
-  openSmoothness: 0.8
-  closeSmoothness: 0.85
-  vowelTransitionSmoothness: 0.9
+  openSmoothness: 0.85
+  closeSmoothness: 0.9
+  vowelTransitionSmoothness: 0.92
   maxVolume: 0.05
   minVolume: 0.001
   autoVolume: 1

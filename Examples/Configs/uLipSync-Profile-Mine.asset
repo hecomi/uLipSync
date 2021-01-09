@@ -27,5 +27,6 @@ MonoBehaviour:
   formantO:
     f1: 436
     f2: 697
-  maxError: 500
+  useErrorRange: 0
+  maxErrorRange: 500
   minLog10H: -4
