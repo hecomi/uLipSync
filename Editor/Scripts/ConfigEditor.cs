@@ -12,11 +12,16 @@ public class ConfigEditor : Editor
     {
         serializedObject.Update();
 
-        bool isDefaultAsset = 
+        bool doNotChangeAssetValues = 
             config.name == Common.defaultConfig ||
             config.name == Common.calibrationConfig;
 
-        if (isDefaultAsset)
+        if (doNotChangeAssetValues)
+        {
+            doNotChangeAssetValues = !EditorUtil.EditorOnlyToggle("Allow Change Default Asset", "Config", false);
+        }
+
+        if (doNotChangeAssetValues)
         {
             EditorGUILayout.IntField("Sample Count", config.sampleCount);
             EditorGUILayout.IntField("Lpc Order", config.lpcOrder);
@@ -38,16 +43,16 @@ public class ConfigEditor : Editor
         }
 
         var newFilterH = EditorGUILayout.Slider("Filter H", config.filterH, 0f, 1f);
-        if (!isDefaultAsset && newFilterH != config.filterH)
+        if (!doNotChangeAssetValues && newFilterH != config.filterH)
         {
             Undo.RecordObject(config, "Change FilterH");
             config.filterH = newFilterH;
         }
 
-        if (isDefaultAsset)
+        if (doNotChangeAssetValues)
         {
             EditorGUILayout.Separator();
-            EditorGUILayout.HelpBox("Cannot change parameters in a default asset.", MessageType.Info);
+            EditorGUILayout.HelpBox(@"Cannot change parameters in a default asset. Please check ""Allow Change Default Asset"" if you really want to change.", MessageType.Info);
         }
 
         serializedObject.ApplyModifiedProperties();
