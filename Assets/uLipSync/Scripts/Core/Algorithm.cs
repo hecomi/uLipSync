@@ -80,6 +80,10 @@ public static class Algorithm
 
         switch (windowFunc)
         {
+            case WindowFunc.None: 
+            {
+                break;
+            }
             case WindowFunc.Hann: 
             {
                 for (int i = 0; i < N; ++i)
