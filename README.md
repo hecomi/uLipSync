@@ -15,7 +15,7 @@ Demo
 
 Environment
 -----------
-- I've created this asset using Unity 2020.1.17f1 on Windows 10 (not tested with other versions and operation systems yet) 
+- I've created this asset using Unity 2020.1.17f1 on Windows 10 (not tested with other versions and operation systems yet)
 - **Burst** and **Mathematics** should be installed in the Package Manager
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Package.png" width="640" />
@@ -68,7 +68,7 @@ Parameters
   - **Normalized Volume**
     - Shows the normalized volume calculated using Min Volume and Max Volume
   - **Min Volume**
-    - Ignore sounds whose volume is lower than this threshold 
+    - Ignore sounds whose volume is lower than this threshold
   - **Max Volume**
     - Make blendshape value 100 with this threshold (If Auto Volume is checked, this parameter is hidden)
   - **Auto Volume**
@@ -138,18 +138,18 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
-        if (info.volume > threshVolume && outputLog) 
+        if (info.volume > threshVolume && outputLog)
         {
             Debug.LogFormat("MAIN VOWEL: {0}, [ A:{1} I:{2}, U:{3} E:{4} O:{5} N:{6} ], VOL: {7}, FORMANT: {8}, {9}",
-                info.mainVowel, 
-                info.volume, 
+                info.mainVowel,
+                info.volume,
                 info.vowels[Vowel.A],
                 info.vowels[Vowel.I],
                 info.vowels[Vowel.U],
                 info.vowels[Vowel.E],
                 info.vowels[Vowel.O],
                 info.vowels[Vowel.None],
-                info.formant.f1, 
+                info.formant.f1,
                 info.formant.f2);
         }
     }
@@ -181,6 +181,7 @@ The lipsync process calculates LPC spectral envelope, and parameters for the cal
   - The maximum frequency to check formants (The highest formant is the 2nd one of vowel I, it's about 3000 Hz)
 - **Window Func**
   - Window function to calculate the spectral envelope
+    - None: Not apply window
     - Hann: Hanning window
     - Blackman-Harris: Blackman-Harris window
     - Gauss_4_5: Gauss window (sigma = 4.5)
@@ -213,7 +214,7 @@ Visualizer is useful when you want to check whether the input sound is correctly
   - **FFT**
     - FFT result
   - **Formant**
-    - Current 
+    - Current
 
 UnityChan
 ---------
