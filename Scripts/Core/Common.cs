@@ -17,6 +17,7 @@ public enum Vowel
 
 public enum WindowFunc
 {
+    None,
     Hann,
     BlackmanHarris,
     Gaussian4_5,
