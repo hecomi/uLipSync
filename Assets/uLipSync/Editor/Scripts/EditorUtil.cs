@@ -33,6 +33,19 @@ public static class EditorUtil
         return GetKey(title, "FoldOut");
     }
 
+    public static bool EditorOnlyToggle(string title, string category, bool initialState)
+    {
+        var keyTitle = title.Replace(" ", "_");
+        var key = GetKey(keyTitle, category);
+        var value = EditorPrefs.GetBool(key, initialState);
+        var newValue = EditorGUILayout.Toggle(title, value);
+        if (newValue != value)
+        {
+            EditorPrefs.SetBool(key, newValue);
+        }
+        return newValue;
+    }
+
     public static bool IsFoldOutOpened(string title)
     {
         return EditorPrefs.GetBool(GetFoldOutKey(title));
