@@ -180,15 +180,11 @@ public class uLipSync : MonoBehaviour
 
     void UpdateLipSyncInfo(float volume, FormantPair formant, Vowel vowel)
     {
-        float sf = 1f - openSmoothness;
-        float sb = 1f - closeSmoothness;
-        float preVolume = result.volume;
-
         rawResult_.volume = volume;
 
         float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
-        float smooth = normalizedVolume > preVolume ? sf : sb;
-        result.volume += (normalizedVolume - preVolume) * smooth;
+        float smooth = normalizedVolume >= result.volume ? openSmoothness : closeSmoothness;
+        Util.CalcNextValue(ref result.volume, normalizedVolume, smooth);
 
         rawResult_.formant = result.formant = formant;
 
@@ -203,7 +199,7 @@ public class uLipSync : MonoBehaviour
             var key = (Vowel)i;
             float target = key == vowel ? 1f : 0f;
             float value = rawResult_.vowels[key];
-            value += (target - value) * (1f - vowelTransitionSmoothness);
+            Util.CalcNextValue(ref value, target, vowelTransitionSmoothness);
             if (value > max)
             {
                 rawResult_.mainVowel = key;
