@@ -7,7 +7,7 @@ namespace uLipSync
 
 public enum Vowel
 {
-    A,
+    A = 0,
     I,
     U,
     E,

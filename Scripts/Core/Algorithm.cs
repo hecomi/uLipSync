@@ -29,6 +29,22 @@ public static class Algorithm
     }
 
     [BurstCompile]
+    public static float GetLogScaledTotalValue(ref NativeArray<float> array, float min)
+    {
+        float sum = 0f;
+        float max = GetMaxValue(ref array);
+        for (int i = 0; i < array.Length; ++i)
+        {
+            float val = array[i] / max;
+            val = math.log10(10f * val);
+            val = (val - min) / (1f - min);
+            val = math.max(val, 0f);
+            sum += val;
+        }
+        return sum;
+    }
+
+    [BurstCompile]
     public static float GetMinValue(ref NativeArray<float> array)
     {
         float min = 0f;
