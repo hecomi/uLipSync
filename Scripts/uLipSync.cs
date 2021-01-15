@@ -10,63 +10,30 @@ namespace uLipSync
 public class uLipSync : MonoBehaviour
 {
     public Profile profile;
-    public Config config;
-    [Range(0f, 2f)] public float outputSoundGain = 1f;
-    [Range(0f, 1f)] public float openSmoothness = 0.8f;
-    [Range(0f, 1f)] public float closeSmoothness = 0.85f;
-    [Range(0f, 1f)] public float vowelTransitionSmoothness = 0.9f;
-    [Range(0f, 1f)] public float maxVolume = 0.01f;
-    [Range(0f, 1f)] public float minVolume = 0.0001f;
-    public bool autoVolume = true;
-    [Range(0f, 1f)] public float autoVolumeAmp = 0.2f;
-    [Range(0f, 1f)] public float autoVolumeFilter = 0.9f;
+    public bool calibration = true;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
+    [Range(0f, 0.1f)] public float minError = 1e-4f;
+    [Range(0f, 2f)] public float outputSoundGain = 1f;
 
     NativeArray<float> rawData_;
     NativeArray<float> inputData_;
-    NativeArray<float> lpcSpectralEnvelope_;
-    NativeArray<float> dLpcSpectralEnvelope_;
-    NativeArray<float> ddLpcSpectralEnvelope_;
+    NativeArray<float> mfcc_;
+    NativeArray<float> mfccForOther_;
     NativeArray<LipSyncJob.Result> jobResult_;
+    public NativeArray<float> mfcc 
+    { 
+        get { return mfccForOther_; } 
+    }
 
     JobHandle jobHandle_;
     object lockObject_ = new object();
-
     int index_ = 0;
 
-    public int lpcOrder { get { return config ? config.lpcOrder : 64; } }
-    public int sampleCount { get { return config ? config.sampleCount : 1024; } }
-    public int maxFreq { get { return config ? config.maxFrequency : 3000; } }
-    public int freqResolution { get { return config ? config.frequencyResolution : 256; } }
-
-    LipSyncInfo rawResult_ = new LipSyncInfo();
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
-
-#if UNITY_EDITOR
-    NativeArray<float> lpcSpectralEnvelopeForEditorOnly_;
-    public NativeArray<float> lpcSpectralEnvelopeForEditorOnly 
-    { 
-        get { return lpcSpectralEnvelopeForEditorOnly_; } 
-    }
-
-    NativeArray<float> ddLpcSpectralEnvelopeForEditorOnly_;
-    public NativeArray<float> ddLpcSpectralEnvelopeForEditorOnly 
-    { 
-        get { return ddLpcSpectralEnvelopeForEditorOnly_; } 
-    }
-
-    NativeArray<float> fftDataJob_;
-    NativeArray<float> fftDataEditor_;
-    public NativeArray<float> fftDataEditor
-    { 
-        get { return fftDataEditor_; } 
-    }
-#endif
 
     void OnEnable()
     {
         AllocateBuffers();
-        InitAutoVolume();
     }
 
     void OnDisable()
@@ -83,25 +50,18 @@ public class uLipSync : MonoBehaviour
         ScheduleJob();
 
         UpdateBuffers();
-        UpdateAutoVolume();
+        UpdateCalibration();
     }
 
     void AllocateBuffers()
     {
         lock (lockObject_)
         {
-            rawData_ = new NativeArray<float>(sampleCount, Allocator.Persistent);
-            inputData_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-            lpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-            dLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-            ddLpcSpectralEnvelope_ = new NativeArray<float>(freqResolution, Allocator.Persistent); 
-            jobResult_ = new NativeArray<LipSyncJob.Result>(2, Allocator.Persistent);
-#if UNITY_EDITOR
-            lpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(lpcSpectralEnvelope_.Length, Allocator.Persistent); 
-            ddLpcSpectralEnvelopeForEditorOnly_ = new NativeArray<float>(ddLpcSpectralEnvelope_.Length, Allocator.Persistent); 
-            fftDataJob_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-            fftDataEditor_ = new NativeArray<float>(sampleCount, Allocator.Persistent); 
-#endif
+            rawData_ = new NativeArray<float>(Common.sampleCount, Allocator.Persistent);
+            inputData_ = new NativeArray<float>(Common.sampleCount, Allocator.Persistent); 
+            mfcc_ = new NativeArray<float>(12, Allocator.Persistent); 
+            jobResult_ = new NativeArray<LipSyncJob.Result>(1, Allocator.Persistent);
+            mfccForOther_ = new NativeArray<float>(12, Allocator.Persistent); 
         }
     }
 
@@ -112,23 +72,15 @@ public class uLipSync : MonoBehaviour
             jobHandle_.Complete();
             rawData_.Dispose();
             inputData_.Dispose();
-            lpcSpectralEnvelope_.Dispose();
-            dLpcSpectralEnvelope_.Dispose();
-            ddLpcSpectralEnvelope_.Dispose();
+            mfcc_.Dispose();
+            mfccForOther_.Dispose();
             jobResult_.Dispose();
-#if UNITY_EDITOR
-            lpcSpectralEnvelopeForEditorOnly_.Dispose();
-            ddLpcSpectralEnvelopeForEditorOnly_.Dispose();
-            fftDataJob_.Dispose();
-            fftDataEditor_.Dispose();
-#endif
         }
     }
 
     void UpdateBuffers()
     {
-        if (sampleCount != rawData_.Length ||
-            freqResolution != lpcSpectralEnvelope_.Length)
+        if (Common.sampleCount != rawData_.Length)
         {
             lock (lockObject_)
             {
@@ -138,107 +90,29 @@ public class uLipSync : MonoBehaviour
         }
     }
 
+    void UpdateCalibration()
+    {
+        if (Input.GetKeyDown(KeyCode.A)) AddMfccToProfile(Vowel.A);
+        if (Input.GetKeyDown(KeyCode.I)) AddMfccToProfile(Vowel.I);
+        if (Input.GetKeyDown(KeyCode.U)) AddMfccToProfile(Vowel.U);
+        if (Input.GetKeyDown(KeyCode.E)) AddMfccToProfile(Vowel.E);
+        if (Input.GetKeyDown(KeyCode.O)) AddMfccToProfile(Vowel.O);
+    }
+
     void GetResult()
     {
         jobHandle_.Complete();
+        mfccForOther_.CopyFrom(mfcc_);
 
-#if UNITY_EDITOR
-        lpcSpectralEnvelopeForEditorOnly_.CopyFrom(lpcSpectralEnvelope_);
-        ddLpcSpectralEnvelopeForEditorOnly_.CopyFrom(ddLpcSpectralEnvelope_);
-        fftDataEditor_.CopyFrom(fftDataJob_);
-#endif
+        if (jobResult_[0].volume > 0.001f)
+        {
+            Debug.Log(jobResult_[0].vowel + "  " + jobResult_[0].distance);
+        }
     }
 
     void InvokeCallback()
     {
         if (onLipSyncUpdate == null) return;
-
-        var vowelInfo = config.checkThirdFormant ?
-            LipSyncUtil.GetVowel(jobResult_[0].f1, jobResult_[0].f2, jobResult_[0].f3, profile) :
-            LipSyncUtil.GetVowel(new FormantPair(jobResult_[0].f1, jobResult_[0].f2), profile);
-
-        float volume = jobResult_[0].volume;
-        FormantPair formant = vowelInfo.formant;
-        Vowel vowel = vowelInfo.vowel;
-
-        if (config.checkSecondDerivative)
-        {
-            var vowelInfoBySecondDerivative = config.checkThirdFormant ?
-                LipSyncUtil.GetVowel(jobResult_[1].f1, jobResult_[1].f2, jobResult_[1].f3, profile) :
-                LipSyncUtil.GetVowel(new FormantPair(jobResult_[1].f1, jobResult_[1].f2), profile);
-            if (vowelInfo.diff > vowelInfoBySecondDerivative.diff)
-            {
-                formant = vowelInfoBySecondDerivative.formant;
-                vowel = vowelInfoBySecondDerivative.vowel;
-            }
-        }
-
-        UpdateLipSyncInfo(volume, formant, vowel);
-
-        onLipSyncUpdate.Invoke(result);
-    }
-
-    void UpdateLipSyncInfo(float volume, FormantPair formant, Vowel vowel)
-    {
-        rawResult_.volume = volume;
-
-        float normalizedVolume = Mathf.Clamp((volume - minVolume) / (maxVolume - minVolume), 0f, 1f);
-        float smooth = normalizedVolume >= result.volume ? openSmoothness : closeSmoothness;
-        Util.CalcNextValue(ref result.volume, normalizedVolume, smooth);
-
-        rawResult_.formant = result.formant = formant;
-
-        if (volume < minVolume) return;
-
-        if (vowel == Vowel.None) return;
-
-        float max = 0f;
-        float sum = 0f;
-        for (int i = (int)Vowel.A; i <= (int)Vowel.None; ++i)
-        {
-            var key = (Vowel)i;
-            float target = key == vowel ? 1f : 0f;
-            float value = rawResult_.vowels[key];
-            Util.CalcNextValue(ref value, target, vowelTransitionSmoothness);
-            if (value > max)
-            {
-                rawResult_.mainVowel = key;
-                max = value;
-            }
-            rawResult_.vowels[key] = value;
-            sum += value;
-        }
-
-        result.mainVowel = rawResult_.mainVowel;
-
-        for (int i = (int)Vowel.A; i <= (int)Vowel.None; ++i)
-        {
-            var key = (Vowel)i;
-            if (sum > Mathf.Epsilon)
-            {
-                result.vowels[key] = rawResult_.vowels[key] / sum;
-            }
-            else
-            {
-                result.vowels[key] = 0f;
-            }
-        }
-    }
-
-    void InitAutoVolume()
-    {
-        if (!autoVolume) return;
-        
-        maxVolume = minVolume + 0.001f;
-    }
-
-    void UpdateAutoVolume()
-    {
-        if (!autoVolume) return;
-
-        maxVolume *= autoVolumeFilter;
-        maxVolume = Mathf.Max(maxVolume, rawResult_.volume * autoVolumeAmp);
-        maxVolume = Mathf.Max(maxVolume, minVolume + 0.001f);
     }
 
     void ScheduleJob()
@@ -254,33 +128,18 @@ public class uLipSync : MonoBehaviour
         {
             input = inputData_,
             startIndex = index,
-            lpcOrder = lpcOrder,
             sampleRate = AudioSettings.outputSampleRate,
-            maxFreq = maxFreq,
-            windowFunc = config.windowFunc,
-            H = lpcSpectralEnvelope_,
-            dH = dLpcSpectralEnvelope_,
-            ddH = ddLpcSpectralEnvelope_,
+            volumeThresh = 1e-4f,
+            mfcc = mfcc_,
+            a = profile.GetAverageAndVarianceOfMfcc(Vowel.A),
+            i = profile.GetAverageAndVarianceOfMfcc(Vowel.I),
+            u = profile.GetAverageAndVarianceOfMfcc(Vowel.U),
+            e = profile.GetAverageAndVarianceOfMfcc(Vowel.E),
+            o = profile.GetAverageAndVarianceOfMfcc(Vowel.O),
             result = jobResult_,
-            volumeThresh = minVolume,
-            minLog10H = profile.minLog10H,
-            filterH = config.filterH,
         };
 
         jobHandle_ = lipSyncJob.Schedule();
-
-#if UNITY_EDITOR
-        var fftJob = new FftJob()
-        {
-            input = inputData_,
-            startIndex = index,
-            spectrum = fftDataJob_,
-            windowFunc = config.windowFunc,
-            volumeThresh = minVolume,
-        };
-
-        jobHandle_ = fftJob.Schedule(jobHandle_);
-#endif
     }
 
     [BurstCompile]
@@ -306,6 +165,11 @@ public class uLipSync : MonoBehaviour
             }
         }
 	}
+
+    public void AddMfccToProfile(Vowel vowel)
+    {
+        profile.Add(vowel, mfcc);
+    }
 }
 
 }

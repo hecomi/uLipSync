@@ -32,11 +32,13 @@ public class uLipSyncBlendShape : MonoBehaviour
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
+    /*
         foreach (var kv in info.vowels)
         {
             int i = (int)kv.Key;
             blendShapeList[i].blend = kv.Value;
         }
+        */
         volume_ = info.volume;
     }
 

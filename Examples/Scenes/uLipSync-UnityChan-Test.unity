@@ -489,18 +489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 37d8bd96d2e899140843028c65a1c78d, type: 2}
-  profile2: {fileID: 11400000, guid: 0beeb56a431ea1646bb55ff6c6fc5a62, type: 2}
-  config: {fileID: 11400000, guid: cdec430819f76c84eb53bfeedf883d31, type: 2}
-  outputSoundGain: 1
-  openSmoothness: 0.8
-  closeSmoothness: 0.85
-  vowelTransitionSmoothness: 0.9
-  maxVolume: 0.01
-  minVolume: 0.0001
-  autoVolume: 1
-  autoVolumeAmp: 0.2
-  autoVolumeFilter: 0.9
+  profile: {fileID: 11400000, guid: 0beeb56a431ea1646bb55ff6c6fc5a62, type: 2}
+  calibration: 1
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -516,6 +506,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  minError: 0.0001
+  outputSoundGain: 1
 --- !u!114 &496503022
 MonoBehaviour:
   m_ObjectHideFlags: 0
