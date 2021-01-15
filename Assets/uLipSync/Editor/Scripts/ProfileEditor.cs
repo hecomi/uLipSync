@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -9,135 +8,77 @@ namespace uLipSync
 public class ProfileEditor : Editor
 {
     Profile profile { get { return target as Profile; } }
+    float min = 0f, max = 0f;
 
     public override void OnInspectorGUI()
     {
-        Draw(true, true);
+        CalcMinMax();
+        Draw(profile.a, "A");
+        Draw(profile.i, "I");
+        Draw(profile.u, "U");
+        Draw(profile.e, "E");
+        Draw(profile.o, "O");
     }
 
-    public void Draw(bool drawTips, bool drawVisualizer)
+    void CalcMinMax()
     {
-        serializedObject.Update();
-
-        bool isDefaultAsset = 
-            profile.name == Common.defaultProfileMan ||
-            profile.name == Common.defaultProfileWoman;
-
-        if (EditorUtil.SimpleFoldout("Formant", true))
+        max = float.MinValue;
+        min = float.MaxValue;
+        foreach (var data in new MfccData[] { profile.a, profile.i, profile.u, profile.e, profile.o })
         {
-            ++EditorGUI.indentLevel;
-            DrawFormant(ref profile.formantA, "A", isDefaultAsset);
-            DrawFormant(ref profile.formantI, "I", isDefaultAsset);
-            DrawFormant(ref profile.formantU, "U", isDefaultAsset);
-            DrawFormant(ref profile.formantE, "E", isDefaultAsset);
-            DrawFormant(ref profile.formantO, "O", isDefaultAsset);
-            EditorGUILayout.Separator();
-            if (isDefaultAsset)
+            for (int j = 0; j < data.mfccList.Count; ++j)
             {
-                EditorGUILayout.Separator();
-                EditorGUILayout.HelpBox("Cannot change parameters in a default asset.", MessageType.Info);
-            }
-            else
-            {
-                DrawFormantResetButtons();
-
-                if (drawTips)
+                var array = data.mfccList[j].array;
+                for (int i = 0; i < array.Length; ++i)
                 {
-                    if (EditorUtil.SimpleFoldout("Tips", true))
-                    {
-                        DrawTips();
-
-                        EditorGUILayout.Separator();
-                    }
+                    var x = array[i];
+                    max = Mathf.Max(max, x);
+                    min = Mathf.Min(min, x);
                 }
             }
-            --EditorGUI.indentLevel;
-
-            EditorGUILayout.Separator();
         }
+    }
 
-        if (drawVisualizer)
+    void Draw(MfccData data, string name)
+    {
+        if (!EditorUtil.Foldout(name, true)) return;
+
+        ++EditorGUI.indentLevel;
+
+        var h = 5;
+        var totalHeight = h * data.mfccList.Count;
+        var area = GUILayoutUtility.GetRect(Screen.width, totalHeight);
+        area = EditorGUI.IndentedRect(area);
+        var w = area.width / 12;
+        var maxMinusMin = max - min;
+
+        for (int j = 0; j < data.mfccList.Count; ++j)
         {
-            if (EditorUtil.SimpleFoldout("Visualizer", true))
+            var y = h * j;
+            for (int i = 0; i < 12; ++i)
             {
-                ++EditorGUI.indentLevel;
-                EditorUtil.DrawFormants(profile);
-                --EditorGUI.indentLevel;
-
-                EditorGUILayout.Separator();
+                var x = w * i;
+                var rect = new Rect(area.x + x, area.y + y, w, h);
+                var value = (data.mfccList[j].array[i] - min) / maxMinusMin;
+                var color = ToRGB(value);
+                Handles.DrawSolidRectangleWithOutline(rect, color, color);
             }
         }
 
-        if (EditorUtil.SimpleFoldout("Settings", true))
-        {
-            ++EditorGUI.indentLevel;
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.useErrorRange));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxErrorRange));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.minLog10H));
-            --EditorGUI.indentLevel;
-        }
-
-        serializedObject.ApplyModifiedProperties();
+        --EditorGUI.indentLevel;
     }
 
-    void DrawFormant(ref FormantPair formant, string name, bool isDefaultAsset)
+    Color ToRGB(float hue)
     {
-        var f1 = EditorGUILayout.Slider($"{name} - F1", formant.f1, 0f, 4000f);
-        if (f1 != formant.f1 && !isDefaultAsset)
-        {
-            Undo.RecordObject(target, $"Changed {name} F1");
-            if (f1 > formant.f2) f1 = formant.f2;
-            formant.f1 = f1;
-        }
-
-        var f2 = EditorGUILayout.Slider($"{name} - F2", formant.f2, 0f, 4000f);
-        if (f2 != formant.f2 && !isDefaultAsset)
-        {
-            Undo.RecordObject(target, $"Changed {name} F2");
-            if (f2 < formant.f1) f2 = formant.f1;
-            formant.f2 = f2;
-        }
-    }
-
-    void DrawFormantResetButtons()
-    {
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Reset (Man)", EditorStyles.miniButtonLeft, GUILayout.Width(120)))
-        {
-            ResetFormant(Common.averageFormantMan);
-        }
-        if (GUILayout.Button("Reset (Woman)", EditorStyles.miniButtonRight, GUILayout.Width(120)))
-        {
-            ResetFormant(Common.averageFormantWoman);
-        }
-        EditorGUILayout.EndHorizontal();
-    }
-
-    void DrawTips()
-    {
-        var man = Common.averageFormantMan;
-        var woman = Common.averageFormantWoman;
-        EditorGUILayout.HelpBox(
-            " Average formant frequencies:\n" +
-            " ----------------------------\n" +
-            " Man\t\t\t\tWoman:\n" +
-            $" A:\tF1: {man[Vowel.A].f1} / F2: {man[Vowel.A].f2}\t\tF1: {woman[Vowel.A].f1} / F2: {woman[Vowel.A].f2}\n" +
-            $" I:\tF1: {man[Vowel.I].f1} / F2: {man[Vowel.I].f2}\t\tF1: {woman[Vowel.I].f1} / F2: {woman[Vowel.I].f2}\n" +
-            $" U:\tF1: {man[Vowel.U].f1} / F2: {man[Vowel.U].f2}\t\tF1: {woman[Vowel.U].f1} / F2: {woman[Vowel.U].f2}\n" +
-            $" E:\tF1: {man[Vowel.E].f1} / F2: {man[Vowel.E].f2}\t\tF1: {woman[Vowel.E].f1} / F2: {woman[Vowel.E].f2}\n" +
-            $" O:\tF1: {man[Vowel.O].f1} / F2: {man[Vowel.O].f2}\t\tF1: {woman[Vowel.O].f1} / F2: {woman[Vowel.O].f2}",
-            MessageType.None);
-    }
-
-    void ResetFormant(Dictionary<Vowel, FormantPair> formant)
-    {
-        Undo.RecordObject(target, "Reset formant");
-        profile.formantA = formant[Vowel.A];
-        profile.formantI = formant[Vowel.I];
-        profile.formantU = formant[Vowel.U];
-        profile.formantE = formant[Vowel.E];
-        profile.formantO = formant[Vowel.O];
+        hue = 1f - hue;
+        hue = hue * 5f;
+        var x = 1 - Mathf.Abs(hue % 2f - 1f);
+        return
+            hue < 1f ? new Color(1f, x, 0f) :
+            hue < 2f ? new Color(x, 1f, 0f) :
+            hue < 3f ? new Color(0f, 1f, x) :
+            hue < 4f ? new Color(0f, x, 1f) :
+            new Color(x * 0.5f, 0f, 0.5f);
     }
 }
 

@@ -8,6 +8,7 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
+    /*
         if (info.volume > threshVolume && outputLog) 
         {
             Debug.LogFormat("MAIN VOWEL: {0}, [ A:{1} I:{2}, U:{3} E:{4} O:{5} N:{6} ], VOL: {7}, FORMANT: {8}, {9}",
@@ -22,5 +23,6 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
                 info.formant.f1, 
                 info.formant.f2);
         }
+        */
     }
 }
