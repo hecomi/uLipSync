@@ -2,44 +2,48 @@
 using UnityEngine.Assertions;
 using Unity.Collections;
 using Unity.Burst;
-using Unity.Mathematics;
 using System.Collections.Generic;
 
 namespace uLipSync
 {
 
 [System.Serializable]
-public struct MfccArray
+public struct Mfcc
 {
     public float[] array;
+    public float this[int i] { get { return array[i]; } }
+    public int length { get { return array.Length; } }
 }
 
 [System.Serializable]
 public class MfccData
 {
-    // public string phenome;
-    public List<MfccArray> mfccList = new List<MfccArray>();
-    public NativeArray<float2> averageAndVariance;
+    public List<Mfcc> mfccList = new List<Mfcc>();
+    public NativeArray<float> averages;
 
     [BurstCompile]
     public void Allocate()
     {
-        averageAndVariance = new NativeArray<float2>(12, Allocator.Persistent);
+        averages = new NativeArray<float>(12, Allocator.Persistent);
     }
 
     [BurstCompile]
     public void Deallocate()
     {
-        if (averageAndVariance.IsCreated) 
+        if (averages.IsCreated) 
         {
-            averageAndVariance.Dispose();
+            averages.Dispose();
         }
     }
 
     public void Add(float[] mfcc)
     {
-        mfccList.Add(new MfccArray() { array = mfcc });
-        while (mfccList.Count > 10) mfccList.RemoveAt(0);
+        mfccList.Add(new Mfcc() { array = mfcc });
+    }
+
+    public void RemoveOldData(int dataCount)
+    {
+        while (mfccList.Count > dataCount) mfccList.RemoveAt(0);
     }
 
     [BurstCompile]
@@ -47,28 +51,35 @@ public class MfccData
     {
         if (mfccList.Count == 0) return;
 
+        for (int i = 0; i < averages.Length; ++i)
+        {
+            averages[i] = 0;
+        }
+
         for (int i = 0; i < 12; ++i)
         {
-            float m = 0f;
-            float s = 0f;
+            averages[i] = 0f;
             foreach (var mfcc in mfccList)
             {
-                Assert.AreEqual(mfcc.array.Length, 12);
-                float x = mfcc.array[i];
-                m += x;
-                s += x * x;
+                Assert.AreEqual(mfcc.length, 12);
+                averages[i] += mfcc[i];
             }
-            m /= mfccList.Count;
-            s /= mfccList.Count;
-            s -= m * m;
-            averageAndVariance[i] = new float2(m, s);
+            averages[i] /= mfccList.Count;
         }
+    }
+
+    public float GetAverage(int i)
+    {
+        return averages[i];
     }
 }
 
 [CreateAssetMenu(menuName = Common.assetName + "/Profile"), BurstCompile]
 public class Profile : ScriptableObject
 {
+    public int mfccDataCount = 32;
+    public int targetSampleRate = 16000;
+
     public MfccData a = new MfccData();
     public MfccData i = new MfccData();
     public MfccData u = new MfccData();
@@ -94,6 +105,7 @@ public class Profile : ScriptableObject
         {
             var data = Get((Vowel)i);
             data.Allocate();
+            data.RemoveOldData(mfccDataCount);
             data.Update();
         }
     }
@@ -111,12 +123,14 @@ public class Profile : ScriptableObject
     {
         var array = new float[mfcc.Length];
         mfcc.CopyTo(array);
-        Get(vowel).Add(array);
+        var data = Get(vowel);
+        data.Add(array);
+        data.RemoveOldData(mfccDataCount);
     }
 
-    public NativeArray<float2> GetAverageAndVarianceOfMfcc(Vowel vowel)
+    public NativeArray<float> GetAverages(Vowel vowel)
     {
-        return Get(vowel).averageAndVariance;
+        return Get(vowel).averages;
     }
 }
 

@@ -5,7 +5,7 @@ namespace uLipSync
 {
 
 [CustomEditor(typeof(uLipSyncMicrophone))]
-public class uLipSyncMicInputEditor : Editor
+public class uLipSyncMicrophoneEditor : Editor
 {
     uLipSyncMicrophone mic { get { return target as uLipSyncMicrophone; } }
 
@@ -42,7 +42,7 @@ public class uLipSyncMicInputEditor : Editor
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
 
-        if (mic.isRecording && GUILayout.Button("Record & Play (last 1 sec)", GUILayout.Width(180)))
+        if (mic.isRecording && GUILayout.Button($"Record & Play (last {mic.clip.length} sec)", GUILayout.Width(180)))
         {
             mic.StopRecordAndCreateAudioClip();
         }

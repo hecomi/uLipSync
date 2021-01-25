@@ -18,14 +18,15 @@ public struct LipSyncJob : IJob
 
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
-    [ReadOnly] public int sampleRate;
+    [ReadOnly] public int outputSampleRate;
+    [ReadOnly] public int targetSampleRate;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
-    public NativeArray<float2> a;
-    public NativeArray<float2> i;
-    public NativeArray<float2> u;
-    public NativeArray<float2> e;
-    public NativeArray<float2> o;
+    public NativeArray<float> a;
+    public NativeArray<float> i;
+    public NativeArray<float> u;
+    public NativeArray<float> e;
+    public NativeArray<float> o;
     public NativeArray<Result> result;
 
     public void Execute()
@@ -39,25 +40,42 @@ public struct LipSyncJob : IJob
             return;
         }
 
-        // copy input ring buffer to a temporary array
-        var data = new NativeArray<float>(input.Length, Allocator.Temp);
-        Algorithm.CopyRingBuffer(input, data, startIndex);
+        // Copy input ring buffer to a temporary array
+        NativeArray<float> buffer;
+        Algorithm.CopyRingBuffer(input, out buffer, startIndex);
 
-        // multiply window function
-        Algorithm.HammingWindow(data);
+        // LPF
+        int cutoff = targetSampleRate / 2;
+        int range = targetSampleRate / 4;
+        Algorithm.LowPassFilter(ref buffer, outputSampleRate, cutoff, range);
+
+        // Down sample
+        NativeArray<float> data;
+        Algorithm.DownSample(buffer, out data, outputSampleRate, targetSampleRate);
+
+        // Pre-emphasis
+        Algorithm.PreEmphasis(ref data, 0.97f);
+
+        // Multiply window function
+        Algorithm.HammingWindow(ref data);
 
         // FFT
-        var spectrum = new NativeArray<float>(input.Length, Allocator.Temp);
-        Algorithm.Fft(data, spectrum);
+        NativeArray<float> spectrum;
+        Algorithm.FFT(data, out spectrum);
 
         // Mel-Filter Bank
-        int melDiv = 20;
-        var melSpectrum = new NativeArray<float>(melDiv, Allocator.Temp);
-        Algorithm.MelFilterBankLog10(melSpectrum, spectrum, sampleRate, melDiv);
+        NativeArray<float> melSpectrum;
+        Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, 32);
+
+        // Log
+        for (int i = 0; i < melSpectrum.Length; ++i)
+        {
+            melSpectrum[i] = math.log10(melSpectrum[i]);
+        }
 
         // DCT
-        var melCepstrum = new NativeArray<float>(melDiv, Allocator.Temp);
-        Algorithm.DCT(melCepstrum, melSpectrum);
+        NativeArray<float> melCepstrum;
+        Algorithm.DCT(melSpectrum, out melCepstrum);
 
         // MFCC
         for (int i = 1; i < 13; ++i)
@@ -75,17 +93,31 @@ public struct LipSyncJob : IJob
         melSpectrum.Dispose();
         spectrum.Dispose();
         data.Dispose();
+        buffer.Dispose();
     }
 
-    float CalcTotalDistance(NativeArray<float2> averageAndVariance)
+    void GetVowel(ref Vowel vowel, ref float minDistance)
     {
-        if (averageAndVariance.Length != mfcc.Length) return float.MaxValue;
+        minDistance = float.MaxValue;
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        {
+            var distance = CalcTotalDistance((Vowel)i);
+            if (distance < minDistance)
+            {
+                vowel = (Vowel)i;
+                minDistance = distance;
+            }
+        }
+    }
+
+    float CalcTotalDistance(NativeArray<float> average)
+    {
+        if (average.Length != mfcc.Length) return float.MaxValue;
 
         var distance = 0f;
         for (int i = 0; i < mfcc.Length; ++i)
         {
-            float2 val = averageAndVariance[i];
-            distance += math.abs(mfcc[i] - val.x);// / val.y * math.abs(val.x);
+            distance += math.abs(mfcc[i] - average[i]);
         }
         return distance;
     }
@@ -100,20 +132,6 @@ public struct LipSyncJob : IJob
             case Vowel.E: return CalcTotalDistance(e);
             case Vowel.O: return CalcTotalDistance(o);
             default: return -1f;
-        }
-    }
-
-    void GetVowel(ref Vowel vowel, ref float minDistance)
-    {
-        minDistance = float.MaxValue;
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
-        {
-            var distance = CalcTotalDistance((Vowel)i);
-            if (distance < minDistance)
-            {
-                vowel = (Vowel)i;
-                minDistance = distance;
-            }
         }
     }
 }
