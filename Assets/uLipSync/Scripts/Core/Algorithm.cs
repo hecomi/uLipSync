@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Burst;
 
@@ -10,7 +9,7 @@ namespace uLipSync
 public static class Algorithm
 {
     [BurstCompile]
-    public static float GetMaxValue(NativeArray<float> array)
+    public static float GetMaxValue(in NativeArray<float> array)
     {
         float max = 0f;
         for (int i = 0; i < array.Length; ++i)
@@ -21,7 +20,7 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static float GetMinValue(NativeArray<float> array)
+    public static float GetMinValue(in NativeArray<float> array)
     {
         float min = 0f;
         for (int i = 0; i < array.Length; ++i)
@@ -32,7 +31,7 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static float GetRMSVolume(NativeArray<float> array)
+    public static float GetRMSVolume(in NativeArray<float> array)
     {
         float average = 0f;
         int n = array.Length;
@@ -44,18 +43,17 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static void CopyRingBuffer(NativeArray<float> src, NativeArray<float> dst, int startSrcIndex)
+    public static void CopyRingBuffer(in NativeArray<float> input, out NativeArray<float> output, int startSrcIndex)
     {
-        int sn = src.Length;
-        int dn = dst.Length;
-        for (int i = 0; i < dn; ++i)
+        output = new NativeArray<float>(input.Length, Allocator.Temp);
+        for (int i = 0; i < input.Length; ++i)
         {
-            dst[i] = src[(startSrcIndex + i) % sn];
+            output[i] = input[(startSrcIndex + i) % input.Length];
         }
     }
 
     [BurstCompile]
-    public static void Normalize(NativeArray<float> array)
+    public static void Normalize(ref NativeArray<float> array)
     {
         float max = GetMaxValue(array);
         if (max < math.EPSILON) return;
@@ -66,7 +64,83 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static void HammingWindow(NativeArray<float> array)
+    public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
+    {
+        cutoff /= sampleRate;
+        range /= sampleRate;
+
+        int n = (int)math.round(3.1f / range);
+        if ((n + 1) % 2 == 0) n += 1;
+
+        var b = new NativeArray<float>(n, Allocator.Temp);
+        for (int i = 0; i < n; ++i)
+        {
+            float x = i - (n - 1) / 2f;
+            float ang = 2f * math.PI * cutoff * x;
+            b[i] = 2f * cutoff * math.sin(ang) / ang;
+        }
+
+        var tmp = new NativeArray<float>(data, Allocator.Temp);
+        for (int i = 0; i < data.Length; ++i)
+        {
+            for (int j = 0; j < b.Length; ++j)
+            {
+                if (i - j >= 0)
+                {
+                    data[i] += b[j] * tmp[i - j];
+                }
+            }
+        }
+        tmp.Dispose();
+    }
+
+    [BurstCompile]
+    public static void DownSample(in NativeArray<float> input, out NativeArray<float> output, int sampleRate, int targetSampleRate)
+    {
+        if (sampleRate <= targetSampleRate)
+        {
+            output = new NativeArray<float>(input, Allocator.Temp);
+        }
+        else if (sampleRate % targetSampleRate == 0)
+        {
+            int skip = sampleRate / targetSampleRate;
+            output = new NativeArray<float>(input.Length / skip, Allocator.Temp);
+            for (int i = 0; i < output.Length; ++i)
+            {
+                output[i] = input[i * skip];
+            }
+        }
+        else
+        {
+            float df = (float)sampleRate / targetSampleRate;
+            int n = (int)math.round(input.Length / df);
+            output = new NativeArray<float>(n, Allocator.Temp);
+            for (int j = 0; j < output.Length; ++j)
+            {
+                float fIndex = df * j;
+                int i0 = (int)math.floor(fIndex);
+                int i1 = math.min(i0, input.Length - 1);
+                float t = fIndex - i0;
+                float x0 = input[i0];
+                float x1 = input[i1];
+                output[j] = math.lerp(x0, x1, t);
+            }
+        }
+    }
+
+    [BurstCompile]
+    public static void PreEmphasis(ref NativeArray<float> data, float p)
+    {
+        var tmp = new NativeArray<float>(data, Allocator.Temp);
+        for (int i = 1; i < data.Length; ++i)
+        {
+            data[i] = tmp[i] - p * tmp[i - 1];
+        }
+        tmp.Dispose();
+    }
+
+    [BurstCompile]
+    public static void HammingWindow(ref NativeArray<float> array)
     {
         int N = array.Length;
 
@@ -77,17 +151,17 @@ public static class Algorithm
         }
     }
 
-    [BurstCompile]
-    public static void Fft(NativeArray<float> data, NativeArray<float> spectrum)
+    public static void FFT(in NativeArray<float> data, out NativeArray<float> spectrum)
     {
         int N = data.Length;
+        spectrum = new NativeArray<float>(N, Allocator.Temp);
 
         var spectrumComplex = new NativeArray<float2>(N, Allocator.Temp);
         for (int i = 0; i < N; ++i)
         {
             spectrumComplex[i] = new float2(data[i], 0f);
         }
-        Fft(spectrumComplex, N);
+        FFT(ref spectrumComplex, N);
 
         for (int i = 0; i < N; ++i)
         {
@@ -98,8 +172,7 @@ public static class Algorithm
         spectrumComplex.Dispose();
     }
 
-    [BurstCompile]
-    static void Fft(NativeArray<float2> spectrum, int N)
+    static void FFT(ref NativeArray<float2> spectrum, int N)
     {
         if (N < 2) return;
 
@@ -112,8 +185,8 @@ public static class Algorithm
             odd[i] = spectrum[i * 2 + 1];
         }
 
-        Fft(even, N / 2);
-        Fft(odd, N / 2);
+        FFT(ref even, N / 2);
+        FFT(ref odd, N / 2);
 
         for (int i = 0; i < N / 2; ++i)
         {
@@ -131,12 +204,14 @@ public static class Algorithm
     }
 
     [BurstCompile]
-    public static void MelFilterBankLog10(
-        NativeArray<float> melSpectrum, 
-        NativeArray<float> spectrum, 
+    public static void MelFilterBank(
+        in NativeArray<float> spectrum, 
+        out NativeArray<float> melSpectrum,
         float sampleRate,
         int melDiv)
     {
+        melSpectrum = new NativeArray<float>(melDiv, Allocator.Temp);
+
         float fMax = sampleRate / 2;
         float melMax = ToMel(fMax);
         int nMax = spectrum.Length / 2;
@@ -163,7 +238,7 @@ public static class Algorithm
                 float a = (i < iCenter) ? ((float)i / iCenter) : ((float)(i - iCenter) / iCenter);
                 sum += a * spectrum[i];
             }
-            melSpectrum[n] = math.log10(sum);
+            melSpectrum[n] = sum;
         }
     }
 
@@ -181,10 +256,11 @@ public static class Algorithm
 
     [BurstCompile]
     public static void DCT(
-        NativeArray<float> cepstrum,
-        NativeArray<float> spectrum)
+        in NativeArray<float> spectrum,
+        out NativeArray<float> cepstrum)
     {
-        int N = cepstrum.Length;
+        int N = spectrum.Length;
+        cepstrum = new NativeArray<float>(N, Allocator.Temp);
         float a = math.PI / N;
         for (int i = 0; i < N; ++i)
         {
@@ -197,14 +273,6 @@ public static class Algorithm
             cepstrum[i] = sum;
         }
     }
-
-    /*
-    [BurstCompile]
-    public static float Cov(List<NativeArray<float>> data)
-    {
-    // 分散共分散行列を求める
-    }
-    */
 }
 
 }

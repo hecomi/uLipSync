@@ -12,7 +12,6 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public bool calibration = true;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
-    [Range(0f, 0.1f)] public float minError = 1e-4f;
     [Range(0f, 2f)] public float outputSoundGain = 1f;
 
     NativeArray<float> rawData_;
@@ -20,9 +19,17 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> mfcc_;
     NativeArray<float> mfccForOther_;
     NativeArray<LipSyncJob.Result> jobResult_;
-    public NativeArray<float> mfcc 
-    { 
-        get { return mfccForOther_; } 
+
+    public NativeArray<float> mfcc { get { return mfccForOther_; } }
+    public bool isMfccUpdated { get; set; } = false;
+
+    int sampleCount
+    {
+        get 
+        {  
+            float r = (float)AudioSettings.outputSampleRate / profile.targetSampleRate;
+            return Mathf.CeilToInt(Common.sampleCount * r);
+        }
     }
 
     JobHandle jobHandle_;
@@ -43,6 +50,8 @@ public class uLipSync : MonoBehaviour
 
     void Update()
     {
+        isMfccUpdated = false;
+
         if (!jobHandle_.IsCompleted) return;
 
         GetResult();
@@ -57,8 +66,9 @@ public class uLipSync : MonoBehaviour
     {
         lock (lockObject_)
         {
-            rawData_ = new NativeArray<float>(Common.sampleCount, Allocator.Persistent);
-            inputData_ = new NativeArray<float>(Common.sampleCount, Allocator.Persistent); 
+            int n = sampleCount;
+            rawData_ = new NativeArray<float>(n, Allocator.Persistent);
+            inputData_ = new NativeArray<float>(n, Allocator.Persistent); 
             mfcc_ = new NativeArray<float>(12, Allocator.Persistent); 
             jobResult_ = new NativeArray<LipSyncJob.Result>(1, Allocator.Persistent);
             mfccForOther_ = new NativeArray<float>(12, Allocator.Persistent); 
@@ -80,7 +90,7 @@ public class uLipSync : MonoBehaviour
 
     void UpdateBuffers()
     {
-        if (Common.sampleCount != rawData_.Length)
+        if (sampleCount != rawData_.Length)
         {
             lock (lockObject_)
             {
@@ -92,17 +102,18 @@ public class uLipSync : MonoBehaviour
 
     void UpdateCalibration()
     {
-        if (Input.GetKeyDown(KeyCode.A)) AddMfccToProfile(Vowel.A);
-        if (Input.GetKeyDown(KeyCode.I)) AddMfccToProfile(Vowel.I);
-        if (Input.GetKeyDown(KeyCode.U)) AddMfccToProfile(Vowel.U);
-        if (Input.GetKeyDown(KeyCode.E)) AddMfccToProfile(Vowel.E);
-        if (Input.GetKeyDown(KeyCode.O)) AddMfccToProfile(Vowel.O);
+        if (Input.GetKey(KeyCode.A)) AddMfccToProfile(Vowel.A);
+        if (Input.GetKey(KeyCode.I)) AddMfccToProfile(Vowel.I);
+        if (Input.GetKey(KeyCode.U)) AddMfccToProfile(Vowel.U);
+        if (Input.GetKey(KeyCode.E)) AddMfccToProfile(Vowel.E);
+        if (Input.GetKey(KeyCode.O)) AddMfccToProfile(Vowel.O);
     }
 
     void GetResult()
     {
         jobHandle_.Complete();
         mfccForOther_.CopyFrom(mfcc_);
+        isMfccUpdated = true;
 
         if (jobResult_[0].volume > 0.001f)
         {
@@ -128,14 +139,15 @@ public class uLipSync : MonoBehaviour
         {
             input = inputData_,
             startIndex = index,
-            sampleRate = AudioSettings.outputSampleRate,
+            outputSampleRate = AudioSettings.outputSampleRate,
+            targetSampleRate = profile.targetSampleRate,
             volumeThresh = 1e-4f,
             mfcc = mfcc_,
-            a = profile.GetAverageAndVarianceOfMfcc(Vowel.A),
-            i = profile.GetAverageAndVarianceOfMfcc(Vowel.I),
-            u = profile.GetAverageAndVarianceOfMfcc(Vowel.U),
-            e = profile.GetAverageAndVarianceOfMfcc(Vowel.E),
-            o = profile.GetAverageAndVarianceOfMfcc(Vowel.O),
+            a = profile.GetAverages(Vowel.A),
+            i = profile.GetAverages(Vowel.I),
+            u = profile.GetAverages(Vowel.U),
+            e = profile.GetAverages(Vowel.E),
+            o = profile.GetAverages(Vowel.O),
             result = jobResult_,
         };
 

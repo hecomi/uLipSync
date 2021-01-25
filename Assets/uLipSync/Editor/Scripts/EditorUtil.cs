@@ -42,6 +42,7 @@ public static class EditorUtil
         style.border = new RectOffset(15, 7, 4, 4);
         style.fixedHeight = 22;
         style.contentOffset = new Vector2(20f, -2f);
+        style.margin = new RectOffset((EditorGUI.indentLevel + 1) * 16, 0, 0, 0);
 
         var key = GetFoldOutKey(title);
         bool display = EditorPrefs.GetBool(key, initialState);
@@ -87,6 +88,36 @@ public static class EditorUtil
         var mics = MicUtil.GetDeviceList();
         var micNames = mics.Select(x => x.name).ToArray();
         index = EditorGUILayout.Popup("Device", index, micNames);
+    }
+
+    public static void DrawMfcc(float[] array, float max, float min, float height)
+    {
+        var area = GUILayoutUtility.GetRect(Screen.width, height);
+        area = EditorGUI.IndentedRect(area);
+
+        var width = area.width / 12;
+        var maxMinusMin = max - min;
+        for (int i = 0; i < 12; ++i)
+        {
+            var x = width * i;
+            var rect = new Rect(area.x + x, area.y, width, height);
+            var value = (array[i] - min) / maxMinusMin;
+            var color = ToRGB(value);
+            Handles.DrawSolidRectangleWithOutline(rect, color, color);
+        }
+    }
+
+    public static Color ToRGB(float hue)
+    {
+        hue = 1f - hue;
+        hue = hue * 5f;
+        var x = 1 - Mathf.Abs(hue % 2f - 1f);
+        return
+            hue < 1f ? new Color(1f, x, 0f) :
+            hue < 2f ? new Color(x, 1f, 0f) :
+            hue < 3f ? new Color(0f, 1f, x) :
+            hue < 4f ? new Color(0f, x, 1f) :
+            new Color(x * 0.5f, 0f, 0.5f);
     }
 }
 

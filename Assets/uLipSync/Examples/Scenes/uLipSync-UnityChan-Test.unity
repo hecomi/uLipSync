@@ -506,7 +506,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  minError: 0.0001
   outputSoundGain: 1
 --- !u!114 &496503022
 MonoBehaviour:

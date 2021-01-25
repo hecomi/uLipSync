@@ -43,7 +43,7 @@ public class uLipSyncMicrophone : MonoBehaviour
 
         UpdateMicInfo();
 
-        if (isAutoStart)
+        if (isAutoStart && isReady)
         {
             StartRecord();
         }
@@ -113,7 +113,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     {
         if (!source) return;
 
-        clip = Microphone.Start(device.name, true, 1, maxFreq);
+        clip = Microphone.Start(device.name, true, 10, maxFreq);
         while (Microphone.GetPosition(device.name) <= 0) ;
         source.loop = true;
         source.Play();
