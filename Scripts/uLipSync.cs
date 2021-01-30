@@ -10,8 +10,8 @@ namespace uLipSync
 public class uLipSync : MonoBehaviour
 {
     public Profile profile;
-    public bool calibration = true;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
+    [Tooltip("If you want to supress the sound output, set this value to zero instead of setting the AudioSource volume to zero")]
     [Range(0f, 1f)] public float outputSoundGain = 1f;
 
     JobHandle jobHandle_;
