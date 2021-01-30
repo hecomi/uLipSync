@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -11,14 +12,20 @@ public class uLipSync : MonoBehaviour
     public bool calibration = true;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
+    JobHandle jobHandle_;
+    object lockObject_ = new object();
+    int index_ = 0;
+
     NativeArray<float> rawInputData_;
     NativeArray<float> inputData_;
     NativeArray<float> mfcc_;
     NativeArray<float> mfccForOther_;
     NativeArray<LipSyncJob.Result> jobResult_;
+    List<Vowel> requestedCalibrationVowels_ = new List<Vowel>();
 
     public NativeArray<float> mfcc { get { return mfccForOther_; } }
-    public bool isMfccUpdated { get; set; } = false;
+    public bool isMfccUpdated { get; private set; } = false;
+    public LipSyncInfo result { get; private set; } = new LipSyncInfo();
 
     int inputSampleCount
     {
@@ -28,12 +35,6 @@ public class uLipSync : MonoBehaviour
             return Mathf.CeilToInt(profile.sampleCount * r);
         }
     }
-
-    JobHandle jobHandle_;
-    object lockObject_ = new object();
-    int index_ = 0;
-
-    public LipSyncInfo result { get; private set; } = new LipSyncInfo();
 
     void OnEnable()
     {
@@ -95,15 +96,6 @@ public class uLipSync : MonoBehaviour
                 AllocateBuffers();
             }
         }
-    }
-
-    void UpdateCalibration()
-    {
-        if (Input.GetKey(KeyCode.A)) AddMfccToProfile(Vowel.A);
-        if (Input.GetKey(KeyCode.I)) AddMfccToProfile(Vowel.I);
-        if (Input.GetKey(KeyCode.U)) AddMfccToProfile(Vowel.U);
-        if (Input.GetKey(KeyCode.E)) AddMfccToProfile(Vowel.E);
-        if (Input.GetKey(KeyCode.O)) AddMfccToProfile(Vowel.O);
     }
 
     void GetResult()
@@ -183,9 +175,20 @@ public class uLipSync : MonoBehaviour
         }
 	}
 
-    public void AddMfccToProfile(Vowel vowel)
+    public void RequestCalibration(Vowel vowel)
     {
-        profile.Add(vowel, mfcc, true);
+        requestedCalibrationVowels_.Add(vowel);
+    }
+
+    void UpdateCalibration()
+    {
+        if (profile == null) return;
+
+        foreach (var vowel in requestedCalibrationVowels_)
+        {
+            profile.Add(vowel, mfcc, true);
+        }
+        requestedCalibrationVowels_.Clear();
     }
 }
 

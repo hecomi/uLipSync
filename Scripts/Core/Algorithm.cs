@@ -200,10 +200,10 @@ public static class Algorithm
 
         for (int i = 0; i < N / 2; ++i)
         {
-            var er = evenRe[i];
-            var ei = evenIm[i];
-            var or = oddRe[i];
-            var oi = oddIm[i];
+            float er = evenRe[i];
+            float ei = evenIm[i];
+            float or = oddRe[i];
+            float oi = oddIm[i];
             float theta = -2f * math.PI * i / N;
             var c = new float2(math.cos(theta), math.sin(theta));
             c = new float2(c.x * or - c.y * oi, c.x * oi + c.y * or);

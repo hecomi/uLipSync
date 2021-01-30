@@ -538,7 +538,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   threshVolume: 0.0001
-  outputLog: 1
+  outputLog: 0
+--- !u!114 &496503024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496503018}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf08450b695ac064b9164f882766725d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0
