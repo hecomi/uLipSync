@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 namespace uLipSync
 {
@@ -15,26 +16,45 @@ public class ProfileEditor : Editor
     {
         serializedObject.Update();
 
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.mfccDataCount));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.minVolume));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.maxVolume));
-        EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
+        if (EditorUtil.SimpleFoldout("Import / Export JSON", false))
+        {
+            ++EditorGUI.indentLevel;
+            DrawImportExport();
+            --EditorGUI.indentLevel;
 
-        profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
-        profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
-        profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
-        profile.sampleCount = Mathf.ClosestPowerOfTwo(profile.sampleCount);
+            EditorGUILayout.Separator();
+        }
 
-        CalcMinMax();
+        if (EditorUtil.SimpleFoldout("Parameters", true))
+        {
+            ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.mfccDataCount));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.minVolume));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxVolume));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
+            profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
+            profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
+            profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
+            profile.sampleCount = Mathf.ClosestPowerOfTwo(profile.sampleCount);
+            --EditorGUI.indentLevel;
 
-        Draw(profile.a, "A");
-        Draw(profile.i, "I");
-        Draw(profile.u, "U");
-        Draw(profile.e, "E");
-        Draw(profile.o, "O");
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.SimpleFoldout("MFCC", true))
+        {
+            ++EditorGUI.indentLevel;
+            CalcMinMax();
+            DrawMFCC(profile.a, "A");
+            DrawMFCC(profile.i, "I");
+            DrawMFCC(profile.u, "U");
+            DrawMFCC(profile.e, "E");
+            DrawMFCC(profile.o, "O");
+            --EditorGUI.indentLevel;
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -58,7 +78,7 @@ public class ProfileEditor : Editor
         }
     }
 
-    void Draw(MfccData data, string name)
+    void DrawMFCC(MfccData data, string name)
     {
         if (!EditorUtil.SimpleFoldout(name, true)) return;
 
@@ -70,6 +90,39 @@ public class ProfileEditor : Editor
         }
 
         --EditorGUI.indentLevel;
+    }
+
+    void DrawImportExport()
+    {
+        EditorGUILayout.BeginHorizontal();
+        profile.jsonPath = EditorGUILayout.TextField("File Path", profile.jsonPath);
+        if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(24)))
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(profile.jsonPath);
+                var file = Path.GetFileName(profile.jsonPath);
+                profile.jsonPath = EditorUtility.SaveFilePanel("Select Profile", dir, file, "json");
+            }
+            catch
+            {
+                profile.jsonPath = EditorUtility.SaveFilePanel("Select Profile", "", "profile", "json");
+                profile.Export(profile.jsonPath);
+            }
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("  Import  ", EditorStyles.miniButtonLeft))
+        {
+            profile.Import(profile.jsonPath);
+        }
+        if (GUILayout.Button("  Export  ", EditorStyles.miniButtonRight))
+        {
+            profile.Export(profile.jsonPath);
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }
 
