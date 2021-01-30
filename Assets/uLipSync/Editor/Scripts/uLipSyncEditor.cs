@@ -14,6 +14,9 @@ public class uLipSync2Editor : Editor
     Editor profileEditor_;
     List<float[]> mfccHistory_ = new List<float[]>();
 
+    float minVolume = 0f;
+    float maxVolume = -100f;
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -82,6 +85,7 @@ public class uLipSync2Editor : Editor
                 ++EditorGUI.indentLevel;
                 if (Application.isPlaying)
                 {
+                    DrawRawVolume();
                     DrawRMSVolume();
                     shouldRepaint = true;
                 }
@@ -125,6 +129,17 @@ public class uLipSync2Editor : Editor
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    void DrawRawVolume()
+    {
+        float volume = Mathf.Log10(lipSync.result.rawVolume);
+        if (volume != Mathf.NegativeInfinity) minVolume = Mathf.Min(minVolume, volume);
+        if (volume != Mathf.Infinity) maxVolume = Mathf.Max(maxVolume, volume);
+
+        EditorGUILayout.LabelField("Current Volume", volume.ToString());
+        EditorGUILayout.LabelField("Min Volume", minVolume.ToString());
+        EditorGUILayout.LabelField("Max Volume", maxVolume.ToString());
     }
 
     void DrawRMSVolume()
