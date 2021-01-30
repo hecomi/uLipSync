@@ -3,6 +3,7 @@ using UnityEngine.Assertions;
 using Unity.Collections;
 using Unity.Burst;
 using System.Collections.Generic;
+using System.IO;
 
 namespace uLipSync
 {
@@ -77,6 +78,8 @@ public class MfccData
 [CreateAssetMenu(menuName = Common.assetName + "/Profile"), BurstCompile]
 public class Profile : ScriptableObject
 {
+    [HideInInspector] public string jsonPath = "";
+
     public int mfccDataCount = 32;
     public int melFilterBankChannels = 24;
     public int targetSampleRate = 16000;
@@ -137,6 +140,40 @@ public class Profile : ScriptableObject
     public NativeArray<float> GetAverages(Vowel vowel)
     {
         return Get(vowel).averages;
+    }
+
+    public void Export(string path)
+    {
+        var json = JsonUtility.ToJson(this);
+        try
+        {
+            File.WriteAllText(path, json);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
+    }
+
+    public void Import(string path)
+    {
+        string json = "";
+        try
+        {
+            json = File.ReadAllText(path);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.Message);
+            return;
+        }
+        JsonUtility.FromJsonOverwrite(json, this);
+    }
+
+    public Profile Create(string path)
+    {
+        var profile = new Profile();
+        return profile;
     }
 }
 

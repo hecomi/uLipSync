@@ -24,9 +24,9 @@ public class uLipSyncBlendShape : MonoBehaviour
         new BlendShapeInfo(),
         new BlendShapeInfo(),
     };
-    [Range(0f, 0.2f)] public float openDuration = 0.05f;
-    [Range(0f, 0.2f)] public float closeDuration = 0.1f;
-    [Range(0f, 0.2f)] public float vowelChangeDuration = 0.04f;
+    [Range(0f, 0.1f)] public float openDuration = 0.05f;
+    [Range(0f, 0.1f)] public float closeDuration = 0.1f;
+    [Range(0f, 0.1f)] public float vowelChangeDuration = 0.04f;
 
     float openVelocity_ = 0f;
     float closeVelocity_ = 0f;
@@ -59,7 +59,8 @@ public class uLipSyncBlendShape : MonoBehaviour
             var vowel = (Vowel)i;
             var info = blendShapeList[i];
             bool isTargetVowel = vowel == this.vowel;
-            info.blend = Mathf.SmoothDamp(info.blend, isTargetVowel ? 1f : 0f, ref vowelChangeVelocity_, vowelChangeDuration);
+            float blend = isTargetVowel ? 1f : 0f;
+            info.blend = Mathf.SmoothDamp(info.blend, blend, ref vowelChangeVelocity_, vowelChangeDuration);
             sum += info.blend;
         }
 
