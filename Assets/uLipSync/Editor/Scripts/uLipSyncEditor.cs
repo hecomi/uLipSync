@@ -46,9 +46,27 @@ public class uLipSync2Editor : Editor
         {
             ++EditorGUI.indentLevel;
 
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.Space(10f, false);
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.onLipSyncUpdate));
 
+            EditorGUILayout.EndHorizontal();
+
             --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.Foldout("Parameters", true))
+        {
+            ++EditorGUI.indentLevel;
+
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
+
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
         }
 
         if (EditorUtil.Foldout("Runtime Information", false))
@@ -130,7 +148,7 @@ public class uLipSync2Editor : Editor
 
     void DrawCurrentMfcc()
     {
-        if (!lipSync.mfcc.IsCreated || !lipSync.isMfccUpdated) return;
+        if (!lipSync.mfcc.IsCreated) return;
 
         var editor = profileEditor_ as ProfileEditor;
         if (!editor) return;

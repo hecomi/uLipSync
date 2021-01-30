@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using System.Collections.Generic;
 
 namespace uLipSync
@@ -11,6 +12,7 @@ public class uLipSync : MonoBehaviour
     public Profile profile;
     public bool calibration = true;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
+    [Range(0f, 1f)] public float outputSoundGain = 1f;
 
     JobHandle jobHandle_;
     object lockObject_ = new object();
@@ -24,7 +26,6 @@ public class uLipSync : MonoBehaviour
     List<Vowel> requestedCalibrationVowels_ = new List<Vowel>();
 
     public NativeArray<float> mfcc { get { return mfccForOther_; } }
-    public bool isMfccUpdated { get; private set; } = false;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
 
     int inputSampleCount
@@ -48,8 +49,6 @@ public class uLipSync : MonoBehaviour
 
     void Update()
     {
-        isMfccUpdated = false;
-
         if (!jobHandle_.IsCompleted) return;
 
         GetResult();
@@ -102,7 +101,6 @@ public class uLipSync : MonoBehaviour
     {
         jobHandle_.Complete();
         mfccForOther_.CopyFrom(mfcc_);
-        isMfccUpdated = true;
 
         var vowel = jobResult_[0].vowel;
         float distance = jobResult_[0].distance;
@@ -161,8 +159,8 @@ public class uLipSync : MonoBehaviour
         jobHandle_ = lipSyncJob.Schedule();
     }
 
-	void OnAudioFilterRead(float[] input, int channels)
-	{
+    void OnAudioFilterRead(float[] input, int channels)
+    {
         if (rawInputData_ == null) return;
 
         lock (lockObject_)
@@ -173,7 +171,15 @@ public class uLipSync : MonoBehaviour
                 rawInputData_[index_++ % rawInputData_.Length] = input[i];
             }
         }
-	}
+
+        if (math.abs(outputSoundGain - 1f) > math.EPSILON)
+        {
+            for (int i = 0; i < input.Length; ++i) 
+            {
+                input[i] *= outputSoundGain;
+            }
+        }
+    }
 
     public void RequestCalibration(Vowel vowel)
     {
