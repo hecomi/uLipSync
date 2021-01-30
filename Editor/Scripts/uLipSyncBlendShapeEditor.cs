@@ -17,6 +17,7 @@ public class uLipSyncBlendShapeEditor : Editor
 
         DrawSkinnedMeshRenderer();
         DrawBlendShapes();
+        DrawParameters();
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -109,6 +110,13 @@ public class uLipSyncBlendShapeEditor : Editor
             Undo.RecordObject(target, "Change Blend Factor");
             info.factor = factor;
         }
+    }
+
+    void DrawParameters()
+    {
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.openSmoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.closeSmoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.vowelChangeSmoothness));
     }
 }
 
