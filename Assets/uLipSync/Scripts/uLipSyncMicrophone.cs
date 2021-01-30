@@ -113,7 +113,10 @@ public class uLipSyncMicrophone : MonoBehaviour
     {
         if (!source) return;
 
-        clip = Microphone.Start(device.name, true, 10, maxFreq);
+        int freq = maxFreq;
+        if (freq <= 0) freq = 48000;
+
+        clip = Microphone.Start(device.name, true, 10, freq);
         while (Microphone.GetPosition(device.name) <= 0) ;
         source.loop = true;
         source.Play();
