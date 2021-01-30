@@ -151,56 +151,72 @@ public static class Algorithm
         }
     }
 
+    [BurstCompile]
     public static void FFT(in NativeArray<float> data, out NativeArray<float> spectrum)
     {
         int N = data.Length;
         spectrum = new NativeArray<float>(N, Allocator.Temp);
 
-        var spectrumComplex = new NativeArray<float2>(N, Allocator.Temp);
+        var spectrumRe = new NativeArray<float>(N, Allocator.Temp);
+        var spectrumIm = new NativeArray<float>(N, Allocator.Temp);
         for (int i = 0; i < N; ++i)
         {
-            spectrumComplex[i] = new float2(data[i], 0f);
+            spectrumRe[i] = data[i];
         }
-        FFT(ref spectrumComplex, N);
+        FFT(ref spectrumRe, ref spectrumIm, N);
 
         for (int i = 0; i < N; ++i)
         {
-            spectrum[i] = math.length(spectrumComplex[i]);
+            float re = spectrumRe[i];
+            float im = spectrumIm[i];
+            spectrum[i] = math.length(new float2(re, im));
         }
 
         data.Dispose();
-        spectrumComplex.Dispose();
+        spectrumRe.Dispose();
+        spectrumIm.Dispose();
     }
 
-    static void FFT(ref NativeArray<float2> spectrum, int N)
+    [BurstCompile]
+    static void FFT(ref NativeArray<float> spectrumRe, ref NativeArray<float> spectrumIm, int N)
     {
         if (N < 2) return;
 
-        var even = new NativeArray<float2>(N / 2, Allocator.Temp);
-        var odd = new NativeArray<float2>(N / 2, Allocator.Temp);
+        var evenRe = new NativeArray<float>(N / 2, Allocator.Temp);
+        var evenIm = new NativeArray<float>(N / 2, Allocator.Temp);
+        var oddRe = new NativeArray<float>(N / 2, Allocator.Temp);
+        var oddIm = new NativeArray<float>(N / 2, Allocator.Temp);
 
         for (int i = 0; i < N / 2; ++i)
         {
-            even[i] = spectrum[i * 2];
-            odd[i] = spectrum[i * 2 + 1];
+            evenRe[i] = spectrumRe[i * 2];
+            evenIm[i] = spectrumIm[i * 2];
+            oddRe[i] = spectrumRe[i * 2 + 1];
+            oddIm[i] = spectrumIm[i * 2 + 1];
         }
 
-        FFT(ref even, N / 2);
-        FFT(ref odd, N / 2);
+        FFT(ref evenRe, ref evenIm, N / 2);
+        FFT(ref oddRe, ref oddIm, N / 2);
 
         for (int i = 0; i < N / 2; ++i)
         {
-            var e = even[i];
-            var o = odd[i];
+            var er = evenRe[i];
+            var ei = evenIm[i];
+            var or = oddRe[i];
+            var oi = oddIm[i];
             float theta = -2f * math.PI * i / N;
             var c = new float2(math.cos(theta), math.sin(theta));
-            c = new float2(c.x * o.x - c.y * o.y, c.x * o.y + c.y * o.x);
-            spectrum[i] = e + c;
-            spectrum[N / 2 + i] = e - c;
+            c = new float2(c.x * or - c.y * oi, c.x * oi + c.y * or);
+            spectrumRe[i] = er + c.x;
+            spectrumIm[i] = ei + c.y;
+            spectrumRe[N / 2 + i] = er - c.x;
+            spectrumIm[N / 2 + i] = ei - c.y;
         }
 
-        even.Dispose();
-        odd.Dispose();
+        evenRe.Dispose();
+        evenIm.Dispose();
+        oddRe.Dispose();
+        oddIm.Dispose();
     }
 
     [BurstCompile]

@@ -14,15 +14,28 @@ public class ProfileEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+
         EditorUtil.DrawProperty(serializedObject, nameof(profile.mfccDataCount));
+        EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
         EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
-        profile.targetSampleRate = Mathf.Max(profile.targetSampleRate, 1000);
+        EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
+        EditorUtil.DrawProperty(serializedObject, nameof(profile.minVolume));
+        EditorUtil.DrawProperty(serializedObject, nameof(profile.maxVolume));
+        EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
+
+        profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
+        profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
+        profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
+        profile.sampleCount = Mathf.ClosestPowerOfTwo(profile.sampleCount);
+
         CalcMinMax();
+
         Draw(profile.a, "A");
         Draw(profile.i, "I");
         Draw(profile.u, "U");
         Draw(profile.e, "E");
         Draw(profile.o, "O");
+
         serializedObject.ApplyModifiedProperties();
     }
 

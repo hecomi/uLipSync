@@ -460,23 +460,16 @@ MonoBehaviour:
   blendShapeList:
   - index: 6
     factor: 1
-    blend: 0
   - index: 7
     factor: 1
-    blend: 0
   - index: 8
     factor: 1
-    blend: 0
   - index: 9
     factor: 1
-    blend: 0
   - index: 10
     factor: 1
-    blend: 0
   - index: -1
     factor: 1
-    blend: 0
-  findFromChildren: 1
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,7 +499,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  outputSoundGain: 1
+      - m_Target: {fileID: 496503023}
+        m_TargetAssemblyTypeName: DebugPrintLipSyncInfo, Assembly-CSharp
+        m_MethodName: OnLipSyncUpdate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &496503022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,6 +525,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: 0
   isAutoStart: 1
+--- !u!114 &496503023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496503018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9370f5d3e3d00f94baf4c82c48c7aff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  threshVolume: 0.0001
+  outputLog: 1
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0

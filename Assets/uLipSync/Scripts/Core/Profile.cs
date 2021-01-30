@@ -78,7 +78,12 @@ public class MfccData
 public class Profile : ScriptableObject
 {
     public int mfccDataCount = 32;
+    public int melFilterBankChannels = 24;
     public int targetSampleRate = 16000;
+    public int sampleCount = 512;
+    [Range(-10f, 0f)] public float minVolume = -4f;
+    [Range(-10f, 0f)] public float maxVolume = -2f;
+    [Range(0f, 50f)] public float maxError = 30f;
 
     public MfccData a = new MfccData();
     public MfccData i = new MfccData();
@@ -119,13 +124,14 @@ public class Profile : ScriptableObject
     }
 
     [BurstCompile]
-    public void Add(Vowel vowel, NativeArray<float> mfcc)
+    public void Add(Vowel vowel, NativeArray<float> mfcc, bool calib)
     {
         var array = new float[mfcc.Length];
         mfcc.CopyTo(array);
         var data = Get(vowel);
         data.Add(array);
         data.RemoveOldData(mfccDataCount);
+        if (calib) data.Update();
     }
 
     public NativeArray<float> GetAverages(Vowel vowel)

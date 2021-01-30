@@ -16,13 +16,14 @@ public enum Vowel
 public static class Common
 {
     public const string assetName = "uLipSync";
-    public const int sampleCount = 512;
 }
 
 public struct LipSyncInfo
 {
-    public string phenome;
+    public Vowel vowel;
     public float volume;
+    public float rawVolume;
+    public float distance;
 }
 
 [System.Serializable]

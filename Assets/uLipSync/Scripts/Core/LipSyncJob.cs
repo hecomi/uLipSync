@@ -20,6 +20,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int startIndex;
     [ReadOnly] public int outputSampleRate;
     [ReadOnly] public int targetSampleRate;
+    [ReadOnly] public int melFilterBankChannels;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
     public NativeArray<float> a;
@@ -35,7 +36,9 @@ public struct LipSyncJob : IJob
         if (volume < volumeThresh)
         {
             var res1 = result[0];
+            res1.vowel = Vowel.None;
             res1.volume = volume;
+            res1.distance = float.MaxValue;
             result[0] = res1;
             return;
         }
@@ -65,7 +68,7 @@ public struct LipSyncJob : IJob
 
         // Mel-Filter Bank
         NativeArray<float> melSpectrum;
-        Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, 32);
+        Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, melFilterBankChannels);
 
         // Log
         for (int i = 0; i < melSpectrum.Length; ++i)
