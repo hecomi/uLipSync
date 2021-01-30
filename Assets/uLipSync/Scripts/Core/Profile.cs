@@ -80,12 +80,19 @@ public class Profile : ScriptableObject
 {
     [HideInInspector] public string jsonPath = "";
 
+    [Tooltip("The number of MFCC data to calculate the average MFCC values")]
     public int mfccDataCount = 32;
+    [Tooltip("The number of Mel Filter Bank channels")]
     public int melFilterBankChannels = 24;
+    [Tooltip("Target sampling rate to apply downsampling")]
     public int targetSampleRate = 16000;
+    [Tooltip("Number of audio samples after downsampling is applied")]
     public int sampleCount = 512;
+    [Tooltip("Min Volume (Log10)")]
     [Range(-10f, 0f)] public float minVolume = -4f;
+    [Tooltip("Max Volume (Log10)")]
     [Range(-10f, 0f)] public float maxVolume = -2f;
+    [Tooltip("Ignore the result if the current distance from the closest MFCC is larger than this value")]
     [Range(0f, 50f)] public float maxError = 30f;
 
     public MfccData a = new MfccData();
