@@ -24,6 +24,9 @@ public class uLipSyncBlendShape : MonoBehaviour
         new BlendShapeInfo(),
         new BlendShapeInfo(),
     };
+    [Range(0f, 1f)] public float openSmoothness = 0.9f;
+    [Range(0f, 1f)] public float closeSmoothness = 0.95f;
+    [Range(0f, 1f)] public float vowelChangeSmoothness = 0.95f;
 
     Vowel vowel = Vowel.A;
     float volume = 0f;
@@ -32,7 +35,8 @@ public class uLipSyncBlendShape : MonoBehaviour
     public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
         vowel = lipSync.vowel;
-        volume = Util.CalcNextValue(volume, lipSync.volume, 0.8f);
+        float smoothness = lipSync.volume > volume ? openSmoothness : closeSmoothness;
+        volume = Util.CalcNextValue(volume, lipSync.volume, smoothness);
         lipSyncUpdated = true;
     }
 
@@ -45,7 +49,7 @@ public class uLipSyncBlendShape : MonoBehaviour
             var vowel = (Vowel)i;
             var info = blendShapeList[i];
             bool isTargetVowel = vowel == this.vowel;
-            info.blend = Util.CalcNextValue(info.blend, isTargetVowel ? 1f : 0f, 0.95f);
+            info.blend = Util.CalcNextValue(info.blend, isTargetVowel ? 1f : 0f, vowelChangeSmoothness);
             sum += info.blend;
         }
 
@@ -70,7 +74,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 
         if (!lipSyncUpdated)
         {
-            volume = Util.CalcNextValue(volume, 0f, 0.9f);
+            volume = Util.CalcNextValue(volume, 0f, closeSmoothness);
         }
         lipSyncUpdated = false;
     }
