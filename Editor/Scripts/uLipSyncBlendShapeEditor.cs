@@ -23,9 +23,10 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawSkinnedMeshRenderer()
     {
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.findFromChildren));
+        var findFromChildren = EditorUtil.EditorOnlyToggle("Find From Children", "uLipSyncBlendShape", true);
+        EditorUtil.DrawProperty(serializedObject, nameof(findFromChildren));
 
-        if (blendShape.findFromChildren)
+        if (findFromChildren)
         {
             var skinnedMeshRenderers = blendShape.GetComponentsInChildren<SkinnedMeshRenderer>();
             int index = 0;
@@ -54,7 +55,7 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawBlendShapes()
     {
-        for (int i = (int)Vowel.A; i <= (int)Vowel.None && i < blendShape.blendShapeList.Count; ++i)
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O && i < blendShape.blendShapeList.Count; ++i)
         {
             var info = blendShape.blendShapeList[i];
             DrawBlendShape((Vowel)i, info);

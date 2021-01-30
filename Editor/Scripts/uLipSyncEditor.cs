@@ -16,17 +16,19 @@ public class uLipSync2Editor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+
         if (EditorUtil.Foldout("Profile", true))
         {
             ++EditorGUI.indentLevel;
 
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.profile));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile));
 
             if (EditorUtil.SimpleFoldout("Setting", false))
             {
                 ++EditorGUI.indentLevel;
 
-                CreateCachedEditor(lipSync.profile, typeof(ProfileEditor), ref profileEditor_);
+                CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
                 var editor = profileEditor_ as ProfileEditor;
                 if (editor) editor.OnInspectorGUI();
 
@@ -49,24 +51,81 @@ public class uLipSync2Editor : Editor
             --EditorGUI.indentLevel;
         }
 
-        if (EditorUtil.Foldout("Result", true))
+        if (EditorUtil.Foldout("Runtime Information", false))
         {
             ++EditorGUI.indentLevel;
-            ++EditorGUI.indentLevel;
-            ++EditorGUI.indentLevel;
+
+            bool shouldRepaint = false;
 
             EditorGUILayout.Separator();
 
-            DrawCurrentMfcc();
+            if (EditorUtil.SimpleFoldout("Volume", true)) 
+            {
+                ++EditorGUI.indentLevel;
+                if (Application.isPlaying)
+                {
+                    DrawRMSVolume();
+                    shouldRepaint = true;
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Current RMS Volume is shown here in runtime.", MessageType.Info);
+                }
+                --EditorGUI.indentLevel;
+
+                EditorGUILayout.Separator();
+            }
+
+            if (EditorUtil.SimpleFoldout("MFCC", true)) 
+            {
+                ++EditorGUI.indentLevel;
+                if (Application.isPlaying)
+                {
+                    ++EditorGUI.indentLevel;
+                    DrawCurrentMfcc();
+                    shouldRepaint = true;
+                    --EditorGUI.indentLevel;
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Current MFCC is shown here in runtime.", MessageType.Info);
+                }
+                --EditorGUI.indentLevel;
+
+                EditorGUILayout.Separator();
+            }
+
+            if (shouldRepaint)
+            {
+                EditorGUILayout.HelpBox("While runtime information is shown, FPS drop occurs due to the heavy editor process.", MessageType.Info);
+                Repaint();
+            }
+
+            --EditorGUI.indentLevel;
 
             EditorGUILayout.Separator();
-
-            --EditorGUI.indentLevel;
-            --EditorGUI.indentLevel;
-            --EditorGUI.indentLevel;
-
-            Repaint();
         }
+
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    void DrawRMSVolume()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.PrefixLabel("Normalized Volume");
+            var rect = EditorGUILayout.GetControlRect(true);
+            rect.y += rect.height * 0.3f;
+            rect.height *= 0.4f;
+            Handles.DrawSolidRectangleWithOutline(rect, new Color(0f, 0f, 0f, 0.2f), new Color(0f, 0f, 0f, 0.5f));
+            rect.width -= 2;
+            rect.width *= Mathf.Clamp(lipSync.result.volume, 0f, 1f);
+            rect.height -= 2;
+            rect.y += 1;
+            rect.x += 1;
+            Handles.DrawSolidRectangleWithOutline(rect, Color.green, new Color(0f, 0f, 0f, 0f));
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
     void DrawCurrentMfcc()

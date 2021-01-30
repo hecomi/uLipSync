@@ -9,7 +9,8 @@ public class BlendShapeInfo
 {
     public int index = -1;
     public float factor = 1f;
-    public float blend = 0f;
+    public float blend { get; set; } = 0f;
+    public float normalizedBlend { get; set; } = 0f;
 }
 
 public class uLipSyncBlendShape : MonoBehaviour
@@ -22,24 +23,37 @@ public class uLipSyncBlendShape : MonoBehaviour
         new BlendShapeInfo(),
         new BlendShapeInfo(),
         new BlendShapeInfo(),
-        new BlendShapeInfo(),
     };
-    float volume_ = 0f;
 
-#if UNITY_EDITOR
-    public bool findFromChildren;
-#endif
+    Vowel vowel = Vowel.A;
+    float volume = 0f;
+    bool lipSyncUpdated = false;
 
-    public void OnLipSyncUpdate(LipSyncInfo info)
+    public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
-    /*
-        foreach (var kv in info.vowels)
+        vowel = lipSync.vowel;
+        volume = Util.CalcNextValue(volume, lipSync.volume, 0.8f);
+        lipSyncUpdated = true;
+    }
+
+    void Update()
+    {
+        float sum = 0f;
+
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
         {
-            int i = (int)kv.Key;
-            blendShapeList[i].blend = kv.Value;
+            var vowel = (Vowel)i;
+            var info = blendShapeList[i];
+            bool isTargetVowel = vowel == this.vowel;
+            info.blend = Util.CalcNextValue(info.blend, isTargetVowel ? 1f : 0f, 0.95f);
+            sum += info.blend;
         }
-        */
-        volume_ = info.volume;
+
+        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        {
+            var info = blendShapeList[i];
+            info.normalizedBlend = info.blend / sum;
+        }
     }
 
     void LateUpdate()
@@ -50,9 +64,15 @@ public class uLipSyncBlendShape : MonoBehaviour
         {
             if (info.index < 0) continue;
 
-            float blend = info.blend * info.factor * volume_ * 100;
+            float blend = info.normalizedBlend * info.factor * volume * 100;
             skinnedMeshRenderer.SetBlendShapeWeight(info.index, blend);
         }
+
+        if (!lipSyncUpdated)
+        {
+            volume = Util.CalcNextValue(volume, 0f, 0.9f);
+        }
+        lipSyncUpdated = false;
     }
 }
 
