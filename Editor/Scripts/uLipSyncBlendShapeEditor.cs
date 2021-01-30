@@ -114,9 +114,9 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawParameters()
     {
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.openSmoothness));
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.closeSmoothness));
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.vowelChangeSmoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.openDuration));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.closeDuration));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.vowelChangeDuration));
     }
 }
 

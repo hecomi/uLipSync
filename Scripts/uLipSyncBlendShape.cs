@@ -24,9 +24,13 @@ public class uLipSyncBlendShape : MonoBehaviour
         new BlendShapeInfo(),
         new BlendShapeInfo(),
     };
-    [Range(0f, 1f)] public float openSmoothness = 0.9f;
-    [Range(0f, 1f)] public float closeSmoothness = 0.95f;
-    [Range(0f, 1f)] public float vowelChangeSmoothness = 0.95f;
+    [Range(0f, 0.2f)] public float openDuration = 0.05f;
+    [Range(0f, 0.2f)] public float closeDuration = 0.1f;
+    [Range(0f, 0.2f)] public float vowelChangeDuration = 0.04f;
+
+    float openVelocity_ = 0f;
+    float closeVelocity_ = 0f;
+    float vowelChangeVelocity_ = 0f;
 
     Vowel vowel = Vowel.A;
     float volume = 0f;
@@ -35,8 +39,14 @@ public class uLipSyncBlendShape : MonoBehaviour
     public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
         vowel = lipSync.vowel;
-        float smoothness = lipSync.volume > volume ? openSmoothness : closeSmoothness;
-        volume = Util.CalcNextValue(volume, lipSync.volume, smoothness);
+        if (lipSync.volume > volume)
+        {
+            volume = Mathf.SmoothDamp(volume, lipSync.volume, ref openVelocity_, openDuration);
+        }
+        else
+        {
+            volume = Mathf.SmoothDamp(volume, lipSync.volume, ref closeVelocity_, closeDuration);
+        }
         lipSyncUpdated = true;
     }
 
@@ -49,7 +59,7 @@ public class uLipSyncBlendShape : MonoBehaviour
             var vowel = (Vowel)i;
             var info = blendShapeList[i];
             bool isTargetVowel = vowel == this.vowel;
-            info.blend = Util.CalcNextValue(info.blend, isTargetVowel ? 1f : 0f, vowelChangeSmoothness);
+            info.blend = Mathf.SmoothDamp(info.blend, isTargetVowel ? 1f : 0f, ref vowelChangeVelocity_, vowelChangeDuration);
             sum += info.blend;
         }
 
@@ -74,7 +84,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 
         if (!lipSyncUpdated)
         {
-            volume = Util.CalcNextValue(volume, 0f, closeSmoothness);
+            volume = Mathf.SmoothDamp(volume, 0f, ref closeVelocity_, closeDuration);
         }
         lipSyncUpdated = false;
     }
