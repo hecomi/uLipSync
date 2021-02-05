@@ -22,8 +22,9 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> inputData_;
     NativeArray<float> mfcc_;
     NativeArray<float> mfccForOther_;
+    NativeArray<float> phenomes_;
     NativeArray<LipSyncJob.Result> jobResult_;
-    List<Vowel> requestedCalibrationVowels_ = new List<Vowel>();
+    List<int> requestedCalibrationVowels_ = new List<int>();
 
     public NativeArray<float> mfcc { get { return mfccForOther_; } }
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
@@ -51,9 +52,10 @@ public class uLipSync : MonoBehaviour
     {
         if (!jobHandle_.IsCompleted) return;
 
-        GetResult();
+        UpdateResult();
         InvokeCallback();
         UpdateCalibration();
+        UpdatePhenomes();
         ScheduleJob();
 
         UpdateBuffers();
@@ -69,6 +71,7 @@ public class uLipSync : MonoBehaviour
             mfcc_ = new NativeArray<float>(12, Allocator.Persistent); 
             jobResult_ = new NativeArray<LipSyncJob.Result>(1, Allocator.Persistent);
             mfccForOther_ = new NativeArray<float>(12, Allocator.Persistent); 
+            phenomes_ = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
         }
     }
 
@@ -82,12 +85,14 @@ public class uLipSync : MonoBehaviour
             mfcc_.Dispose();
             mfccForOther_.Dispose();
             jobResult_.Dispose();
+            phenomes_.Dispose();
         }
     }
 
     void UpdateBuffers()
     {
-        if (inputSampleCount != rawInputData_.Length)
+        if (inputSampleCount != rawInputData_.Length ||
+            profile.mfccs.Count * 12 != phenomes_.Length)
         {
             lock (lockObject_)
             {
@@ -97,26 +102,24 @@ public class uLipSync : MonoBehaviour
         }
     }
 
-    void GetResult()
+    void UpdateResult()
     {
         jobHandle_.Complete();
         mfccForOther_.CopyFrom(mfcc_);
 
-        var vowel = jobResult_[0].vowel;
+        var index = jobResult_[0].index;
+        var phenome = profile.GetPhenome(index);
         float distance = jobResult_[0].distance;
         float vol = Mathf.Log10(jobResult_[0].volume);
         float minVol = profile.minVolume;
         float maxVol = Mathf.Max(profile.maxVolume, minVol + 1e-4f);
         vol = (vol - minVol) / (maxVol - minVol);
         vol = Mathf.Clamp(vol, 0f, 1f);
-        if (distance > profile.maxError )
-        {
-            vol = 0f;
-        }
 
         result = new LipSyncInfo()
         {
-            vowel = vowel,
+            index = index,
+            phenome = phenome,
             volume = vol,
             rawVolume = jobResult_[0].volume,
             distance = distance,
@@ -128,6 +131,19 @@ public class uLipSync : MonoBehaviour
         if (onLipSyncUpdate == null) return;
 
         onLipSyncUpdate.Invoke(result);
+    }
+
+    void UpdatePhenomes()
+    {
+        int index = 0;
+        foreach (var data in profile.mfccs)
+        {
+            foreach (var value in data.mfccNativeArray)
+            {
+                if (index >= phenomes_.Length) break;
+                phenomes_[index++] = value;
+            }
+        }
     }
 
     void ScheduleJob()
@@ -148,11 +164,7 @@ public class uLipSync : MonoBehaviour
             volumeThresh = Mathf.Pow(10f, profile.minVolume),
             melFilterBankChannels = profile.melFilterBankChannels,
             mfcc = mfcc_,
-            a = profile.GetAverages(Vowel.A),
-            i = profile.GetAverages(Vowel.I),
-            u = profile.GetAverages(Vowel.U),
-            e = profile.GetAverages(Vowel.E),
-            o = profile.GetAverages(Vowel.O),
+            phenomes = phenomes_,
             result = jobResult_,
         };
 
@@ -181,19 +193,20 @@ public class uLipSync : MonoBehaviour
         }
     }
 
-    public void RequestCalibration(Vowel vowel)
+    public void RequestCalibration(int index)
     {
-        requestedCalibrationVowels_.Add(vowel);
+        requestedCalibrationVowels_.Add(index);
     }
 
     void UpdateCalibration()
     {
         if (profile == null) return;
 
-        foreach (var vowel in requestedCalibrationVowels_)
+        foreach (var index in requestedCalibrationVowels_)
         {
-            profile.Add(vowel, mfcc, true);
+            profile.UpdateMfcc(index, mfcc, true);
         }
+
         requestedCalibrationVowels_.Clear();
     }
 }

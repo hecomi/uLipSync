@@ -34,7 +34,6 @@ public class ProfileEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.minVolume));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.maxVolume));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxError));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
             profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
             profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
@@ -48,11 +47,11 @@ public class ProfileEditor : Editor
         {
             ++EditorGUI.indentLevel;
             CalcMinMax();
-            DrawMFCC(profile.a, "A");
-            DrawMFCC(profile.i, "I");
-            DrawMFCC(profile.u, "U");
-            DrawMFCC(profile.e, "E");
-            DrawMFCC(profile.o, "O");
+            for (int i = 0; i < profile.mfccs.Count; ++i)
+            {
+                DrawMFCC(i);
+            }
+            DrawAddMFCC();
             --EditorGUI.indentLevel;
         }
 
@@ -63,11 +62,11 @@ public class ProfileEditor : Editor
     {
         max = float.MinValue;
         min = float.MaxValue;
-        foreach (var data in new MfccData[] { profile.a, profile.i, profile.u, profile.e, profile.o })
+        foreach (var data in profile.mfccs)
         {
-            for (int j = 0; j < data.mfccList.Count; ++j)
+            for (int j = 0; j < data.mfccCalibrationDataList.Count; ++j)
             {
-                var array = data.mfccList[j].array;
+                var array = data.mfccCalibrationDataList[j].array;
                 for (int i = 0; i < array.Length; ++i)
                 {
                     var x = array[i];
@@ -78,18 +77,67 @@ public class ProfileEditor : Editor
         }
     }
 
-    void DrawMFCC(MfccData data, string name)
+    void DrawMFCC(int index)
     {
-        if (!EditorUtil.SimpleFoldout(name, true)) return;
+        var data = profile.mfccs[index];
+        
+        if (!EditorUtil.SimpleFoldout(data.name, true)) return;
 
         ++EditorGUI.indentLevel;
 
-        foreach (var mfcc in data.mfccList)
+        data.name = EditorGUILayout.TextField("Phenome", data.name);
+        EditorGUILayout.Separator();
+
+        foreach (var mfcc in data.mfccCalibrationDataList)
         {
             EditorUtil.DrawMfcc(mfcc.array, max, min, 2f);
         }
 
+        EditorGUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
+        {
+            profile.RemoveMfcc(index);
+        }
+        if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
+        {
+            if (index >= 1)
+            {
+                var tmp = profile.mfccs[index];
+                profile.mfccs[index] = profile.mfccs[index - 1];
+                profile.mfccs[index - 1] = tmp;
+            }
+        }
+        if (GUILayout.Button(" ▼ ", EditorStyles.miniButtonRight))
+        {
+            if (index < profile.mfccs.Count - 1)
+            {
+                var tmp = profile.mfccs[index];
+                profile.mfccs[index] = profile.mfccs[index + 1];
+                profile.mfccs[index + 1] = tmp;
+            }
+        }
+
+        EditorGUILayout.EndHorizontal();
+
         --EditorGUI.indentLevel;
+    }
+
+    void DrawAddMFCC()
+    {
+        EditorGUILayout.Separator();
+
+        EditorGUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("  Add Phenome  "))
+        {
+            profile.AddMfcc("New Data");
+        }
+
+        EditorGUILayout.EndHorizontal();
     }
 
     void DrawImportExport()

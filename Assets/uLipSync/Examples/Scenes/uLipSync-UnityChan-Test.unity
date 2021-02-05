@@ -457,19 +457,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 187725991}
-  blendShapeList:
-  - index: 6
-    factor: 1
-  - index: 7
-    factor: 1
-  - index: 8
-    factor: 1
-  - index: 9
-    factor: 1
-  - index: 10
-    factor: 1
-  - index: -1
-    factor: 1
+  blendShapes:
+  - phenome: A
+    index: 6
+    maxWeight: 1
+  - phenome: I
+    index: 7
+    maxWeight: 1
+  - phenome: U
+    index: 8
+    maxWeight: 1
+  - phenome: E
+    index: 9
+    maxWeight: 1
+  - phenome: O
+    index: 10
+    maxWeight: 1
+  - phenome: S
+    index: 8
+    maxWeight: 1
+  - phenome: Breath1
+    index: -1
+    maxWeight: 1
+  - phenome: N
+    index: 8
+    maxWeight: 1
+  - phenome: Breath2
+    index: -1
+    maxWeight: 1
+  applyVolume: 0
+  openDuration: 0.05
+  closeDuration: 0.1
+  vowelChangeDuration: 0.05
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -483,7 +502,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 0beeb56a431ea1646bb55ff6c6fc5a62, type: 2}
-  calibration: 1
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -511,6 +529,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  outputSoundGain: 1
 --- !u!114 &496503022
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,16 +3,6 @@
 namespace uLipSync
 {
 
-public enum Vowel
-{
-    A = 0,
-    I,
-    U,
-    E,
-    O,
-    None,
-}
-
 public static class Common
 {
     public const string assetName = "uLipSync";
@@ -20,7 +10,8 @@ public static class Common
 
 public struct LipSyncInfo
 {
-    public Vowel vowel;
+    public int index;
+    public string phenome;
     public float volume;
     public float rawVolume;
     public float distance;

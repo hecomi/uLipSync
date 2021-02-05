@@ -17,11 +17,11 @@ public class CalibrationByKeyboardInput : MonoBehaviour
     {
         if (!lipSync) return;
 
-        if (Input.GetKey(KeyCode.A)) lipSync.RequestCalibration(Vowel.A);
-        if (Input.GetKey(KeyCode.I)) lipSync.RequestCalibration(Vowel.I);
-        if (Input.GetKey(KeyCode.U)) lipSync.RequestCalibration(Vowel.U);
-        if (Input.GetKey(KeyCode.E)) lipSync.RequestCalibration(Vowel.E);
-        if (Input.GetKey(KeyCode.O)) lipSync.RequestCalibration(Vowel.O);
+        for (int i = 0; i < lipSync.profile.mfccs.Count; ++i)
+        {
+            var key = (KeyCode)((int)(KeyCode.Alpha1) + i);
+            if (Input.GetKey(key)) lipSync.RequestCalibration(i);
+        }
     }
 }
 

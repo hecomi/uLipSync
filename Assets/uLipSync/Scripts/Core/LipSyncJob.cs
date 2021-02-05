@@ -11,7 +11,7 @@ public struct LipSyncJob : IJob
 {
     public struct Result
     {
-        public Vowel vowel;
+        public int index;
         public float volume;
         public float distance;
     }
@@ -23,11 +23,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int melFilterBankChannels;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
-    public NativeArray<float> a;
-    public NativeArray<float> i;
-    public NativeArray<float> u;
-    public NativeArray<float> e;
-    public NativeArray<float> o;
+    public NativeArray<float> phenomes;
     public NativeArray<Result> result;
 
     public void Execute()
@@ -36,7 +32,7 @@ public struct LipSyncJob : IJob
         if (volume < volumeThresh)
         {
             var res1 = result[0];
-            res1.vowel = Vowel.None;
+            res1.index = -1;
             res1.volume = volume;
             res1.distance = float.MaxValue;
             result[0] = res1;
@@ -89,7 +85,7 @@ public struct LipSyncJob : IJob
         // Result
         var res = new Result();
         res.volume = volume;
-        GetVowel(ref res.vowel, ref res.distance);
+        GetVowel(ref res.index, ref res.distance);
         result[0] = res;
 
         melCepstrum.Dispose();
@@ -99,43 +95,30 @@ public struct LipSyncJob : IJob
         buffer.Dispose();
     }
 
-    void GetVowel(ref Vowel vowel, ref float minDistance)
+    void GetVowel(ref int index, ref float minDistance)
     {
         minDistance = float.MaxValue;
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        int n = phenomes.Length / 12;
+        for (int i = 0; i < n; ++i)
         {
-            var distance = CalcTotalDistance((Vowel)i);
+            var distance = CalcTotalDistance(i);
             if (distance < minDistance)
             {
-                vowel = (Vowel)i;
+                index = i;
                 minDistance = distance;
             }
         }
     }
 
-    float CalcTotalDistance(NativeArray<float> average)
+    float CalcTotalDistance(int index)
     {
-        if (average.Length != mfcc.Length) return float.MaxValue;
-
         var distance = 0f;
+        int offset = index * 12;
         for (int i = 0; i < mfcc.Length; ++i)
         {
-            distance += math.abs(mfcc[i] - average[i]);
+            distance += math.abs(mfcc[i] - phenomes[i + offset]);
         }
         return distance;
-    }
-
-    float CalcTotalDistance(Vowel vowel)
-    {
-        switch (vowel)
-        {
-            case Vowel.A: return CalcTotalDistance(a);
-            case Vowel.I: return CalcTotalDistance(i);
-            case Vowel.U: return CalcTotalDistance(u);
-            case Vowel.E: return CalcTotalDistance(e);
-            case Vowel.O: return CalcTotalDistance(o);
-            default: return -1f;
-        }
     }
 }
 

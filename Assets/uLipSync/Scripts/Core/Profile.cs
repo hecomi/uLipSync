@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Assertions;
 using Unity.Collections;
 using Unity.Burst;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace uLipSync
 {
 
 [System.Serializable]
-public struct Mfcc
+public struct MfccCalibrationData
 {
     public float[] array;
     public float this[int i] { get { return array[i]; } }
@@ -19,59 +18,73 @@ public struct Mfcc
 [System.Serializable]
 public class MfccData
 {
-    public List<Mfcc> mfccList = new List<Mfcc>();
-    public NativeArray<float> averages;
+    public string name;
+    public List<MfccCalibrationData> mfccCalibrationDataList = new List<MfccCalibrationData>();
+    public NativeArray<float> mfccNativeArray;
+
+    public MfccData(string name)
+    {
+        this.name = name;
+        Allocate();
+    }
 
     [BurstCompile]
     public void Allocate()
     {
-        averages = new NativeArray<float>(12, Allocator.Persistent);
+        if (!IsAllocated())
+        {
+            mfccNativeArray = new NativeArray<float>(12, Allocator.Persistent);
+        }
     }
 
     [BurstCompile]
     public void Deallocate()
     {
-        if (averages.IsCreated) 
+        if (IsAllocated())
         {
-            averages.Dispose();
+            mfccNativeArray.Dispose();
         }
     }
 
-    public void Add(float[] mfcc)
+    bool IsAllocated()
     {
-        mfccList.Add(new Mfcc() { array = mfcc });
+        return mfccNativeArray.IsCreated;
     }
 
-    public void RemoveOldData(int dataCount)
+    public void AddCalibrationData(float[] mfcc)
     {
-        while (mfccList.Count > dataCount) mfccList.RemoveAt(0);
+        if (mfcc.Length != 12)
+        {
+            Debug.LogError("The length of MFCC array should be 12.");
+            return;
+        }
+        mfccCalibrationDataList.Add(new MfccCalibrationData() { array = mfcc });
+    }
+
+    public void RemoveOldCalibrationData(int dataCount)
+    {
+        while (mfccCalibrationDataList.Count > dataCount) mfccCalibrationDataList.RemoveAt(0);
     }
 
     [BurstCompile]
-    public void Update()
+    public void UpdateNativeArray()
     {
-        if (mfccList.Count == 0) return;
-
-        for (int i = 0; i < averages.Length; ++i)
-        {
-            averages[i] = 0;
-        }
+        if (mfccCalibrationDataList.Count == 0) return;
 
         for (int i = 0; i < 12; ++i)
         {
-            averages[i] = 0f;
-            foreach (var mfcc in mfccList)
+            mfccNativeArray[i] = 0f;
+            foreach (var mfcc in mfccCalibrationDataList)
             {
-                Assert.AreEqual(mfcc.length, 12);
-                averages[i] += mfcc[i];
+                mfccNativeArray[i] += mfcc[i];
             }
-            averages[i] /= mfccList.Count;
+            mfccNativeArray[i] /= mfccCalibrationDataList.Count;
         }
     }
 
     public float GetAverage(int i)
     {
-        return averages[i];
+        return mfccNativeArray[i];
     }
 }
 
@@ -92,61 +105,68 @@ public class Profile : ScriptableObject
     [Range(-10f, 0f)] public float minVolume = -4f;
     [Tooltip("Max Volume (Log10)")]
     [Range(-10f, 0f)] public float maxVolume = -2f;
-    [Tooltip("Ignore the result if the current distance from the closest MFCC is larger than this value")]
-    [Range(0f, 50f)] public float maxError = 30f;
 
-    public MfccData a = new MfccData();
-    public MfccData i = new MfccData();
-    public MfccData u = new MfccData();
-    public MfccData e = new MfccData();
-    public MfccData o = new MfccData();
-
-    MfccData Get(Vowel vowel)
-    {
-        switch (vowel)
-        {
-            case Vowel.A: return a;
-            case Vowel.I: return i;
-            case Vowel.U: return u;
-            case Vowel.E: return e;
-            case Vowel.O: return o;
-            default: return null;
-        }
-    }
+    public List<MfccData> mfccs = new List<MfccData>();
 
     void OnEnable()
     {
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        foreach (var data in mfccs)
         {
-            var data = Get((Vowel)i);
             data.Allocate();
-            data.RemoveOldData(mfccDataCount);
-            data.Update();
+            data.RemoveOldCalibrationData(mfccDataCount);
+            data.UpdateNativeArray();
         }
     }
 
     void OnDisable()
     {
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        foreach (var data in mfccs)
         {
-            Get((Vowel)i).Deallocate();
+            data.Deallocate();
         }
     }
 
+    public string GetPhenome(int index)
+    {
+        if (index < 0 || index >= mfccs.Count) return "";
+        
+        return mfccs[index].name;
+    }
+
+    public void AddMfcc(string name)
+    {
+        var data = new MfccData(name);
+        for (int i = 0; i < mfccDataCount; ++i)
+        {
+            data.AddCalibrationData(new float[12]);
+        }
+        mfccs.Add(data);
+    }
+
+    public void RemoveMfcc(int index)
+    {
+        if (index < 0 || index >= mfccs.Count) return;
+        var data = mfccs[index];
+        data.Deallocate();
+        mfccs.RemoveAt(index);
+    }
+
     [BurstCompile]
-    public void Add(Vowel vowel, NativeArray<float> mfcc, bool calib)
+    public void UpdateMfcc(int index, NativeArray<float> mfcc, bool calib)
     {
         var array = new float[mfcc.Length];
         mfcc.CopyTo(array);
-        var data = Get(vowel);
-        data.Add(array);
-        data.RemoveOldData(mfccDataCount);
-        if (calib) data.Update();
+
+        var data = mfccs[index];
+        data.AddCalibrationData(array);
+        data.RemoveOldCalibrationData(mfccDataCount);
+
+        if (calib) data.UpdateNativeArray();
     }
 
-    public NativeArray<float> GetAverages(Vowel vowel)
+    public NativeArray<float> GetAverages(int index)
     {
-        return Get(vowel).averages;
+        return mfccs[index].mfccNativeArray;
     }
 
     public void Export(string path)
