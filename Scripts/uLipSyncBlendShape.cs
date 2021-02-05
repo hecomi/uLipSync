@@ -4,49 +4,49 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-[System.Serializable]
-public class BlendShapeInfo
-{
-    public int index = -1;
-    public float factor = 1f;
-    public float blend { get; set; } = 0f;
-    public float normalizedBlend { get; set; } = 0f;
-}
-
 public class uLipSyncBlendShape : MonoBehaviour
 {
-    public SkinnedMeshRenderer skinnedMeshRenderer;
-    public List<BlendShapeInfo> blendShapeList = new List<BlendShapeInfo>()
+    [System.Serializable]
+    public class BlendShapeInfo
     {
-        new BlendShapeInfo(),
-        new BlendShapeInfo(),
-        new BlendShapeInfo(),
-        new BlendShapeInfo(),
-        new BlendShapeInfo(),
-    };
-    [Range(0f, 0.1f)] public float openDuration = 0.05f;
-    [Range(0f, 0.1f)] public float closeDuration = 0.1f;
-    [Range(0f, 0.1f)] public float vowelChangeDuration = 0.04f;
+        public string phenome;
+        public int index = -1;
+        public float maxWeight = 1f;
+        public float vowelChangeVelocity { get; set; } = 0f;
+        public float weight { get; set; } = 0f;
+        public float normalizedWeight { get; set; } = 0f;
+    }
+
+    public SkinnedMeshRenderer skinnedMeshRenderer;
+    public List<BlendShapeInfo> blendShapes = new List<BlendShapeInfo>();
+    public bool applyVolume = false;
+    [Range(0f, 0.2f)] public float openDuration = 0.05f;
+    [Range(0f, 0.2f)] public float closeDuration = 0.1f;
+    [Range(0f, 0.2f)] public float vowelChangeDuration = 0.04f;
 
     float openVelocity_ = 0f;
     float closeVelocity_ = 0f;
-    float vowelChangeVelocity_ = 0f;
+    List<float> vowelChangeVelocity_ = new List<float>();
 
-    Vowel vowel = Vowel.A;
+    string phenome = "";
     float volume = 0f;
     bool lipSyncUpdated = false;
 
     public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
-        vowel = lipSync.vowel;
-        if (lipSync.volume > volume)
+        phenome = lipSync.phenome;
+
+        if (lipSync.volume > Mathf.Epsilon)
         {
-            volume = Mathf.SmoothDamp(volume, lipSync.volume, ref openVelocity_, openDuration);
+            var targetVolume = applyVolume ? lipSync.volume : 1f;
+            volume = Mathf.SmoothDamp(volume, targetVolume, ref openVelocity_, openDuration);
         }
         else
         {
-            volume = Mathf.SmoothDamp(volume, lipSync.volume, ref closeVelocity_, closeDuration);
+            var targetVolume = applyVolume ? lipSync.volume : 0f;
+            volume = Mathf.SmoothDamp(volume, targetVolume, ref closeVelocity_, closeDuration);
         }
+
         lipSyncUpdated = true;
     }
 
@@ -54,20 +54,18 @@ public class uLipSyncBlendShape : MonoBehaviour
     {
         float sum = 0f;
 
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        foreach (var bs in blendShapes)
         {
-            var vowel = (Vowel)i;
-            var info = blendShapeList[i];
-            bool isTargetVowel = vowel == this.vowel;
-            float blend = isTargetVowel ? 1f : 0f;
-            info.blend = Mathf.SmoothDamp(info.blend, blend, ref vowelChangeVelocity_, vowelChangeDuration);
-            sum += info.blend;
+            float targetWeight = (bs.phenome == phenome) ? 1f : 0f;
+            float vowelChangeVelocity = bs.vowelChangeVelocity;
+            bs.weight = Mathf.SmoothDamp(bs.weight, targetWeight, ref vowelChangeVelocity, vowelChangeDuration);
+            bs.vowelChangeVelocity = vowelChangeVelocity;
+            sum += bs.weight;
         }
 
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O; ++i)
+        foreach (var bs in blendShapes)
         {
-            var info = blendShapeList[i];
-            info.normalizedBlend = info.blend / sum;
+            bs.normalizedWeight = sum > 0f ? bs.weight / sum : 0f;
         }
     }
 
@@ -75,20 +73,39 @@ public class uLipSyncBlendShape : MonoBehaviour
     {
         if (!skinnedMeshRenderer) return;
 
-        foreach (var info in blendShapeList)
+        foreach (var bs in blendShapes)
         {
-            if (info.index < 0) continue;
-
-            float blend = info.normalizedBlend * info.factor * volume * 100;
-            skinnedMeshRenderer.SetBlendShapeWeight(info.index, blend);
+            if (bs.index < 0) continue;
+            skinnedMeshRenderer.SetBlendShapeWeight(bs.index, 0f);
         }
 
-        if (!lipSyncUpdated)
+        foreach (var bs in blendShapes)
+        {
+            if (bs.index < 0) continue;
+
+            float weight = skinnedMeshRenderer.GetBlendShapeWeight(bs.index);
+            weight += bs.normalizedWeight * bs.maxWeight * volume * 100;
+            skinnedMeshRenderer.SetBlendShapeWeight(bs.index, weight);
+        }
+
+        if (lipSyncUpdated)
+        {
+            lipSyncUpdated = false;
+        }
+        else
         {
             volume = Mathf.SmoothDamp(volume, 0f, ref closeVelocity_, closeDuration);
         }
-        lipSyncUpdated = false;
     }
+
+#if UNITY_EDITOR
+    public void AddBlendShapeInfo()
+    {
+        var info = new BlendShapeInfo();
+        info.phenome = "Phenome";
+        blendShapes.Add(info);
+    }
+#endif
 }
 
 }

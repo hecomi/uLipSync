@@ -10,7 +10,10 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
     {
         if (info.volume > threshVolume && outputLog) 
         {
-            Debug.LogFormat($"VOWEL: {info.vowel}, VOL: {info.volume}, DIST: {info.distance} ");
+            Debug.LogFormat(
+                $"PHENOME: {info.phenome}, " +
+                $"VOL: {info.volume}, " +
+                $"DIST: {info.distance} ");
         }
     }
 }

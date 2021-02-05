@@ -15,9 +15,29 @@ public class uLipSyncBlendShapeEditor : Editor
     {
         serializedObject.Update();
 
-        DrawSkinnedMeshRenderer();
-        DrawBlendShapes();
-        DrawParameters();
+        if (EditorUtil.Foldout("Skinned Mesh Renderer", true))
+        {
+            ++EditorGUI.indentLevel;
+            DrawSkinnedMeshRenderer();
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.Foldout("Blend Shapes", true))
+        {
+            ++EditorGUI.indentLevel;
+            DrawBlendShapes();
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.Foldout("Parameters", true))
+        {
+            ++EditorGUI.indentLevel;
+            DrawParameters();
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -56,31 +76,47 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawBlendShapes()
     {
-        for (int i = (int)Vowel.A; i <= (int)Vowel.O && i < blendShape.blendShapeList.Count; ++i)
+        foreach (var info in blendShape.blendShapes)
         {
-            var info = blendShape.blendShapeList[i];
-            DrawBlendShape((Vowel)i, info);
+            DrawBlendShape(info);
         }
+
+        EditorGUILayout.Separator();
+
+        DrawAddBlendShapeButtons();
     }
 
-    void DrawBlendShape(Vowel vowel, BlendShapeInfo info)
+    void DrawAddBlendShapeButtons()
     {
         EditorGUILayout.BeginHorizontal();
 
-        EditorGUILayout.PrefixLabel(vowel.ToString());
-        DrawBlendShapePopup(info);
-        DrawFactor(info);
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button(" Add New BlendShape "))
+        {
+            blendShape.AddBlendShapeInfo();
+        }
 
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawBlendShapePopup(BlendShapeInfo info)
+    void DrawBlendShape(uLipSyncBlendShape.BlendShapeInfo bs)
     {
-        var newIndex = EditorGUILayout.Popup(info.index + 1, GetBlendShapeArray(), GUILayout.MinWidth(200f));
-        if (newIndex != info.index + 1)
+        EditorGUILayout.BeginHorizontal();
+
+        bs.phenome = EditorGUILayout.TextField(bs.phenome, GUILayout.Width(64));
+        DrawBlendShapePopup(bs);
+        DrawFactor(bs);
+
+        EditorGUILayout.EndHorizontal();
+    }
+
+    void DrawBlendShapePopup(uLipSyncBlendShape.BlendShapeInfo bs)
+    {
+        var newIndex = EditorGUILayout.Popup(bs.index + 1, GetBlendShapeArray(), GUILayout.MinWidth(200f));
+        if (newIndex != bs.index + 1)
         {
             Undo.RecordObject(target, "Change Blend Shape");
-            info.index = newIndex - 1;
+            bs.index = newIndex - 1;
         }
     }
 
@@ -102,18 +138,19 @@ public class uLipSyncBlendShapeEditor : Editor
         return names.ToArray();
     }
 
-    void DrawFactor(BlendShapeInfo info)
+    void DrawFactor(uLipSyncBlendShape.BlendShapeInfo bs)
     {
-        float factor = EditorGUILayout.Slider(info.factor, 0f, 2f);
-        if (factor != info.factor)
+        float factor = EditorGUILayout.Slider(bs.maxWeight, 0f, 2f);
+        if (factor != bs.maxWeight)
         {
             Undo.RecordObject(target, "Change Blend Factor");
-            info.factor = factor;
+            bs.maxWeight = factor;
         }
     }
 
     void DrawParameters()
     {
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.applyVolume));
         EditorUtil.DrawProperty(serializedObject, nameof(blendShape.openDuration));
         EditorUtil.DrawProperty(serializedObject, nameof(blendShape.closeDuration));
         EditorUtil.DrawProperty(serializedObject, nameof(blendShape.vowelChangeDuration));
