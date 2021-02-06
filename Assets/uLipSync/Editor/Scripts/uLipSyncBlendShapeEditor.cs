@@ -76,9 +76,9 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawBlendShapes()
     {
-        foreach (var info in blendShape.blendShapes)
+        for (int i = 0; i < blendShape.blendShapes.Count; ++i)
         {
-            DrawBlendShape(info);
+            DrawBlendShape(i);
         }
 
         EditorGUILayout.Separator();
@@ -99,20 +99,26 @@ public class uLipSyncBlendShapeEditor : Editor
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawBlendShape(uLipSyncBlendShape.BlendShapeInfo bs)
+    void DrawBlendShape(int index)
     {
-        EditorGUILayout.BeginHorizontal();
+        var bs = blendShape.blendShapes[index];
 
-        bs.phenome = EditorGUILayout.TextField(bs.phenome, GUILayout.Width(64));
-        DrawBlendShapePopup(bs);
-        DrawFactor(bs);
+        if (EditorUtil.SimpleFoldout(bs.phenome, true, "-BlendShape"))
+        {
+            ++EditorGUI.indentLevel;
 
-        EditorGUILayout.EndHorizontal();
+            bs.phenome = EditorGUILayout.TextField("Phenome", bs.phenome);
+            DrawBlendShapePopup(bs);
+            DrawFactor(bs);
+            DrawRemoveUpDown(index);
+
+            --EditorGUI.indentLevel;
+        }
     }
 
     void DrawBlendShapePopup(uLipSyncBlendShape.BlendShapeInfo bs)
     {
-        var newIndex = EditorGUILayout.Popup(bs.index + 1, GetBlendShapeArray(), GUILayout.MinWidth(200f));
+        var newIndex = EditorGUILayout.Popup("BlendShape", bs.index + 1, GetBlendShapeArray());
         if (newIndex != bs.index + 1)
         {
             Undo.RecordObject(target, "Change Blend Shape");
@@ -140,12 +146,47 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawFactor(uLipSyncBlendShape.BlendShapeInfo bs)
     {
-        float factor = EditorGUILayout.Slider(bs.maxWeight, 0f, 2f);
-        if (factor != bs.maxWeight)
+        float weight = EditorGUILayout.Slider("Max Weight", bs.maxWeight, 0f, 2f);
+        if (weight != bs.maxWeight)
         {
-            Undo.RecordObject(target, "Change Blend Factor");
-            bs.maxWeight = factor;
+            Undo.RecordObject(target, "Change Max Weight");
+            bs.maxWeight = weight;
         }
+    }
+
+    void DrawRemoveUpDown(int index)
+    {
+        EditorGUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
+        {
+            blendShape.RemoveBlendShape(index);
+        }
+
+        var blendShapes = blendShape.blendShapes;
+
+        if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
+        {
+            if (index >= 1)
+            {
+                var tmp = blendShapes[index];
+                blendShapes[index] = blendShapes[index - 1];
+                blendShapes[index - 1] = tmp;
+            }
+        }
+        if (GUILayout.Button(" ▼ ", EditorStyles.miniButtonRight))
+        {
+            if (index < blendShapes.Count - 1)
+            {
+                var tmp = blendShapes[index];
+                blendShapes[index] = blendShapes[index + 1];
+                blendShapes[index + 1] = tmp;
+            }
+        }
+
+        EditorGUILayout.EndHorizontal();
     }
 
     void DrawParameters()

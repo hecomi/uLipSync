@@ -67,9 +67,9 @@ public static class EditorUtil
         return display;
     }
 
-    public static bool SimpleFoldout(string title, bool initialState)
+    public static bool SimpleFoldout(string title, bool initialState, string additionalKey = "")
     {
-        var key = GetFoldOutKey(title);
+        var key = GetFoldOutKey(title + additionalKey);
         bool display = EditorPrefs.GetBool(key, initialState);
         bool newDisplay = EditorGUILayout.Foldout(display, title, EditorStyles.foldoutHeader);
         if (newDisplay != display) EditorPrefs.SetBool(key, newDisplay);
