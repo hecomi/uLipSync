@@ -3,17 +3,19 @@ using uLipSync;
 
 public class DebugPrintLipSyncInfo : MonoBehaviour
 {
-    public float threshVolume = 1e-5f;
-    public bool outputLog = true;
+    void Start()
+    {
+    }
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
-        if (info.volume > threshVolume && outputLog) 
-        {
-            Debug.LogFormat(
-                $"PHENOME: {info.phenome}, " +
-                $"VOL: {info.volume}, " +
-                $"DIST: {info.distance} ");
-        }
+        if (!isActiveAndEnabled) return;
+
+        if (info.volume < Mathf.Epsilon) return;
+
+        Debug.LogFormat(
+            $"PHENOME: {info.phenome}, " +
+            $"VOL: {info.volume}, " +
+            $"DIST: {info.distance} ");
     }
 }

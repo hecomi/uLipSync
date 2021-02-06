@@ -105,6 +105,12 @@ public class uLipSyncBlendShape : MonoBehaviour
         info.phenome = "Phenome";
         blendShapes.Add(info);
     }
+
+    public void RemoveBlendShape(int index)
+    {
+        if (index < 0 || index >= blendShapes.Count) return;
+        blendShapes.RemoveAt(index);
+    }
 #endif
 }
 
