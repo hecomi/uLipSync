@@ -1,10 +1,10 @@
 uLipSync
 ========
 
-**uLipSync** is an Unity asset to do a realtime lipsync (now supports only **A**, **I**, **U**, **E**, and **O**).
+**uLipSync** is an Unity asset to do a realtime lipsync.
 
 - Fast calculation using Job and Burst compiler
-- No native plugin / No dependency
+- No native plugin / No dependency (only official packages)
 
 
 Demo
@@ -23,204 +23,197 @@ Environment
 
 Get started
 -----------
-1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it into your project.
+1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it to your project.
+
 2. Attach `uLipSync` component to the GameObject that has `AudioSource` and plays voice sounds.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-Default-UI.png" width="640" />
 
-3. Attach `uLipSyncBlendshape` component to the GameObject of your character.
-4. Set parameters of the component. Checking `Find From Children` helps you find the target `SkinnedMeshRenderer` and blendshapes of the character's mouth.
+3. Select the Profile (how to create and calibrate a Profile is described later).
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-BlendShape.png" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-UI.png" width="640" />
 
-5. Register `uLipSyncBlendshape.OnLipSyncUpdate` to `uLipSync` in Callback section.
+4. Attach `uLipSyncBlendshape` component to the GameObject of your character and select target `SkinnedMeshRenderer`.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Register-Callback.png" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-BlendShape-Default-UI.png" width="640" />
 
-6. Choose a profile from `Man` or `Woman` in LipSync Profile section.
+5. Click on the "Add New BlendShape" button to link the Phoneme and BlendShape corresponding to the recognition result.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Profiles.png" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-BlendShape-UI.png" width="640" />
 
-7. Play!
+6. Register `uLipSyncBlendshape.OnLipSyncUpdate` to `uLipSync` in Callback section.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Register-Callback.png" width="640" />
+
+7. If you want to use mic input, please attach `uLipSyncMicrophone`.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Microphone-UI.png" width="640" />
+
+8. Play!
 
 
 Copmonents
 ----------
 ### `uLipSync`
-This is a core component to calculate lipsync. `uLipSync` gets sound buffers from `MonoBehaviour.OnAudioFilterRead()` so you have to attach this component to the same GameObject that has `AudioSource` to play voice. In `LateUpdate()` phase, this component schedules a job to calculate lipsync parameters, then retrives the result in the future `LateUpdate()` timing when the calculation finishes (typically, the calculation is ~1ms so next frame). All calculation is optimized by Burst compiler.
+This is the core component for calculating lip-sync. uLipSync` gets the audio buffer from `MonoBehaviour.OnAudioFilterRead()`, so it needs to be attached to the same GameObject that plays the audio in `AudioSource`. This computation is done in a background thread and is optimized by JobSystem and Burst Compiler.
 
 ### `uLipSyncBlendShape`
-Update BlendShapes of `SkinnedMeshRenderer` by registering `OnLipSyncUpdate()` to the event handler of `uLipSync` components as described in the above section.
+This component is used to control the blendshape of the `SkinndeMeshRenderer`. By registering a blendshape that corresponds to the Phoneme registered in the `uLipSync` profile, the results of speech analysis will be reflected in the shape of the mouth.
 
 ### `uLipSyncMicrophone`
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-Microphone.png" width="640" />
-
-Create `AudioClip` that plays Mic input and set it to `AudioSource`. Please attach this component to the same GameObject that has `uLipSync`. You can start / stop the recording from the Script by calling `StartRecord()` / `StopRecord()`. And you can change the input source by changing `index`. `uLipSync.MicUtil.GetDeviceList()` helps you find the desired input.
-
-
-Parameters
-----------
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Section-Parameters.png" width="640" />
-
-- **Volume**
-  - **Normalized Volume**
-    - Shows the normalized volume calculated using Min Volume and Max Volume
-  - **Min Volume**
-    - Ignore sounds whose volume is lower than this threshold
-  - **Max Volume**
-    - Make blendshape value 100 with this threshold (If Auto Volume is checked, this parameter is hidden)
-  - **Auto Volume**
-    - Calculate Max volume automatically from recent inputs
-  - **Auto Volume Amp**
-    - Max Volume = current input volume * amp
-  - **Auto Volume Filter**
-    - Decrease max volume by this filter every frame (MaxVolume *= filter)
-- **Smoothness**
-  - **Open Smoothness**
-    - Speed to open mouth (instant 0.0 <-> 1.0 smooth)
-  - **Close Smoothness**
-    - Speed to close mouth (instant 0.0 <-> 1.0 smooth)
-  - **Vowel Transition Smoothness**
-    - Speed to change the shape of mouth (instant 0.0 <-> 1.0 smooth)
-- **Output**
-  - **Output Sound Gain**
-    - Change the volume of output sound
-    - If you use `uLipSync` with microphone and don't want to output microphone sound in Unity, please set the gain zero.
-
+Create an `AudioClip` to play the microphone input and set it to `AudioSource`. Attach this component to a GameObject that has `uLipSync`. You can start/stop recording by calling `StartRecord()` / `StopRecord()` from the script. You can also change the input source by changing the `index`. To find the input you want to use, you can use `uLipSync.MicUtil.GetDeviceList()`.
 
 Profile
 -------
 
-uLipSync detects frequencies of the 1st and the 2nd formants from short sound inputs and guesses the vowel from them.
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Profile-UI.png" width="640" />
 
-- https://en.wikipedia.org/wiki/Formant
+`uLipSync` extracts voice features called MFCCs from the currently playing sound in real time. This is one of the features that were used for speech recognition before the advent of deep learning. The `uLipSync` estimates which MFCCs of each phoneme the currently playing sound is close to, and issues a callback with the relevant information. The `uLipSyncBlendShape` uses the callback to smoothly move the blendshape of the `SkinnedMeshRenderer`.
 
-The preset `Man` and `Woman` profiles have typical frequencies of all vowels for men and women. But these frequencies depend on person, so you can create your profiles by cliking `Create` button if you want to optimize the lipsync for the voice you use.
+An asset called `Profile` is used to register this MFCC and related calculation parameters.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Asset-Profile.png" width="640" />
-
-- **Formant**
-  - **F1**
-    - the frequency of the 1st formant (Hz)
-  - **F2**
-    - the frequency of the 2nd formant (Hz)
-- **Tips**
-  - Typical frequencies are written here
-- **Visualizer**
-  - X-axis is the 1st formant, and Y-axis is the 2nd formant
-  - Please check each formant is not so close
-- **Settings**
-  - **Use Error Range**
-    - If you want to remove the result outer the range in the graph, please check this
-  - **Max Error Range**
-    - Maximum range from formants (= Radius in the graph)
-  - **Min Log 10H**
-    - Do not use the formant if the spectrum value is lower than this threshold
+- **MFCC**
+  - Press `Add Phoneme` to register a new phoneme. By registering the name of the phoneme (e.g. A, I, E, O, U) and the corresponding MFCC according to the calibration method described below, you can estimate the phoneme.
+- **Parameters**
+  - **Mfcc Data Count**
+    - The number of MFCC data to be registered.
+  - **Mel Filter Bank Channels**
+    - The number of Mel Filter Bank channels needed in the process of calculating MFCCs.
+  - **Target Sample Rate**
+    - The frequency at which the input data is downsampled to lighten the calculation. For example, by default, 48000 Hz data is input to `OnAudioFilterRead()`, but by default it is downsampled by 1/3 to 16000 Hz.
+  - **Sample Count**
+    - The number of buffers of sound needed for MFCC calculations. The default is 1024 samples at 16000 Hz, so about 0.064 seconds (~4 frames) of data is used (the calculation itself is done every frame, overlapping).
+  - **Min Volume**
+    - This is the minimum value of the input volume (Log10 applied, 0.001 would be -3).
+  - **Max Volume**
+    - The maximum value of the input volume. The normalized volume in combination with `Min Volume` will be output as the volume for the callback (`OnLipSyncUpdate()`).
+- **Import / Export JSON**
+  - You can output `Profile` to JSON and vice versa, or import it. See below for details.
 
 
 Callback
 --------
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Section-Callback.png" width="640" />
+The registered callback will be issued at the time of `Update()` after the lip-sync calculation is finished. The `LipSyncInfo` structure passed as an argument looks like the following.
 
-When lipsync process finishes, the result is notified by this event. The event handler should have a `LipSyncInfo` argument like this:
+```cs
+public struct LipSyncInfo
+{
+    public int index;
+    public string phenome;
+    public float volume;
+    public float rawVolume;
+    public float distance;
+}
+```
 
-```c
+- `index`
+  - Index of the recognized MFCC
+- `phenome`
+  - Phoneme of the recognized MFCC (registered string)
+- `volume`
+  - The volume normalized by `Min Volume` and `Max Volume`
+- `rawVolume`
+  - Volume before normalization
+- `distance`
+  - Error between the current input and the registered MFCC (the larger the error, the lower the confidence)
+
+An example code is as follows:
+
+```cs
 using UnityEngine;
 using uLipSync;
 
 public class DebugPrintLipSyncInfo : MonoBehaviour
 {
-    public float threshVolume = 0.01f;
-    public bool outputLog = true;
-
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
-        if (info.volume > threshVolume && outputLog)
-        {
-            Debug.LogFormat("MAIN VOWEL: {0}, [ A:{1} I:{2}, U:{3} E:{4} O:{5} N:{6} ], VOL: {7}, FORMANT: {8}, {9}",
-                info.mainVowel,
-                info.volume,
-                info.vowels[Vowel.A],
-                info.vowels[Vowel.I],
-                info.vowels[Vowel.U],
-                info.vowels[Vowel.E],
-                info.vowels[Vowel.O],
-                info.vowels[Vowel.None],
-                info.formant.f1,
-                info.formant.f2);
-        }
+        Debug.LogFormat(
+            $"PHENOME: {info.phenome}, " +
+            $"VOL: {info.volume}, " +
+            $"DIST: {info.distance} ");
     }
 }
 ```
 
 
-Config
-------
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Section-Config.png" width="640" />
-
-The lipsync process calculates LPC spectral envelope, and parameters for the calculation is defined in this section. You can create your parameter set in the same way as `Profile`. I recommend you NOT to change the default settings if you don't know the details of the calculation.
-
-- **Config**
-  - **Default**
-    - A recommended setting
-  - **Calibration**
-    - Needs long time (~ 1 sec) but you can see formants more clearly so that you can check frequencies of formants.
-  - **Create**
-    - Create a new `Config` asset
-- **Sample Count**
-  - The number of sound data
-- **Lpc Order**
-  - LPC (Linear predictive coding) order
-- **Frequency Resolution**
-  - The division number of LPC spectral envelope (0 Hz ~ Max Frequency)
-- **Max Frequency**
-  - The maximum frequency to check formants (The highest formant is the 2nd one of vowel I, it's about 3000 Hz)
-- **Window Func**
-  - Window function to calculate the spectral envelope
-    - None: Not apply window
-    - Hann: Hanning window
-    - Blackman-Harris: Blackman-Harris window
-    - Gauss_4_5: Gauss window (sigma = 4.5)
-- **Check Second Derivative**
-  - To guess formants, the second derivative of the spectral envelope are considered. This is useful when the second formant of O is unclear, but sometimes has a bad influence on other vowels.
-- **Check Third Formant**
-  - Consider also the third formant to guess vowels. This is useful when an undesired peak appears but also has bad effect sometimes.
-- **Filter H**
-  - The spectral envelope changes slowly to avoid the noise. This is useful when you want to check formant peaks when adjusting formant values in profile.
-
-
-Visualizer
+Parameters
 ----------
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/visualizer.gif" width="640" />
+- **Output Sound Gain**
+  - Set it to 0 if you want lip-sync but don't want to output audio because if you set the volume of `AudioSource` to 0, the recognition itself will not be done.
 
-Visualizer is useful when you want to check whether the input sound is correctly analyzed with given profile.
 
-- **Draw On Every Frame**
-  - To update graphs in realtime, editor script needs to call `Repaint()` every frame. This causes performance issues in the game, so I recommend to check this only when you really want to see them in realtime.
-- **Formant Map**
-  - X-axis is the 1st formant frequency, and Y-axis is the 2nd formant one.
-  - In runtime, white circle indicates the latest result and the ellipse of the vowel gets brighter by it.
-- **LPC Spectral Envelope**
-  - Draws a graph of LPC spectral envelope and you can see some related information by selecting following checkboxes:
-  - **LPC**
-    - LPC spectral envelope
-  - **dLPC**
-    - The second derivative of the envelope
-  - **FFT**
-    - FFT result
-  - **Formant**
-    - Current
+Runtime Information
+-------------------
 
-UnityChan
----------
-Examples include Unity-chan assets (Release packages don't include them).
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Runtime-Information-UI.gif" width="640" />
 
-© Unity Technologies Japan/UCL
+- **Volume**
+  - **Current Volume**
+    - Current raw volume
+  - **Min Volume**
+    - Minimum volume entered since startup to date.
+  - **Max Volume**
+    - Maximum volume entered since startup.
+  - **Normalized Volume**
+    - Volume normalized by the `Min Volume` and `Max Volume` registered in `Profile`.
+- **MFCC**
+  - The MFCC for the current input, displayed in real time.
+
+Opening this FoldOut will affect the performance of the game as it will cause the editor to draw every frame.
+
+
+How to add phonemes / calibrate them
+------------------------------------
+
+### Using Microphone
+
+First, click the Create button under Profile to create a new profile. The created profile asset will be automatically registered to the profile of `uLipSync`.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile.gif" width="640" />
+
+Next, click the Add Phenome button to add a phoneme, such as A, I, E, O, U.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile-Phoneme.gif" width="640" />
+
+Then start the game, and hold down the Calib button in A when it is talking "aaaaaaa". Likewise, continue to speak "iiiiiii" and press and hold the Calib button in I. Calibrate all the phonemes like this to register the MFCCs.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Profile-Calibration.gif" width="640" />
+
+### Using AudioClip
+Please prepare an AudioClip that is compatible with each Phoneme. While one of them is playing, press the corresponding Calib button as described above to reflect the result of the sound analysis into the profile.
+
+
+### Script
+You can also send calibration requests from scripts by calling the `uLipSync.RequestCalibration(int index)`. The sample `CalibrationByKeyboardInput.cs` shows how to calibrate with numeric keys like this:
+
+```cs
+lipSync = GetComponent<uLipSync>();
+
+for (int i = 0; i < lipSync.profile.mfccs.Count; ++i)
+{
+    var key = (KeyCode)((int)(KeyCode.Alpha1) + i);
+    if (Input.GetKey(key)) lipSync.RequestCalibration(i);
+}
+```
+
+
+Import / Export Json
+--------------------
+
+Since Profile is a ScriptableObject, changes are not saved in a build. Instead, it is possible to export and import the profile in Json format. From the script, do the following:
+
+```cs
+var lipSync = GetComponent<uLipSync>();
+var profile = lipSync.profile;
+
+// Export
+profile.Export(path);
+
+// Import
+profile.Import(path);
+```
 
 
 License
