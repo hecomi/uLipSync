@@ -458,32 +458,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 187725991}
   blendShapes:
-  - phenome: A
+  - phoneme: A
     index: 6
     maxWeight: 1
-  - phenome: I
+  - phoneme: I
     index: 7
     maxWeight: 1
-  - phenome: U
+  - phoneme: U
     index: 8
     maxWeight: 1
-  - phenome: E
+  - phoneme: E
     index: 9
     maxWeight: 1
-  - phenome: O
+  - phoneme: O
     index: 10
-    maxWeight: 1
-  - phenome: S
-    index: 8
-    maxWeight: 1
-  - phenome: Breath1
-    index: -1
-    maxWeight: 1
-  - phenome: N
-    index: 8
-    maxWeight: 1
-  - phenome: Breath2
-    index: -1
     maxWeight: 1
   applyVolume: 0
   openDuration: 0.05
@@ -501,24 +489,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 0beeb56a431ea1646bb55ff6c6fc5a62, type: 2}
+  profile: {fileID: 0}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 496503020}
         m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync
-        m_MethodName: OnLipSyncUpdate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 496503023}
-        m_TargetAssemblyTypeName: DebugPrintLipSyncInfo, Assembly-CSharp
         m_MethodName: OnLipSyncUpdate
         m_Mode: 0
         m_Arguments:

@@ -119,6 +119,22 @@ public static class EditorUtil
             hue < 4f ? new Color(0f, x, 1f) :
             new Color(x * 0.5f, 0f, 0.5f);
     }
+
+    public static T CreateAssetInRoot<T>(string name) where T : ScriptableObject
+    {
+        var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{name}.asset");
+        var obj = ScriptableObject.CreateInstance<T>();
+        AssetDatabase.CreateAsset(obj, path);
+        return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
+
+    public static T FindAsset<T>(string name) where T : ScriptableObject
+    {
+        var path = AssetDatabase.FindAssets(name)
+            .Select(x => AssetDatabase.GUIDToAssetPath(x))
+            .FirstOrDefault();
+        return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
 }
 
 }

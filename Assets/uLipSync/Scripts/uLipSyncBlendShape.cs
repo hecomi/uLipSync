@@ -9,7 +9,7 @@ public class uLipSyncBlendShape : MonoBehaviour
     [System.Serializable]
     public class BlendShapeInfo
     {
-        public string phenome;
+        public string phoneme;
         public int index = -1;
         public float maxWeight = 1f;
         public float vowelChangeVelocity { get; set; } = 0f;
@@ -28,13 +28,13 @@ public class uLipSyncBlendShape : MonoBehaviour
     float closeVelocity_ = 0f;
     List<float> vowelChangeVelocity_ = new List<float>();
 
-    string phenome = "";
+    string phoneme = "";
     float volume = 0f;
     bool lipSyncUpdated = false;
 
     public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
-        phenome = lipSync.phenome;
+        phoneme = lipSync.phoneme;
 
         if (lipSync.volume > Mathf.Epsilon)
         {
@@ -56,7 +56,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 
         foreach (var bs in blendShapes)
         {
-            float targetWeight = (bs.phenome == phenome) ? 1f : 0f;
+            float targetWeight = (bs.phoneme == phoneme) ? 1f : 0f;
             float vowelChangeVelocity = bs.vowelChangeVelocity;
             bs.weight = Mathf.SmoothDamp(bs.weight, targetWeight, ref vowelChangeVelocity, vowelChangeDuration);
             bs.vowelChangeVelocity = vowelChangeVelocity;
@@ -102,7 +102,7 @@ public class uLipSyncBlendShape : MonoBehaviour
     public void AddBlendShapeInfo()
     {
         var info = new BlendShapeInfo();
-        info.phenome = "Phenome";
+        info.phoneme = "Phoneme";
         blendShapes.Add(info);
     }
 
