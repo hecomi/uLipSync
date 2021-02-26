@@ -22,7 +22,7 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> inputData_;
     NativeArray<float> mfcc_;
     NativeArray<float> mfccForOther_;
-    NativeArray<float> phenomes_;
+    NativeArray<float> phonemes_;
     NativeArray<LipSyncJob.Result> jobResult_;
     List<int> requestedCalibrationVowels_ = new List<int>();
 
@@ -55,7 +55,7 @@ public class uLipSync : MonoBehaviour
         UpdateResult();
         InvokeCallback();
         UpdateCalibration();
-        UpdatePhenomes();
+        UpdatePhonemes();
         ScheduleJob();
 
         UpdateBuffers();
@@ -71,7 +71,7 @@ public class uLipSync : MonoBehaviour
             mfcc_ = new NativeArray<float>(12, Allocator.Persistent); 
             jobResult_ = new NativeArray<LipSyncJob.Result>(1, Allocator.Persistent);
             mfccForOther_ = new NativeArray<float>(12, Allocator.Persistent); 
-            phenomes_ = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
+            phonemes_ = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
         }
     }
 
@@ -85,14 +85,14 @@ public class uLipSync : MonoBehaviour
             mfcc_.Dispose();
             mfccForOther_.Dispose();
             jobResult_.Dispose();
-            phenomes_.Dispose();
+            phonemes_.Dispose();
         }
     }
 
     void UpdateBuffers()
     {
         if (inputSampleCount != rawInputData_.Length ||
-            profile.mfccs.Count * 12 != phenomes_.Length)
+            profile.mfccs.Count * 12 != phonemes_.Length)
         {
             lock (lockObject_)
             {
@@ -108,7 +108,7 @@ public class uLipSync : MonoBehaviour
         mfccForOther_.CopyFrom(mfcc_);
 
         var index = jobResult_[0].index;
-        var phenome = profile.GetPhenome(index);
+        var phoneme = profile.GetPhoneme(index);
         float distance = jobResult_[0].distance;
         float vol = Mathf.Log10(jobResult_[0].volume);
         float minVol = profile.minVolume;
@@ -119,7 +119,7 @@ public class uLipSync : MonoBehaviour
         result = new LipSyncInfo()
         {
             index = index,
-            phenome = phenome,
+            phoneme = phoneme,
             volume = vol,
             rawVolume = jobResult_[0].volume,
             distance = distance,
@@ -133,15 +133,15 @@ public class uLipSync : MonoBehaviour
         onLipSyncUpdate.Invoke(result);
     }
 
-    void UpdatePhenomes()
+    void UpdatePhonemes()
     {
         int index = 0;
         foreach (var data in profile.mfccs)
         {
             foreach (var value in data.mfccNativeArray)
             {
-                if (index >= phenomes_.Length) break;
-                phenomes_[index++] = value;
+                if (index >= phonemes_.Length) break;
+                phonemes_[index++] = value;
             }
         }
     }
@@ -164,7 +164,7 @@ public class uLipSync : MonoBehaviour
             volumeThresh = Mathf.Pow(10f, profile.minVolume),
             melFilterBankChannels = profile.melFilterBankChannels,
             mfcc = mfcc_,
-            phenomes = phenomes_,
+            phonemes = phonemes_,
             result = jobResult_,
         };
 

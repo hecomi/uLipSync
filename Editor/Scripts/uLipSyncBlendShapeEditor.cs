@@ -103,11 +103,11 @@ public class uLipSyncBlendShapeEditor : Editor
     {
         var bs = blendShape.blendShapes[index];
 
-        if (EditorUtil.SimpleFoldout(bs.phenome, true, "-BlendShape"))
+        if (EditorUtil.SimpleFoldout(bs.phoneme, true, "-BlendShape"))
         {
             ++EditorGUI.indentLevel;
 
-            bs.phenome = EditorGUILayout.TextField("Phenome", bs.phenome);
+            bs.phoneme = EditorGUILayout.TextField("Phoneme", bs.phoneme);
             DrawBlendShapePopup(bs);
             DrawFactor(bs);
             DrawRemoveUpDown(index);

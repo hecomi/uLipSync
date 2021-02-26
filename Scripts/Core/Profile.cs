@@ -126,7 +126,7 @@ public class Profile : ScriptableObject
         }
     }
 
-    public string GetPhenome(int index)
+    public string GetPhoneme(int index)
     {
         if (index < 0 || index >= mfccs.Count) return "";
         
@@ -154,6 +154,8 @@ public class Profile : ScriptableObject
     [BurstCompile]
     public void UpdateMfcc(int index, NativeArray<float> mfcc, bool calib)
     {
+        if (index < 0 || index >= mfccs.Count) return;
+
         var array = new float[mfcc.Length];
         mfcc.CopyTo(array);
 

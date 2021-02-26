@@ -23,7 +23,7 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int melFilterBankChannels;
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
-    public NativeArray<float> phenomes;
+    public NativeArray<float> phonemes;
     public NativeArray<Result> result;
 
     public void Execute()
@@ -98,7 +98,7 @@ public struct LipSyncJob : IJob
     void GetVowel(ref int index, ref float minDistance)
     {
         minDistance = float.MaxValue;
-        int n = phenomes.Length / 12;
+        int n = phonemes.Length / 12;
         for (int i = 0; i < n; ++i)
         {
             var distance = CalcTotalDistance(i);
@@ -116,7 +116,7 @@ public struct LipSyncJob : IJob
         int offset = index * 12;
         for (int i = 0; i < mfcc.Length; ++i)
         {
-            distance += math.abs(mfcc[i] - phenomes[i + offset]);
+            distance += math.abs(mfcc[i] - phonemes[i + offset]);
         }
         return distance;
     }

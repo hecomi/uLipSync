@@ -11,18 +11,28 @@ public class ProfileEditor : Editor
     Profile profile { get { return target as Profile; } }
     public float min = 0f;
     public float max = 0f;
+    public uLipSync uLipSync { get; set; }
+    bool isCalibrating_ = false;
 
     public override void OnInspectorGUI()
     {
+        Draw(false);
+    }
+
+    public void Draw(bool showCalibration)
+    {
         serializedObject.Update();
 
-        if (EditorUtil.SimpleFoldout("Import / Export JSON", false))
+        if (EditorUtil.SimpleFoldout("MFCC", true))
         {
             ++EditorGUI.indentLevel;
-            DrawImportExport();
+            CalcMinMax();
+            for (int i = 0; i < profile.mfccs.Count; ++i)
+            {
+                DrawMFCC(i, showCalibration);
+            }
+            DrawAddMFCC();
             --EditorGUI.indentLevel;
-
-            EditorGUILayout.Separator();
         }
 
         if (EditorUtil.SimpleFoldout("Parameters", true))
@@ -43,16 +53,13 @@ public class ProfileEditor : Editor
             EditorGUILayout.Separator();
         }
 
-        if (EditorUtil.SimpleFoldout("MFCC", true))
+        if (EditorUtil.SimpleFoldout("Import / Export JSON", false))
         {
             ++EditorGUI.indentLevel;
-            CalcMinMax();
-            for (int i = 0; i < profile.mfccs.Count; ++i)
-            {
-                DrawMFCC(i);
-            }
-            DrawAddMFCC();
+            DrawImportExport();
             --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
         }
 
         serializedObject.ApplyModifiedProperties();
@@ -77,7 +84,7 @@ public class ProfileEditor : Editor
         }
     }
 
-    void DrawMFCC(int index)
+    void DrawMFCC(int index, bool showCalibration)
     {
         var data = profile.mfccs[index];
         
@@ -85,7 +92,7 @@ public class ProfileEditor : Editor
 
         ++EditorGUI.indentLevel;
 
-        data.name = EditorGUILayout.TextField("Phenome", data.name);
+        data.name = EditorGUILayout.TextField("Phoneme", data.name);
         EditorGUILayout.Separator();
 
         foreach (var mfcc in data.mfccCalibrationDataList)
@@ -93,32 +100,68 @@ public class ProfileEditor : Editor
             EditorUtil.DrawMfcc(mfcc.array, max, min, 2f);
         }
 
+        if (!uLipSync) showCalibration = false;
+
         EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
 
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
-        {
-            profile.RemoveMfcc(index);
-        }
-        if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
-        {
-            if (index >= 1)
+            if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
             {
-                var tmp = profile.mfccs[index];
-                profile.mfccs[index] = profile.mfccs[index - 1];
-                profile.mfccs[index - 1] = tmp;
+                profile.RemoveMfcc(index);
+            }
+
+            if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
+            {
+                if (index >= 1)
+                {
+                    var tmp = profile.mfccs[index];
+                    profile.mfccs[index] = profile.mfccs[index - 1];
+                    profile.mfccs[index - 1] = tmp;
+                }
+            }
+
+            if (GUILayout.Button(" ▼ ", showCalibration ? EditorStyles.miniButtonMid : EditorStyles.miniButtonRight))
+            {
+                if (index < profile.mfccs.Count - 1)
+                {
+                    var tmp = profile.mfccs[index];
+                    profile.mfccs[index] = profile.mfccs[index + 1];
+                    profile.mfccs[index + 1] = tmp;
+                }
+            }
+
+            if (showCalibration)
+            {
+                // GUILayout.Button(" Calib ", EditorStyles.miniButtonRight);
+                var text = new GUIContent(" Calib ");
+                var rect = GUILayoutUtility.GetRect(text, EditorStyles.miniButtonRight);
+                var e = Event.current;
+                if (e != null && rect.Contains(e.mousePosition))
+                {
+                    if (e.type == EventType.MouseDown)
+                    {
+                        isCalibrating_ = true;
+                    }
+                    else if (e.type == EventType.MouseUp)
+                    {
+                        isCalibrating_ = false;
+                    }
+
+                    if (isCalibrating_)
+                    {
+                        uLipSync.RequestCalibration(index);
+                    }
+
+                    Repaint();
+                }
+                else if (e.isMouse)
+                {
+                    isCalibrating_ = false;
+                }
+                GUI.Button(rect, text);
             }
         }
-        if (GUILayout.Button(" ▼ ", EditorStyles.miniButtonRight))
-        {
-            if (index < profile.mfccs.Count - 1)
-            {
-                var tmp = profile.mfccs[index];
-                profile.mfccs[index] = profile.mfccs[index + 1];
-                profile.mfccs[index + 1] = tmp;
-            }
-        }
-
         EditorGUILayout.EndHorizontal();
 
         --EditorGUI.indentLevel;
@@ -132,7 +175,7 @@ public class ProfileEditor : Editor
 
         GUILayout.FlexibleSpace();
 
-        if (GUILayout.Button("  Add Phenome  "))
+        if (GUILayout.Button("  Add Phoneme  "))
         {
             profile.AddMfcc("New Data");
         }

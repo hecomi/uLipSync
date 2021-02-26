@@ -6,7 +6,7 @@ namespace uLipSync
 {
 
 [CustomEditor(typeof(uLipSync))]
-public class uLipSync2Editor : Editor
+public class uLipSyncEditor : Editor
 {
     uLipSync lipSync { get { return target as uLipSync; } }
     Profile profile { get { return lipSync.profile; } }
@@ -25,20 +25,7 @@ public class uLipSync2Editor : Editor
         {
             ++EditorGUI.indentLevel;
 
-            EditorUtil.DrawProperty(serializedObject, nameof(profile));
-
-            if (EditorUtil.SimpleFoldout("Setting", false))
-            {
-                ++EditorGUI.indentLevel;
-
-                CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
-                var editor = profileEditor_ as ProfileEditor;
-                if (editor) editor.OnInspectorGUI();
-
-                EditorGUILayout.Separator();
-
-                --EditorGUI.indentLevel;
-            }
+            DrawProfile();
 
             EditorGUILayout.Separator();
 
@@ -129,6 +116,49 @@ public class uLipSync2Editor : Editor
         }
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    void DrawProfile()
+    {
+        EditorUtil.DrawProperty(serializedObject, nameof(profile));
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button("Man", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
+            {
+                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileMan);
+            }
+
+            if (GUILayout.Button("Woman", EditorStyles.miniButtonMid, GUILayout.Width(80)))
+            {
+                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileWoman);
+            }
+
+            if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(80)))
+            {
+                lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.assetName}-Profile-New");
+            }
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (profile && EditorUtil.SimpleFoldout("Setting", false))
+        {
+            ++EditorGUI.indentLevel;
+
+            CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
+            var editor = profileEditor_ as ProfileEditor;
+            if (editor) 
+            {
+                editor.uLipSync = lipSync;
+                editor.Draw(true);
+            }
+
+            EditorGUILayout.Separator();
+
+            --EditorGUI.indentLevel;
+        }
     }
 
     void DrawRawVolume()
