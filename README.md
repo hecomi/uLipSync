@@ -171,11 +171,11 @@ How to add phonemes / calibrate them
 
 First, click the Create button under Profile to create a new profile. The created profile asset will be automatically registered to the profile of `uLipSync`.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile.gif" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile.png" width="640" />
 
 Next, click the Add Phenome button to add a phoneme, such as A, I, E, O, U.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile-Phoneme.gif" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-New-Profile-Phoneme.png" width="640" />
 
 Then start the game, and hold down the Calib button in A when it is talking "aaaaaaa". Likewise, continue to speak "iiiiiii" and press and hold the Calib button in I. Calibrate all the phonemes like this to register the MFCCs.
 
