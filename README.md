@@ -216,6 +216,13 @@ profile.Import(path);
 ```
 
 
+UnityChan
+---------
+Examples include Unity-chan assets (Release packages don't include them).
+
+© Unity Technologies Japan/UCL
+
+
 License
 -------
 The MIT License (MIT)
