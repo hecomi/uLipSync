@@ -27,7 +27,7 @@ Get started
 
 2. Attach `uLipSync` component to the GameObject that has `AudioSource` and plays voice sounds.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/uLipSync-Default-UI.png" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Default-UI.png" width="640" />
 
 3. Select the Profile (how to create and calibrate a Profile is described later).
 
