@@ -6,8 +6,8 @@ namespace uLipSync
 public static class Common
 {
     public const string assetName = "uLipSync";
-    public const string defaultProfileMan = assetName + "-Profile-Man";
-    public const string defaultProfileWoman = assetName + "-Profile-Woman";
+    public const string defaultProfileMale = assetName + "-Profile-Male";
+    public const string defaultProfileFemale = assetName + "-Profile-Female";
 }
 
 public struct LipSyncInfo
