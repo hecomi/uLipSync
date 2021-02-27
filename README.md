@@ -55,7 +55,7 @@ Get started
 Copmonents
 ----------
 ### `uLipSync`
-This is the core component for calculating lip-sync. uLipSync` gets the audio buffer from `MonoBehaviour.OnAudioFilterRead()`, so it needs to be attached to the same GameObject that plays the audio in `AudioSource`. This computation is done in a background thread and is optimized by JobSystem and Burst Compiler.
+This is the core component for calculating lip-sync. `uLipSync` gets the audio buffer from `MonoBehaviour.OnAudioFilterRead()`, so it needs to be attached to the same GameObject that plays the audio in `AudioSource`. This computation is done in a background thread and is optimized by JobSystem and Burst Compiler.
 
 ### `uLipSyncBlendShape`
 This component is used to control the blendshape of the `SkinndeMeshRenderer`. By registering a blendshape that corresponds to the Phoneme registered in the `uLipSync` profile, the results of speech analysis will be reflected in the shape of the mouth.

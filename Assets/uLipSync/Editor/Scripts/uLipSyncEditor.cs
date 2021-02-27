@@ -126,14 +126,14 @@ public class uLipSyncEditor : Editor
         {
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Man", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
+            if (GUILayout.Button("Male", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
             {
-                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileMan);
+                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileMale);
             }
 
-            if (GUILayout.Button("Woman", EditorStyles.miniButtonMid, GUILayout.Width(80)))
+            if (GUILayout.Button("Female", EditorStyles.miniButtonMid, GUILayout.Width(80)))
             {
-                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileWoman);
+                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileFemale);
             }
 
             if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(80)))
