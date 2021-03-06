@@ -53,6 +53,7 @@ public class uLipSyncEditor : Editor
             ++EditorGUI.indentLevel;
 
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.audioSource));
 
             --EditorGUI.indentLevel;
 

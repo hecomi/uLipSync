@@ -14,6 +14,9 @@ public class uLipSync : MonoBehaviour
     [Tooltip("If you want to supress the sound output, set this value to zero instead of setting the AudioSource volume to zero")]
     [Range(0f, 1f)] public float outputSoundGain = 1f;
 
+    public uLipSyncAudioSource audioSource;
+    uLipSyncAudioSource currentAudioSource_;
+
     JobHandle jobHandle_;
     object lockObject_ = new object();
     int index_ = 0;
@@ -38,6 +41,11 @@ public class uLipSync : MonoBehaviour
         }
     }
 
+    void Awake()
+    {
+        UpdateAudioSource();
+    }
+
     void OnEnable()
     {
         AllocateBuffers();
@@ -59,6 +67,7 @@ public class uLipSync : MonoBehaviour
         ScheduleJob();
 
         UpdateBuffers();
+        UpdateAudioSource();
     }
 
     void AllocateBuffers()
@@ -171,28 +180,6 @@ public class uLipSync : MonoBehaviour
         jobHandle_ = lipSyncJob.Schedule();
     }
 
-    void OnAudioFilterRead(float[] input, int channels)
-    {
-        if (rawInputData_ == null) return;
-
-        lock (lockObject_)
-        {
-            index_ = index_ % rawInputData_.Length;
-            for (int i = 0; i < input.Length; i += channels) 
-            {
-                rawInputData_[index_++ % rawInputData_.Length] = input[i];
-            }
-        }
-
-        if (math.abs(outputSoundGain - 1f) > math.EPSILON)
-        {
-            for (int i = 0; i < input.Length; ++i) 
-            {
-                input[i] *= outputSoundGain;
-            }
-        }
-    }
-
     public void RequestCalibration(int index)
     {
         requestedCalibrationVowels_.Add(index);
@@ -208,6 +195,55 @@ public class uLipSync : MonoBehaviour
         }
 
         requestedCalibrationVowels_.Clear();
+    }
+
+    void UpdateAudioSource()
+    {
+        if (audioSource == currentAudioSource_) return;
+
+        if (currentAudioSource_)
+        {
+            currentAudioSource_.onAudioFilterRead.RemoveListener(OnDataReceived);
+        }
+
+        if (audioSource)
+        {
+            audioSource.onAudioFilterRead.AddListener(OnDataReceived);
+        }
+
+        currentAudioSource_ = audioSource;
+    }
+
+    void OnDataReceived(float[] input, int channels)
+    {
+        if (rawInputData_ == null) return;
+
+        lock (lockObject_)
+        {
+            int n = rawInputData_.Length;
+            index_ = index_ % n;
+            for (int i = 0; i < input.Length; i += channels) 
+            {
+                rawInputData_[index_++ % n] = input[i];
+            }
+        }
+
+        if (math.abs(outputSoundGain - 1f) > math.EPSILON)
+        {
+            int n = input.Length;
+            for (int i = 0; i < n; ++i) 
+            {
+                input[i] *= outputSoundGain;
+            }
+        }
+    }
+
+    void OnAudioFilterRead(float[] input, int channels)
+    {
+        if (!audioSource)
+        {
+            OnDataReceived(input, channels);
+        }
     }
 }
 
