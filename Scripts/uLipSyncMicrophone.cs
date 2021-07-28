@@ -130,7 +130,6 @@ public class uLipSyncMicrophone : MonoBehaviour
             }
             System.Threading.Thread.Sleep(1);
         }
-        Debug.Log(retryCount);
 
         source.loop = true;
         source.Play();
