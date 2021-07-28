@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace uLipSync
 {
@@ -61,7 +62,7 @@ public class uLipSyncMicrophone : MonoBehaviour
         if (isStartRequested)
         {
             isStartRequested = false;
-            StartRecordInternal();
+            StartCoroutine(StartRecordInternal());
         }
 
         if (isStopRequested)
@@ -109,15 +110,22 @@ public class uLipSyncMicrophone : MonoBehaviour
         isStartRequested = false;
     }
 
-    void StartRecordInternal()
+    IEnumerator StartRecordInternal()
     {
-        if (!source) return;
+        if (!source) yield break;
 
         int freq = maxFreq;
         if (freq <= 0) freq = 48000;
 
         clip = Microphone.Start(device.name, true, 10, freq);
-        while (Microphone.GetPosition(device.name) <= 0) ;
+        for(int i=0; Microphone.GetPosition(device.name) <= 0; i++){
+            if(i > 100)
+            {
+                Debug.LogError("Failed to get microphone.");
+                yield break;
+            }
+            yield return null;
+        }
         source.loop = true;
         source.Play();
 
