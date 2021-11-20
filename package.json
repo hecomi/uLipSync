@@ -1,0 +1,36 @@
+{
+    "name": "com.hecomi.ulipsync",
+    "version": "1.1.0",
+    "displayName": "uLipSync",
+    "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
+    "author": {
+        "name": "hecomi",
+        "url": "https://tips.hecomi.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hecomi/uLipSync"
+    },
+    "keywords": [
+        "unity",
+        "lipsync"
+    ],
+    "license": "MIT License",
+    "samples": [
+        {
+            "displayName": "00. UnityChan",
+            "description": "© UTJ/UCL",
+            "path": "Samples~/00. UnityChan"
+        },
+        {
+            "displayName": "01. Basic",
+            "description": "A basic sample.",
+            "path": "Samples~/01. Basic"
+        },
+        {
+            "displayName": "02. AudioSource-Proxy",
+            "description": "A sample for using an AudioSource that belongs to a different GameObject.",
+            "path": "Samples~/02. AudioSource-Proxy"
+        }
+    ]
+}
