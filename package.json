@@ -22,9 +22,9 @@
     "license": "MIT License",
     "samples": [
         {
-            "displayName": "00. UnityChan",
-            "description": "© UTJ/UCL",
-            "path": "Samples~/00. UnityChan"
+            "displayName": "00. Common",
+            "description": "Common assets required for all samples, including UnityChan © UTJ/UCL.",
+            "path": "Samples~/00. Common"
         },
         {
             "displayName": "01. Basic",
