@@ -216,7 +216,7 @@ public class uLipSync : MonoBehaviour
 
     void OnDataReceived(float[] input, int channels)
     {
-        if (rawInputData_ == null) return;
+        if (rawInputData_ == null || rawInputData_.Length == 0) return;
 
         lock (lockObject_)
         {
