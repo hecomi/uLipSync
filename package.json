@@ -1,6 +1,6 @@
 {
     "name": "com.hecomi.ulipsync",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "displayName": "uLipSync",
     "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
     "author": {
@@ -10,6 +10,10 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/hecomi/uLipSync"
+    },
+    "dependencies": {
+        "com.unity.burst": "1.4.11",
+        "com.unity.mathematics": "1.2.5"
     },
     "keywords": [
         "unity",
