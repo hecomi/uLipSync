@@ -21,35 +21,48 @@ Environment
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/Package.png" width="640" />
 
 
+Install
+-------
+
+- Unity Package
+  - Download the latest .unitypackage from [Release page](https://github.com/hecomi/uLipSync/releases).
+- Git URL (UPM)
+  - Add `https://github.com/hecomi/uLipSync.git#upm` to Package Manager.
+- Scoped Registry (UPM)
+  - Add a scoped registry to your project.
+    - URL: `https://registry.npmjs.com`
+    - Scope: `com.hecomi`
+  - Install uLipSync in Package Manager.
+
+
 Get started
 -----------
-1. Download the latest package from the [Releases](https://github.com/hecomi/uLipSync/releases) page and add it to your project.
 
-2. Attach `uLipSync` component to the GameObject that has `AudioSource` and plays voice sounds.
+1. Attach `uLipSync` component to the GameObject that has `AudioSource` and plays voice sounds.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Default-UI.png" width="640" />
 
-3. Select the Profile (how to create and calibrate a Profile is described later).
+2. Select the Profile (how to create and calibrate a Profile is described later).
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-UI.png" width="640" />
 
-4. Attach `uLipSyncBlendshape` component to the GameObject of your character and select target `SkinnedMeshRenderer`.
+3. Attach `uLipSyncBlendshape` component to the GameObject of your character and select target `SkinnedMeshRenderer`.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-BlendShape-Default-UI.png" width="640" />
 
-5. Click on the "Add New BlendShape" button to link the Phoneme and BlendShape corresponding to the recognition result.
+4. Click on the "Add New BlendShape" button to link the Phoneme and BlendShape corresponding to the recognition result.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-BlendShape-UI.png" width="640" />
 
-6. Register `uLipSyncBlendshape.OnLipSyncUpdate` to `uLipSync` in Callback section.
+5. Register `uLipSyncBlendshape.OnLipSyncUpdate` to `uLipSync` in Callback section.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Register-Callback.png" width="640" />
 
-7. If you want to use mic input, please attach `uLipSyncMicrophone`.
+6. If you want to use mic input, please attach `uLipSyncMicrophone`.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v1/uLipSync-Microphone-UI.png" width="640" />
 
-8. Play!
+7. Play!
 
 
 Copmonents
