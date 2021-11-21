@@ -39,50 +39,40 @@ public struct LipSyncJob : IJob
             return;
         }
 
-        // Copy input ring buffer to a temporary array
         NativeArray<float> buffer;
         Algorithm.CopyRingBuffer(input, out buffer, startIndex);
 
-        // LPF
         int cutoff = targetSampleRate / 2;
         int range = targetSampleRate / 4;
         Algorithm.LowPassFilter(ref buffer, outputSampleRate, cutoff, range);
 
-        // Down sample
         NativeArray<float> data;
+
         Algorithm.DownSample(buffer, out data, outputSampleRate, targetSampleRate);
 
-        // Pre-emphasis
         Algorithm.PreEmphasis(ref data, 0.97f);
 
-        // Multiply window function
         Algorithm.HammingWindow(ref data);
 
-        // FFT
         NativeArray<float> spectrum;
         Algorithm.FFT(data, out spectrum);
 
-        // Mel-Filter Bank
         NativeArray<float> melSpectrum;
         Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, melFilterBankChannels);
 
-        // Log
         for (int i = 0; i < melSpectrum.Length; ++i)
         {
             melSpectrum[i] = math.log10(melSpectrum[i]);
         }
 
-        // DCT
         NativeArray<float> melCepstrum;
         Algorithm.DCT(melSpectrum, out melCepstrum);
 
-        // MFCC
         for (int i = 1; i < 13; ++i)
         {
             mfcc[i - 1] = melCepstrum[i];
         }
 
-        // Result
         var res = new Result();
         res.volume = volume;
         GetVowel(ref res.index, ref res.distance);
