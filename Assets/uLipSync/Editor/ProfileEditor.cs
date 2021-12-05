@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 using System.IO;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -13,6 +15,7 @@ public class ProfileEditor : Editor
     public float max = 0f;
     public uLipSync uLipSync { get; set; }
     bool isCalibrating_ = false;
+    ReorderableList reorderableList_ = null;
 
     public override void OnInspectorGUI()
     {
@@ -27,11 +30,7 @@ public class ProfileEditor : Editor
         {
             ++EditorGUI.indentLevel;
             CalcMinMax();
-            for (int i = 0; i < profile.mfccs.Count; ++i)
-            {
-                DrawMFCC(i, showCalibration);
-            }
-            DrawAddMFCC();
+            DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
         }
 
@@ -65,6 +64,43 @@ public class ProfileEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    void DrawMfccReorderableList(bool showCalibration)
+    {
+        if (reorderableList_ == null)
+        {
+            reorderableList_ = new ReorderableList(profile.mfccs, typeof(MfccData));
+            reorderableList_.drawHeaderCallback = rect => 
+            {
+                rect.xMin -= EditorGUI.indentLevel * 12f;
+                EditorGUI.LabelField(rect, "MFCCs");
+            };
+            reorderableList_.draggable = true;
+            reorderableList_.drawElementCallback = (rect, index, isActive, isFocused) =>
+            {
+                DrawMFCC(rect, index, showCalibration);
+            };
+            reorderableList_.elementHeightCallback = index =>
+            {
+                return GetMFCCHeight(index);
+            };
+            reorderableList_.onAddCallback = index =>
+            {
+                profile.AddMfcc("New Phoneme");
+            };
+            reorderableList_.onRemoveCallback = list =>
+            {
+                profile.RemoveMfcc(list.index);
+            };
+        }
+
+        EditorGUILayout.Separator();
+        EditorGUILayout.BeginHorizontal();
+        var indent = EditorGUI.indentLevel * 12f;
+        EditorGUILayout.Space(indent, false);
+        reorderableList_.DoLayoutList();
+        EditorGUILayout.EndHorizontal();
+    }
+
     void CalcMinMax()
     {
         max = float.MinValue;
@@ -84,103 +120,74 @@ public class ProfileEditor : Editor
         }
     }
 
-    void DrawMFCC(int index, bool showCalibration)
+    void DrawMFCC(Rect position, int index, bool showCalibration)
     {
         var data = profile.mfccs[index];
-        
-        if (!EditorUtil.SimpleFoldout(data.name, true)) return;
+        float singleLineHeight = 
+            EditorGUIUtility.singleLineHeight + 
+            EditorGUIUtility.standardVerticalSpacing;
 
-        ++EditorGUI.indentLevel;
+        position = EditorGUI.IndentedRect(position);
+        position.xMin += 12;
+        position.height = singleLineHeight;
 
-        data.name = EditorGUILayout.TextField("Phoneme", data.name);
-        EditorGUILayout.Separator();
+        if (!EditorUtil.SimpleFoldout(position, data.name, true, "MfccData")) return;
+        position.y += singleLineHeight;
+
+        data.name = EditorGUI.TextField(position, "Phoneme", data.name);
+        position.y += singleLineHeight;
+        position.y += 5f;
+
+        var mfccPos = new Rect(position);
+        if (showCalibration)
+        {
+            mfccPos.xMax -= 60;
+        }
 
         foreach (var mfcc in data.mfccCalibrationDataList)
         {
-            EditorUtil.DrawMfcc(mfcc.array, max, min, 2f);
+            EditorUtil.DrawMfcc(mfccPos, mfcc.array, max, min, 2f);
+            mfccPos.y += 2f;
         }
 
-        if (!uLipSync) showCalibration = false;
-
-        EditorGUILayout.BeginHorizontal();
+        var calibButtonPos = new Rect(position);
+        calibButtonPos.xMin = mfccPos.xMax + 8;
+        calibButtonPos.height = 2f * data.mfccCalibrationDataList.Count;
+        if (showCalibration)
         {
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
+            var text = new GUIContent(" Calib ");
+            var e = Event.current;
+            if (e != null && calibButtonPos.Contains(e.mousePosition))
             {
-                profile.RemoveMfcc(index);
-            }
-
-            if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
-            {
-                if (index >= 1)
+                if (e.type == EventType.MouseDown)
                 {
-                    var tmp = profile.mfccs[index];
-                    profile.mfccs[index] = profile.mfccs[index - 1];
-                    profile.mfccs[index - 1] = tmp;
+                    isCalibrating_ = true;
                 }
-            }
-
-            if (GUILayout.Button(" ▼ ", showCalibration ? EditorStyles.miniButtonMid : EditorStyles.miniButtonRight))
-            {
-                if (index < profile.mfccs.Count - 1)
-                {
-                    var tmp = profile.mfccs[index];
-                    profile.mfccs[index] = profile.mfccs[index + 1];
-                    profile.mfccs[index + 1] = tmp;
-                }
-            }
-
-            if (showCalibration)
-            {
-                // GUILayout.Button(" Calib ", EditorStyles.miniButtonRight);
-                var text = new GUIContent(" Calib ");
-                var rect = GUILayoutUtility.GetRect(text, EditorStyles.miniButtonRight);
-                var e = Event.current;
-                if (e != null && rect.Contains(e.mousePosition))
-                {
-                    if (e.type == EventType.MouseDown)
-                    {
-                        isCalibrating_ = true;
-                    }
-                    else if (e.type == EventType.MouseUp)
-                    {
-                        isCalibrating_ = false;
-                    }
-
-                    if (isCalibrating_)
-                    {
-                        uLipSync.RequestCalibration(index);
-                    }
-
-                    Repaint();
-                }
-                else if (e.isMouse)
+                else if (e.type == EventType.MouseUp)
                 {
                     isCalibrating_ = false;
                 }
-                GUI.Button(rect, text);
-            }
-        }
-        EditorGUILayout.EndHorizontal();
 
-        --EditorGUI.indentLevel;
+                if (isCalibrating_)
+                {
+                    uLipSync.RequestCalibration(index);
+                }
+
+                Repaint();
+            }
+            else if (e.isMouse)
+            {
+                isCalibrating_ = false;
+            }
+            GUI.Button(calibButtonPos, text);
+        }
     }
 
-    void DrawAddMFCC()
+    float GetMFCCHeight(int index)
     {
-        EditorGUILayout.Separator();
-
-        EditorGUILayout.BeginHorizontal();
-
-        GUILayout.FlexibleSpace();
-
-        if (GUILayout.Button("  Add Phoneme  "))
-        {
-            profile.AddMfcc("New Data");
-        }
-
-        EditorGUILayout.EndHorizontal();
+        var data = profile.mfccs[index];
+        bool isOpened = EditorUtil.IsFoldOutOpened(data.name + "MfccData", true);
+        return isOpened ? 75f : 20f;
     }
 
     void DrawImportExport()

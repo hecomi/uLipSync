@@ -1,6 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Unity.Collections;
-using Unity.Burst;
 using System.Collections.Generic;
 using System.IO;
 
@@ -25,25 +24,25 @@ public class MfccData
     public MfccData(string name)
     {
         this.name = name;
-        Allocate();
     }
 
-    [BurstCompile]
+    ~MfccData()
+    {
+        Deallocate();
+    }
+
     public void Allocate()
     {
-        if (!IsAllocated())
-        {
-            mfccNativeArray = new NativeArray<float>(12, Allocator.Persistent);
-        }
+        if (IsAllocated()) return;
+
+        mfccNativeArray = new NativeArray<float>(12, Allocator.Persistent);
     }
 
-    [BurstCompile]
     public void Deallocate()
     {
-        if (IsAllocated())
-        {
-            mfccNativeArray.Dispose();
-        }
+        if (!IsAllocated()) return;
+
+        mfccNativeArray.Dispose();
     }
 
     bool IsAllocated()
@@ -66,7 +65,6 @@ public class MfccData
         while (mfccCalibrationDataList.Count > dataCount) mfccCalibrationDataList.RemoveAt(0);
     }
 
-    [BurstCompile]
     public void UpdateNativeArray()
     {
         if (mfccCalibrationDataList.Count == 0) return;
@@ -88,7 +86,7 @@ public class MfccData
     }
 }
 
-[CreateAssetMenu(menuName = Common.assetName + "/Profile"), BurstCompile]
+[CreateAssetMenu(menuName = Common.assetName + "/Profile")]
 public class Profile : ScriptableObject
 {
     [HideInInspector] public string jsonPath = "";
@@ -151,7 +149,6 @@ public class Profile : ScriptableObject
         mfccs.RemoveAt(index);
     }
 
-    [BurstCompile]
     public void UpdateMfcc(int index, NativeArray<float> mfcc, bool calib)
     {
         if (index < 0 || index >= mfccs.Count) return;
