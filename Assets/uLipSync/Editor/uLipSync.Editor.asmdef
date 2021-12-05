@@ -1,13 +1,14 @@
 {
-    "name": "uLipSync",
+    "name": "uLipSync.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:2665a8d13d1b3f18800f46e256720795",
-        "GUID:d8b63aba1907145bea998dd612889d6b"
+        "GUID:d444a9c79d21fec4181e6e12dc2e9706"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
