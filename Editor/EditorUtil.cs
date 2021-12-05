@@ -30,9 +30,11 @@ public static class EditorUtil
         return newValue;
     }
 
-    public static bool IsFoldOutOpened(string title)
+    public static bool IsFoldOutOpened(string title, bool initialState = false)
     {
-        return EditorPrefs.GetBool(GetFoldOutKey(title));
+        var key = GetFoldOutKey(title);
+        if (!EditorPrefs.HasKey(key)) return initialState;
+        return EditorPrefs.GetBool(key);
     }
 
     public static bool Foldout(string title, bool initialState)
@@ -67,6 +69,15 @@ public static class EditorUtil
         return display;
     }
 
+    public static bool SimpleFoldout(Rect rect, string title, bool initialState, string additionalKey = "")
+    {
+        var key = GetFoldOutKey(title + additionalKey);
+        bool display = EditorPrefs.GetBool(key, initialState);
+        bool newDisplay = EditorGUI.Foldout(rect, display, title);
+        if (newDisplay != display) EditorPrefs.SetBool(key, newDisplay);
+        return newDisplay;
+    }
+
     public static bool SimpleFoldout(string title, bool initialState, string additionalKey = "")
     {
         var key = GetFoldOutKey(title + additionalKey);
@@ -95,6 +106,21 @@ public static class EditorUtil
         var area = GUILayoutUtility.GetRect(Screen.width, height);
         area = EditorGUI.IndentedRect(area);
 
+        var width = area.width / 12;
+        var maxMinusMin = max - min;
+        for (int i = 0; i < 12; ++i)
+        {
+            var x = width * i;
+            var rect = new Rect(area.x + x, area.y, width, height);
+            var value = (array[i] - min) / maxMinusMin;
+            var color = ToRGB(value);
+            Handles.DrawSolidRectangleWithOutline(rect, color, color);
+        }
+    }
+
+    public static void DrawMfcc(Rect area, float[] array, float max, float min, float height)
+    {
+        area = EditorGUI.IndentedRect(area);
         var width = area.width / 12;
         var maxMinusMin = max - min;
         for (int i = 0; i < 12; ++i)

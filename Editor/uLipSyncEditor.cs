@@ -144,21 +144,12 @@ public class uLipSyncEditor : Editor
         }
         EditorGUILayout.EndHorizontal();
 
-        if (profile && EditorUtil.SimpleFoldout("Setting", false))
+        CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
+        var editor = profileEditor_ as ProfileEditor;
+        if (editor) 
         {
-            ++EditorGUI.indentLevel;
-
-            CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
-            var editor = profileEditor_ as ProfileEditor;
-            if (editor) 
-            {
-                editor.uLipSync = lipSync;
-                editor.Draw(true);
-            }
-
-            EditorGUILayout.Separator();
-
-            --EditorGUI.indentLevel;
+            editor.uLipSync = lipSync;
+            editor.Draw(true);
         }
     }
 
