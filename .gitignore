@@ -76,3 +76,4 @@ crashlytics-build.properties
 /Assets/Extensions*
 /*.log
 .vsconfig
+.vscode
