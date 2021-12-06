@@ -134,6 +134,7 @@ public class Profile : ScriptableObject
     public void AddMfcc(string name)
     {
         var data = new MfccData(name);
+        data.Allocate();
         for (int i = 0; i < mfccDataCount; ++i)
         {
             data.AddCalibrationData(new float[12]);
