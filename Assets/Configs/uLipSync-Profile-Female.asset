@@ -17,8 +17,8 @@ MonoBehaviour:
   melFilterBankChannels: 24
   targetSampleRate: 16000
   sampleCount: 1024
-  minVolume: -3
-  maxVolume: -2
+  minVolume: -2.5
+  maxVolume: -1.5
   mfccs:
   - name: A
     mfccCalibrationDataList:
