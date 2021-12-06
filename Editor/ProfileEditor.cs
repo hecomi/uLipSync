@@ -185,8 +185,13 @@ public class ProfileEditor : Editor
 
     float GetMFCCHeight(int index)
     {
-        var data = profile.mfccs[index];
-        bool isOpened = EditorUtil.IsFoldOutOpened(data.name + "MfccData", true);
+        string name = "";
+        if (profile.mfccs.Count < index)
+        {
+            var data = profile.mfccs[index];
+            name = data.name;
+        }
+        bool isOpened = EditorUtil.IsFoldOutOpened(name + "MfccData", true);
         return isOpened ? 75f : 20f;
     }
 
