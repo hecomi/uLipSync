@@ -214,7 +214,7 @@ public class uLipSync : MonoBehaviour
         currentAudioSource_ = audioSource;
     }
 
-    void OnDataReceived(float[] input, int channels)
+    public void OnDataReceived(float[] input, int channels)
     {
         if (rawInputData_ == null || rawInputData_.Length == 0) return;
 
