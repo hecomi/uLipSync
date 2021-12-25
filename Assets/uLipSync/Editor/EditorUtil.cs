@@ -30,9 +30,9 @@ public static class EditorUtil
         return newValue;
     }
 
-    public static bool IsFoldOutOpened(string title, bool initialState = false)
+    public static bool IsFoldOutOpened(string title, bool initialState = false, string additionalKey = "")
     {
-        var key = GetFoldOutKey(title);
+        var key = GetFoldOutKey(title + additionalKey);
         if (!EditorPrefs.HasKey(key)) return initialState;
         return EditorPrefs.GetBool(key);
     }
@@ -130,6 +130,48 @@ public static class EditorUtil
             var value = (array[i] - min) / maxMinusMin;
             var color = ToRGB(value);
             Handles.DrawSolidRectangleWithOutline(rect, color, color);
+        }
+    }
+
+    public static void DrawWave(Rect rect, AudioClip clip)
+    {
+        if (!clip) return;
+
+        var minMaxData = AudioUtil.GetMinMaxData(clip);
+        int channels = clip.channels;
+        var height = (float)rect.height / channels;
+        int samples = (minMaxData == null) ? 0 : (minMaxData.Length / (2 * channels));
+
+        for (int ch = 0; ch < channels; ch++)
+        {
+            var chRect = new Rect(rect.x, rect.y + height * ch, rect.width, height);
+            var curveColor = new Color(1.0f, 140.0f / 255.0f, 0.0f, 1.0f);
+            AudioCurveRendering.AudioMinMaxCurveAndColorEvaluator dlg = delegate(
+                float x, 
+                out Color col, 
+                out float minValue, 
+                out float maxValue)
+            {
+                col = curveColor;
+
+                if (samples <= 0)
+                {
+                    minValue = 0.0f;
+                    maxValue = 0.0f;
+                }
+                else
+                {
+                    float p = Mathf.Clamp(x * (samples - 2), 0.0f, samples - 2);
+                    int i = (int)Mathf.Floor(p);
+                    int offset1 = (i * channels + ch) * 2;
+                    int offset2 = offset1 + channels * 2;
+                    minValue = Mathf.Min(minMaxData[offset1 + 1], minMaxData[offset2 + 1]) * 0.95f;
+                    maxValue = Mathf.Max(minMaxData[offset1 + 0], minMaxData[offset2 + 0]) * 0.95f;
+                    if (minValue > maxValue) { float tmp = minValue; minValue = maxValue; maxValue = tmp; }
+                }
+            };
+
+            AudioCurveRendering.DrawMinMaxFilledCurve(rect, dlg);
         }
     }
 

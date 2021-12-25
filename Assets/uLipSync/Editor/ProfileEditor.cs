@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
-using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -179,20 +178,31 @@ public class ProfileEditor : Editor
             {
                 isCalibrating_ = false;
             }
-            GUI.Button(calibButtonPos, text);
+
+            var style = new GUIStyle(GUI.skin.button);
+            style.fixedHeight = 20f;
+            GUI.Button(calibButtonPos, text, style);
         }
     }
 
     float GetMFCCHeight(int index)
     {
         string name = "";
-        if (profile.mfccs.Count < index)
+        float height = 20f;
+
+        if (index < profile.mfccs.Count)
         {
             var data = profile.mfccs[index];
             name = data.name;
+
+            if (EditorUtil.IsFoldOutOpened(name, true, "MfccData"))
+            {
+                height += 32f;
+                height += data.mfccCalibrationDataList.Count * 2f;
+            }
         }
-        bool isOpened = EditorUtil.IsFoldOutOpened(name + "MfccData", true);
-        return isOpened ? 75f : 20f;
+
+        return height;
     }
 
     void DrawImportExport()
