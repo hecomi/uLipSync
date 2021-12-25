@@ -149,7 +149,7 @@ public class uLipSyncEditor : Editor
         if (editor) 
         {
             editor.uLipSync = lipSync;
-            editor.Draw(true);
+            editor.Draw(Application.isPlaying);
         }
     }
 
