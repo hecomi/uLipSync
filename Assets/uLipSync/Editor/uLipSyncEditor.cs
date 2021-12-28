@@ -64,56 +64,33 @@ public class uLipSyncEditor : Editor
         {
             ++EditorGUI.indentLevel;
 
-            bool shouldRepaint = false;
+            if (Application.isPlaying)
+            {
+                DrawRawVolume();
+                DrawRMSVolume();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Current RMS Volume is shown here in runtime.", MessageType.Info);
+            }
 
             EditorGUILayout.Separator();
 
-            if (EditorUtil.SimpleFoldout("Volume", true)) 
+            if (Application.isPlaying)
             {
-                ++EditorGUI.indentLevel;
-                if (Application.isPlaying)
-                {
-                    DrawRawVolume();
-                    DrawRMSVolume();
-                    shouldRepaint = true;
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Current RMS Volume is shown here in runtime.", MessageType.Info);
-                }
-                --EditorGUI.indentLevel;
-
-                EditorGUILayout.Separator();
+                DrawCurrentMfcc();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Current MFCC is shown here in runtime.", MessageType.Info);
             }
 
-            if (EditorUtil.SimpleFoldout("MFCC", true)) 
-            {
-                ++EditorGUI.indentLevel;
-                if (Application.isPlaying)
-                {
-                    ++EditorGUI.indentLevel;
-                    DrawCurrentMfcc();
-                    shouldRepaint = true;
-                    --EditorGUI.indentLevel;
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Current MFCC is shown here in runtime.", MessageType.Info);
-                }
-                --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
 
-                EditorGUILayout.Separator();
-            }
-
-            if (shouldRepaint)
-            {
-                EditorGUILayout.HelpBox("While runtime information is shown, FPS drop occurs due to the heavy editor process.", MessageType.Info);
-                Repaint();
-            }
+            EditorGUILayout.HelpBox("While runtime information is shown, FPS drop occurs due to the heavy editor process.", MessageType.Warning);
+            Repaint();
 
             --EditorGUI.indentLevel;
-
-            EditorGUILayout.Separator();
         }
 
         serializedObject.ApplyModifiedProperties();

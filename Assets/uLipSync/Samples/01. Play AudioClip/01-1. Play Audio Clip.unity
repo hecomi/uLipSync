@@ -359,7 +359,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 5f1962b28971041f3b08aa2185cca6ae, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -475,9 +475,9 @@ MonoBehaviour:
     index: 10
     maxWeight: 1
   applyVolume: 1
-  openDuration: 0.05
-  closeDuration: 0.1
-  vowelChangeDuration: 0.08
+  openDuration: 0.03
+  closeDuration: 0.05
+  vowelChangeDuration: 0.05
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,22 +508,6 @@ MonoBehaviour:
         m_CallState: 2
   outputSoundGain: 0.37
   audioSource: {fileID: 0}
---- !u!114 &496503025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496503018}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 354cff4bd7e4344c898201f2bf926e51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 5ce5e31b4113b41d4b0537bd71771881, type: 3}
-  start: 0
-  end: 0.9830022
-  crossFadeDuration: 0.05
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0

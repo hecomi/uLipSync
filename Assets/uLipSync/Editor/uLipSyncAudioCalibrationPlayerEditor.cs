@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -13,7 +14,8 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
     bool _requireApply = false;
     bool _isDraggingStart = false;
     bool _isDraggingEnd = false;
-    bool _drawCursor = false;
+    bool isDragging => _isDraggingStart || _isDraggingEnd;
+    List<string> _messages = new List<string>();
 
     public override void OnInspectorGUI()
     {
@@ -37,8 +39,8 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
         EditorGUILayout.Separator();
 
         DrawWave();
-        DrawCrossFade();
-        DrawHelpBox();
+        EditorGUILayout.Separator();
+        DrawParameters();
 
         if (Application.isPlaying && _requireApply)
         {
@@ -52,6 +54,21 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
         {
             Repaint();
         }
+        else
+        {
+            EditorUtility.SetDirty(target);
+        }
+
+        if (isDragging)
+        {
+            player.Pause();
+        }
+        else
+        {
+            player.UnPause();
+        }
+
+        DrawHelpBox();
     }
 
     public override bool RequiresConstantRepaint()
@@ -87,7 +104,7 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
         EditorUtil.DrawWave(rect, player.clip);
         DrawTrimArea(rect, true, ref player.start, ref _isDraggingStart, ref _isDraggingEnd);
         DrawTrimArea(rect, false, ref player.end, ref _isDraggingEnd, ref _isDraggingStart);
-        DrawCursor(rect);
+        DrawCrossFadeArea(rect);
 
         player.start = Mathf.Clamp(player.start, 0f, preWaveEnd - 0.001f);
         player.end = Mathf.Clamp(player.end, preWaveStart + 0.001f, 1f);
@@ -150,30 +167,21 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
         else if (Event.current.type == EventType.MouseUp)
         {
             isDraggingSelf = false;
-            _requireRepaint = true;
         }
 
         return delta;
     }
 
-    void DrawCursor(Rect rect)
+    void DrawCrossFadeArea(Rect rect)
     {
-        if (!Application.isPlaying) return;
-
-        EditorGUILayout.Separator();
-        _drawCursor = EditorGUILayout.Toggle("Show Cursor", _drawCursor);
-        if (!_drawCursor) return;
-
-        var cursorRect = rect;
-        var range = player.end - player.start;
-        rect.x += (player.start + player.position * range) * rect.width;
-        rect.width = 5f;
-        EditorGUI.DrawRect(rect, new Color(1f, 1f, 0f, 0.2f));
-
-        _requireRepaint = true;
+        var range = player.crossFadeDuration / player.clip.length;
+        range = Mathf.Min(range, player.end - player.start);
+        rect.x += (player.end - range) * rect.width;
+        rect.width *= range;
+        EditorGUI.DrawRect(rect, new Color(0f, 1f, 1f, 0.2f));
     }
 
-    void DrawCrossFade()
+    void DrawParameters()
     {
         float preDuration = player.crossFadeDuration;
         player.crossFadeDuration = EditorGUILayout.Slider("Cross Fade", preDuration, 0f, 0.1f);
@@ -186,14 +194,20 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
     void DrawHelpBox()
     {
         var lipSync = player.GetComponent<uLipSync>();
-
         if (lipSync && lipSync.outputSoundGain < Mathf.Epsilon)
         {
             var msg = 
                 "uLipSync.outputSoundGain is zero." +
                 "It means that you will not be able to hear the sound.";
+            _messages.Add(msg);
+        }
+
+        foreach (var msg in _messages)
+        {
             EditorGUILayout.HelpBox(msg, MessageType.Warning);
         }
+
+        _messages.Clear();
     }
 }
 
