@@ -98,21 +98,6 @@ public class uLipSyncBlendShape : MonoBehaviour
             _volume = Mathf.SmoothDamp(_volume, 0f, ref _closeVelocity, closeDuration);
         }
     }
-
-#if UNITY_EDITOR
-    public void AddBlendShapeInfo()
-    {
-        var info = new BlendShapeInfo();
-        info.phoneme = "Phoneme";
-        blendShapes.Add(info);
-    }
-
-    public void RemoveBlendShape(int index)
-    {
-        if (index < 0 || index >= blendShapes.Count) return;
-        blendShapes.RemoveAt(index);
-    }
-#endif
 }
 
 }
