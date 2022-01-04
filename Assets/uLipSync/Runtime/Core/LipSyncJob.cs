@@ -1,4 +1,4 @@
-﻿using Unity.Jobs;
+using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Burst;
@@ -9,11 +9,9 @@ namespace uLipSync
 [BurstCompile]
 public struct LipSyncJob : IJob
 {
-    public struct Result
+    public struct Info
     {
-        public int index;
         public float volume;
-        public float distance;
     }
 
     [ReadOnly] public NativeArray<float> input;
@@ -24,20 +22,12 @@ public struct LipSyncJob : IJob
     [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
     public NativeArray<float> phonemes;
-    public NativeArray<Result> result;
+    public NativeArray<float> distances;
+    public NativeArray<Info> info;
 
     public void Execute()
     {
         float volume = Algorithm.GetRMSVolume(input);
-        if (volume < volumeThresh)
-        {
-            var res1 = result[0];
-            res1.index = -1;
-            res1.volume = volume;
-            res1.distance = float.MaxValue;
-            result[0] = res1;
-            return;
-        }
 
         NativeArray<float> buffer;
         Algorithm.CopyRingBuffer(input, out buffer, startIndex);
@@ -68,15 +58,20 @@ public struct LipSyncJob : IJob
         NativeArray<float> melCepstrum;
         Algorithm.DCT(melSpectrum, out melCepstrum);
 
-        for (int i = 1; i < 13; ++i)
+        for (int i = 1; i <= 12; ++i)
         {
             mfcc[i - 1] = melCepstrum[i];
         }
 
-        var res = new Result();
-        res.volume = volume;
-        GetVowel(ref res.index, ref res.distance);
-        result[0] = res;
+        for (int i = 0; i < distances.Length; ++i)
+        {
+            distances[i] = CalcTotalDistance(i);
+        }
+
+        info[0] = new Info()
+        {
+            volume = volume,
+        };
 
         melCepstrum.Dispose();
         melSpectrum.Dispose();

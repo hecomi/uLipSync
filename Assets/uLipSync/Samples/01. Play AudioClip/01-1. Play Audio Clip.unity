@@ -187,8 +187,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 60
+  near clip plane: 0.05
+  far clip plane: 10
   field of view: 30
   orthographic: 0
   orthographic size: 5
@@ -474,6 +474,12 @@ MonoBehaviour:
   - phoneme: O
     index: 10
     maxWeight: 1
+  - phoneme: N
+    index: -1
+    maxWeight: 1
+  - phoneme: Noise
+    index: -1
+    maxWeight: 1
   applyVolume: 1
   openDuration: 0.03
   closeDuration: 0.05
@@ -506,7 +512,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  outputSoundGain: 0.37
+  outputSoundGain: 1
   audioSource: {fileID: 0}
 --- !u!850595691 &1359427199
 LightingSettings:

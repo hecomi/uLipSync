@@ -509,7 +509,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  outputSoundGain: 0.37
+  outputSoundGain: 1
   audioSource: {fileID: 0}
 --- !u!114 &496503025
 MonoBehaviour:
