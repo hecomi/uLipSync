@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -10,6 +11,7 @@ namespace uLipSync
 public class uLipSyncBlendShapeEditor : Editor
 {
     uLipSyncBlendShape blendShape { get { return target as uLipSyncBlendShape; } }
+    ReorderableList reorderableList_ = null;
 
     public override void OnInspectorGUI()
     {
@@ -26,7 +28,8 @@ public class uLipSyncBlendShapeEditor : Editor
         if (EditorUtil.Foldout("Blend Shapes", true))
         {
             ++EditorGUI.indentLevel;
-            DrawBlendShapes();
+            //DrawBlendShapes();
+            DrawBlendShapeReorderableList();
             --EditorGUI.indentLevel;
             EditorGUILayout.Separator();
         }
@@ -49,24 +52,7 @@ public class uLipSyncBlendShapeEditor : Editor
 
         if (findFromChildren)
         {
-            var skinnedMeshRenderers = blendShape.GetComponentsInChildren<SkinnedMeshRenderer>();
-            int index = 0;
-            for (int i = 0; i < skinnedMeshRenderers.Length; ++i)
-            {
-                var skinnedMeshRenderer = skinnedMeshRenderers[i];
-                if (skinnedMeshRenderer == blendShape.skinnedMeshRenderer)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            var names = skinnedMeshRenderers.Select(x => x.gameObject.name).ToArray();
-            var newIndex = EditorGUILayout.Popup("Skinned Mesh Renderer", index, names);
-            if (newIndex != index)
-            {
-                Undo.RecordObject(target, "Change Skinned Mesh Renderer");
-                blendShape.skinnedMeshRenderer = skinnedMeshRenderers[newIndex];
-            }
+            DrawSkinnedMeshRendererInChildren();
         }
         else
         {
@@ -74,56 +60,93 @@ public class uLipSyncBlendShapeEditor : Editor
         }
     }
 
-    void DrawBlendShapes()
+    void DrawSkinnedMeshRendererInChildren()
     {
-        for (int i = 0; i < blendShape.blendShapes.Count; ++i)
+        var skinnedMeshRenderers = blendShape.GetComponentsInChildren<SkinnedMeshRenderer>();
+        int index = 0;
+        for (int i = 0; i < skinnedMeshRenderers.Length; ++i)
         {
-            DrawBlendShape(i);
+            var skinnedMeshRenderer = skinnedMeshRenderers[i];
+            if (skinnedMeshRenderer == blendShape.skinnedMeshRenderer)
+            {
+                index = i;
+                break;
+            }
+        }
+        var names = skinnedMeshRenderers.Select(x => x.gameObject.name).ToArray();
+        var newIndex = EditorGUILayout.Popup("Skinned Mesh Renderer", index, names);
+        if (newIndex != index)
+        {
+            Undo.RecordObject(target, "Change Skinned Mesh Renderer");
+            blendShape.skinnedMeshRenderer = skinnedMeshRenderers[newIndex];
+        }
+    }
+
+    void DrawBlendShapeReorderableList()
+    {
+        if (reorderableList_ == null)
+        {
+            reorderableList_ = new ReorderableList(blendShape.blendShapes, typeof(MfccData));
+            reorderableList_.drawHeaderCallback = rect => 
+            {
+                rect.xMin -= EditorGUI.indentLevel * 12f;
+                EditorGUI.LabelField(rect, "MFCCs");
+            };
+            reorderableList_.draggable = true;
+            reorderableList_.drawElementCallback = (rect, index, isActive, isFocused) =>
+            {
+                DrawBlendShapeListItem(rect, index);
+            };
+            reorderableList_.elementHeightCallback = index =>
+            {
+                return GetBlendShapeListItemHeight(index);
+            };
         }
 
         EditorGUILayout.Separator();
-
-        DrawAddBlendShapeButtons();
-    }
-
-    void DrawAddBlendShapeButtons()
-    {
         EditorGUILayout.BeginHorizontal();
-
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button(" Add New BlendShape "))
-        {
-            blendShape.AddBlendShapeInfo();
-        }
-
+        var indent = EditorGUI.indentLevel * 12f;
+        EditorGUILayout.Space(indent, false);
+        reorderableList_.DoLayoutList();
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawBlendShape(int index)
+    void DrawBlendShapeListItem(Rect rect, int index)
     {
+        rect.y += 2f;
+        rect.height = EditorGUIUtility.singleLineHeight;
+
         var bs = blendShape.blendShapes[index];
+        float singleLineHeight = 
+            EditorGUIUtility.singleLineHeight + 
+            EditorGUIUtility.standardVerticalSpacing;
 
-        if (EditorUtil.SimpleFoldout(bs.phoneme, true, "-BlendShape"))
-        {
-            ++EditorGUI.indentLevel;
+        bs.phoneme = EditorGUI.TextField(rect, "Phoneme", bs.phoneme);
 
-            bs.phoneme = EditorGUILayout.TextField("Phoneme", bs.phoneme);
-            DrawBlendShapePopup(bs);
-            DrawFactor(bs);
-            DrawRemoveUpDown(index);
+        rect.y += singleLineHeight;
 
-            --EditorGUI.indentLevel;
-        }
-    }
-
-    void DrawBlendShapePopup(uLipSyncBlendShape.BlendShapeInfo bs)
-    {
-        var newIndex = EditorGUILayout.Popup("BlendShape", bs.index + 1, GetBlendShapeArray());
+        var newIndex = EditorGUI.Popup(rect, "BlendShape", bs.index + 1, GetBlendShapeArray());
         if (newIndex != bs.index + 1)
         {
             Undo.RecordObject(target, "Change Blend Shape");
             bs.index = newIndex - 1;
         }
+
+        rect.y += singleLineHeight;
+
+        float weight = EditorGUI.Slider(rect, "Max Weight", bs.maxWeight, 0f, 2f);
+        if (weight != bs.maxWeight)
+        {
+            Undo.RecordObject(target, "Change Max Weight");
+            bs.maxWeight = weight;
+        }
+
+        rect.y += singleLineHeight;
+    }
+
+    float GetBlendShapeListItemHeight(int index)
+    {
+        return 64f;
     }
 
     string[] GetBlendShapeArray()
@@ -142,51 +165,6 @@ public class uLipSyncBlendShapeEditor : Editor
             names.Add(name);
         }
         return names.ToArray();
-    }
-
-    void DrawFactor(uLipSyncBlendShape.BlendShapeInfo bs)
-    {
-        float weight = EditorGUILayout.Slider("Max Weight", bs.maxWeight, 0f, 2f);
-        if (weight != bs.maxWeight)
-        {
-            Undo.RecordObject(target, "Change Max Weight");
-            bs.maxWeight = weight;
-        }
-    }
-
-    void DrawRemoveUpDown(int index)
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        GUILayout.FlexibleSpace();
-
-        if (GUILayout.Button(" Remove ", EditorStyles.miniButtonLeft))
-        {
-            blendShape.RemoveBlendShape(index);
-        }
-
-        var blendShapes = blendShape.blendShapes;
-
-        if (GUILayout.Button(" ▲ ", EditorStyles.miniButtonMid))
-        {
-            if (index >= 1)
-            {
-                var tmp = blendShapes[index];
-                blendShapes[index] = blendShapes[index - 1];
-                blendShapes[index - 1] = tmp;
-            }
-        }
-        if (GUILayout.Button(" ▼ ", EditorStyles.miniButtonRight))
-        {
-            if (index < blendShapes.Count - 1)
-            {
-                var tmp = blendShapes[index];
-                blendShapes[index] = blendShapes[index + 1];
-                blendShapes[index + 1] = tmp;
-            }
-        }
-
-        EditorGUILayout.EndHorizontal();
     }
 
     void DrawParameters()
