@@ -1,4 +1,5 @@
 ﻿using UnityEngine.Events;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -17,6 +18,7 @@ public struct LipSyncInfo
     public float volume;
     public float rawVolume;
     public float distance;
+    public Dictionary<string, float> phonemeRatios;
 }
 
 [System.Serializable]

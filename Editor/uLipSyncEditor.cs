@@ -16,6 +16,7 @@ public class uLipSyncEditor : Editor
 
     float minVolume = 0f;
     float maxVolume = -100f;
+    float _smoothVolume = 0f;
 
     public override void OnInspectorGUI()
     {
@@ -133,10 +134,14 @@ public class uLipSyncEditor : Editor
     void DrawRawVolume()
     {
         float volume = Mathf.Log10(lipSync.result.rawVolume);
-        if (volume != Mathf.NegativeInfinity) minVolume = Mathf.Min(minVolume, volume);
-        if (volume != Mathf.Infinity) maxVolume = Mathf.Max(maxVolume, volume);
+        if (volume != Mathf.NegativeInfinity && volume != Mathf.Infinity)
+        {
+            _smoothVolume += (volume - _smoothVolume) * 0.9f;
+            minVolume = Mathf.Min(minVolume, _smoothVolume);
+            maxVolume = Mathf.Max(maxVolume, _smoothVolume);
+        }
 
-        EditorGUILayout.LabelField("Current Volume", volume.ToString());
+        EditorGUILayout.LabelField("Current Volume", _smoothVolume.ToString());
         EditorGUILayout.LabelField("Min Volume", minVolume.ToString());
         EditorGUILayout.LabelField("Max Volume", maxVolume.ToString());
     }

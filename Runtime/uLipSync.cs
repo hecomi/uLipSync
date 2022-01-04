@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -17,19 +17,20 @@ public class uLipSync : MonoBehaviour
     public uLipSyncAudioSource audioSource;
     uLipSyncAudioSource currentAudioSource_;
 
-    JobHandle jobHandle_;
-    object lockObject_ = new object();
-    int index_ = 0;
+    JobHandle _jobHandle;
+    object _lockObject = new object();
+    int _index = 0;
 
-    NativeArray<float> rawInputData_;
-    NativeArray<float> inputData_;
-    NativeArray<float> mfcc_;
-    NativeArray<float> mfccForOther_;
-    NativeArray<float> phonemes_;
-    NativeArray<LipSyncJob.Result> jobResult_;
-    List<int> requestedCalibrationVowels_ = new List<int>();
+    NativeArray<float> _rawInputData;
+    NativeArray<float> _inputData;
+    NativeArray<float> _mfcc;
+    NativeArray<float> _mfccForOther;
+    NativeArray<float> _phonemes;
+    NativeArray<float> _distances;
+    NativeArray<LipSyncJob.Info> _info;
+    List<int> _requestedCalibrationVowels = new List<int>();
 
-    public NativeArray<float> mfcc { get { return mfccForOther_; } }
+    public NativeArray<float> mfcc { get { return _mfccForOther; } }
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
 
     int inputSampleCount
@@ -58,7 +59,7 @@ public class uLipSync : MonoBehaviour
 
     void Update()
     {
-        if (!jobHandle_.IsCompleted) return;
+        if (!_jobHandle.IsCompleted) return;
 
         UpdateResult();
         InvokeCallback();
@@ -72,38 +73,40 @@ public class uLipSync : MonoBehaviour
 
     void AllocateBuffers()
     {
-        lock (lockObject_)
+        lock (_lockObject)
         {
             int n = inputSampleCount;
-            rawInputData_ = new NativeArray<float>(n, Allocator.Persistent);
-            inputData_ = new NativeArray<float>(n, Allocator.Persistent); 
-            mfcc_ = new NativeArray<float>(12, Allocator.Persistent); 
-            jobResult_ = new NativeArray<LipSyncJob.Result>(1, Allocator.Persistent);
-            mfccForOther_ = new NativeArray<float>(12, Allocator.Persistent); 
-            phonemes_ = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
+            _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
+            _inputData = new NativeArray<float>(n, Allocator.Persistent); 
+            _mfcc = new NativeArray<float>(12, Allocator.Persistent); 
+            _distances = new NativeArray<float>(profile.mfccs.Count, Allocator.Persistent);
+            _mfccForOther = new NativeArray<float>(12, Allocator.Persistent); 
+            _phonemes = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
+            _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
         }
     }
 
     void DisposeBuffers()
     {
-        lock (lockObject_)
+        lock (_lockObject)
         {
-            jobHandle_.Complete();
-            rawInputData_.Dispose();
-            inputData_.Dispose();
-            mfcc_.Dispose();
-            mfccForOther_.Dispose();
-            jobResult_.Dispose();
-            phonemes_.Dispose();
+            _jobHandle.Complete();
+            _rawInputData.Dispose();
+            _inputData.Dispose();
+            _mfcc.Dispose();
+            _mfccForOther.Dispose();
+            _distances.Dispose();
+            _phonemes.Dispose();
+            _info.Dispose();
         }
     }
 
     void UpdateBuffers()
     {
-        if (inputSampleCount != rawInputData_.Length ||
-            profile.mfccs.Count * 12 != phonemes_.Length)
+        if (inputSampleCount != _rawInputData.Length ||
+            profile.mfccs.Count * 12 != _phonemes.Length)
         {
-            lock (lockObject_)
+            lock (_lockObject)
             {
                 DisposeBuffers();
                 AllocateBuffers();
@@ -113,25 +116,53 @@ public class uLipSync : MonoBehaviour
 
     void UpdateResult()
     {
-        jobHandle_.Complete();
-        mfccForOther_.CopyFrom(mfcc_);
+        _jobHandle.Complete();
+        _mfccForOther.CopyFrom(_mfcc);
 
-        var index = jobResult_[0].index;
-        var phoneme = profile.GetPhoneme(index);
-        float distance = jobResult_[0].distance;
-        float vol = Mathf.Log10(jobResult_[0].volume);
+        float sumInvDistance = 0f;
+        float minDistance = float.MaxValue;
+        int mainIndex = -1;
+        string mainPhoneme = "";
+        for (int i = 0; i < _distances.Length; ++i)
+        {
+            var d = _distances[i];
+            if (d < minDistance)
+            {
+                minDistance = d;
+                mainIndex = i;
+                mainPhoneme = profile.GetPhoneme(i);
+            }
+            sumInvDistance += Mathf.Exp(-d);
+        }
+
+        var ratios = new Dictionary<string, float>();
+        for (int i = 0; i < _distances.Length; ++i)
+        {
+            var phoneme = profile.GetPhoneme(i);
+            var d = _distances[i];
+            var invDistance = Mathf.Exp(-d);
+            var ratio = sumInvDistance > 0f ? invDistance / sumInvDistance : 0f;
+            if (!ratios.TryAdd(phoneme, ratio))
+            {
+                ratios[phoneme] += ratio;
+            }
+        }
+
+        float rawVolume = _info[0].volume;
         float minVol = profile.minVolume;
         float maxVol = Mathf.Max(profile.maxVolume, minVol + 1e-4f);
-        vol = (vol - minVol) / (maxVol - minVol);
-        vol = Mathf.Clamp(vol, 0f, 1f);
+        float normVol = Mathf.Log10(rawVolume);
+        normVol = (normVol - minVol) / (maxVol - minVol);
+        normVol = Mathf.Clamp(normVol, 0f, 1f);
 
         result = new LipSyncInfo()
         {
-            index = index,
-            phoneme = phoneme,
-            volume = vol,
-            rawVolume = jobResult_[0].volume,
-            distance = distance,
+            index = mainIndex,
+            phoneme = mainPhoneme,
+            volume = normVol,
+            rawVolume = rawVolume,
+            distance = minDistance,
+            phonemeRatios = ratios,
         };
     }
 
@@ -149,8 +180,8 @@ public class uLipSync : MonoBehaviour
         {
             foreach (var value in data.mfccNativeArray)
             {
-                if (index >= phonemes_.Length) break;
-                phonemes_[index++] = value;
+                if (index >= _phonemes.Length) break;
+                _phonemes[index++] = value;
             }
         }
     }
@@ -158,43 +189,44 @@ public class uLipSync : MonoBehaviour
     void ScheduleJob()
     {
         int index = 0;
-        lock (lockObject_)
+        lock (_lockObject)
         {
-            inputData_.CopyFrom(rawInputData_);
-            index = index_;
+            _inputData.CopyFrom(_rawInputData);
+            index = _index;
         }
 
         var lipSyncJob = new LipSyncJob()
         {
-            input = inputData_,
+            input = _inputData,
             startIndex = index,
             outputSampleRate = AudioSettings.outputSampleRate,
             targetSampleRate = profile.targetSampleRate,
             volumeThresh = Mathf.Pow(10f, profile.minVolume),
             melFilterBankChannels = profile.melFilterBankChannels,
-            mfcc = mfcc_,
-            phonemes = phonemes_,
-            result = jobResult_,
+            mfcc = _mfcc,
+            phonemes = _phonemes,
+            distances = _distances,
+            info = _info,
         };
 
-        jobHandle_ = lipSyncJob.Schedule();
+        _jobHandle = lipSyncJob.Schedule();
     }
 
     public void RequestCalibration(int index)
     {
-        requestedCalibrationVowels_.Add(index);
+        _requestedCalibrationVowels.Add(index);
     }
 
     void UpdateCalibration()
     {
         if (profile == null) return;
 
-        foreach (var index in requestedCalibrationVowels_)
+        foreach (var index in _requestedCalibrationVowels)
         {
             profile.UpdateMfcc(index, mfcc, true);
         }
 
-        requestedCalibrationVowels_.Clear();
+        _requestedCalibrationVowels.Clear();
     }
 
     void UpdateAudioSource()
@@ -216,15 +248,15 @@ public class uLipSync : MonoBehaviour
 
     public void OnDataReceived(float[] input, int channels)
     {
-        if (rawInputData_ == null || rawInputData_.Length == 0) return;
+        if (_rawInputData == null || _rawInputData.Length == 0) return;
 
-        lock (lockObject_)
+        lock (_lockObject)
         {
-            int n = rawInputData_.Length;
-            index_ = index_ % n;
+            int n = _rawInputData.Length;
+            _index = _index % n;
             for (int i = 0; i < input.Length; i += channels) 
             {
-                rawInputData_[index_++ % n] = input[i];
+                _rawInputData[_index++ % n] = input[i];
             }
         }
 

@@ -28,23 +28,22 @@ public class uLipSyncBlendShape : MonoBehaviour
     float _closeVelocity = 0f;
     List<float> _vowelChangeVelocity = new List<float>();
 
-    string _phoneme = "";
-    float _phonemeTimer = 0f;
+    LipSyncInfo _info = new LipSyncInfo();
     float _volume = 0f;
     bool _lipSyncUpdated = false;
 
-    public void OnLipSyncUpdate(LipSyncInfo lipSync)
+    public void OnLipSyncUpdate(LipSyncInfo info)
     {
-        _phoneme = lipSync.phoneme;
+        _info = info;
 
-        if (lipSync.volume > Mathf.Epsilon)
+        if (_info.volume > 1e-2f)
         {
-            var targetVolume = applyVolume ? lipSync.volume : 1f;
+            var targetVolume = applyVolume ? _info.volume : 1f;
             _volume = Mathf.SmoothDamp(_volume, targetVolume, ref _openVelocity, openDuration);
         }
         else
         {
-            var targetVolume = applyVolume ? lipSync.volume : 0f;
+            var targetVolume = applyVolume ? _info.volume : 0f;
             _volume = Mathf.SmoothDamp(_volume, targetVolume, ref _closeVelocity, closeDuration);
         }
 
@@ -54,10 +53,12 @@ public class uLipSyncBlendShape : MonoBehaviour
     void Update()
     {
         float sum = 0f;
+        var ratios = _info.phonemeRatios;
 
         foreach (var bs in blendShapes)
         {
-            float targetWeight = (bs.phoneme == _phoneme) ? 1f : 0f;
+            float targetWeight = 0f;
+            if (ratios != null) ratios.TryGetValue(bs.phoneme, out targetWeight);
             float vowelChangeVelocity = bs.vowelChangeVelocity;
             bs.weight = Mathf.SmoothDamp(bs.weight, targetWeight, ref vowelChangeVelocity, vowelChangeDuration);
             bs.vowelChangeVelocity = vowelChangeVelocity;
