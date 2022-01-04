@@ -24,30 +24,31 @@ public class uLipSyncBlendShape : MonoBehaviour
     [Range(0f, 0.2f)] public float closeDuration = 0.1f;
     [Range(0f, 0.2f)] public float vowelChangeDuration = 0.04f;
 
-    float openVelocity_ = 0f;
-    float closeVelocity_ = 0f;
-    List<float> vowelChangeVelocity_ = new List<float>();
+    float _openVelocity = 0f;
+    float _closeVelocity = 0f;
+    List<float> _vowelChangeVelocity = new List<float>();
 
-    string phoneme = "";
-    float volume = 0f;
-    bool lipSyncUpdated = false;
+    string _phoneme = "";
+    float _phonemeTimer = 0f;
+    float _volume = 0f;
+    bool _lipSyncUpdated = false;
 
     public void OnLipSyncUpdate(LipSyncInfo lipSync)
     {
-        phoneme = lipSync.phoneme;
+        _phoneme = lipSync.phoneme;
 
         if (lipSync.volume > Mathf.Epsilon)
         {
             var targetVolume = applyVolume ? lipSync.volume : 1f;
-            volume = Mathf.SmoothDamp(volume, targetVolume, ref openVelocity_, openDuration);
+            _volume = Mathf.SmoothDamp(_volume, targetVolume, ref _openVelocity, openDuration);
         }
         else
         {
             var targetVolume = applyVolume ? lipSync.volume : 0f;
-            volume = Mathf.SmoothDamp(volume, targetVolume, ref closeVelocity_, closeDuration);
+            _volume = Mathf.SmoothDamp(_volume, targetVolume, ref _closeVelocity, closeDuration);
         }
 
-        lipSyncUpdated = true;
+        _lipSyncUpdated = true;
     }
 
     void Update()
@@ -56,7 +57,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 
         foreach (var bs in blendShapes)
         {
-            float targetWeight = (bs.phoneme == phoneme) ? 1f : 0f;
+            float targetWeight = (bs.phoneme == _phoneme) ? 1f : 0f;
             float vowelChangeVelocity = bs.vowelChangeVelocity;
             bs.weight = Mathf.SmoothDamp(bs.weight, targetWeight, ref vowelChangeVelocity, vowelChangeDuration);
             bs.vowelChangeVelocity = vowelChangeVelocity;
@@ -84,17 +85,17 @@ public class uLipSyncBlendShape : MonoBehaviour
             if (bs.index < 0) continue;
 
             float weight = skinnedMeshRenderer.GetBlendShapeWeight(bs.index);
-            weight += bs.normalizedWeight * bs.maxWeight * volume * 100;
+            weight += bs.normalizedWeight * bs.maxWeight * _volume * 100;
             skinnedMeshRenderer.SetBlendShapeWeight(bs.index, weight);
         }
 
-        if (lipSyncUpdated)
+        if (_lipSyncUpdated)
         {
-            lipSyncUpdated = false;
+            _lipSyncUpdated = false;
         }
         else
         {
-            volume = Mathf.SmoothDamp(volume, 0f, ref closeVelocity_, closeDuration);
+            _volume = Mathf.SmoothDamp(_volume, 0f, ref _closeVelocity, closeDuration);
         }
     }
 
