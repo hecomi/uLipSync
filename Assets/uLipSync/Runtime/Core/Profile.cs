@@ -99,10 +99,6 @@ public class Profile : ScriptableObject
     public int targetSampleRate = 16000;
     [Tooltip("Number of audio samples after downsampling is applied")]
     public int sampleCount = 512;
-    [Tooltip("Min Volume (Log10)")]
-    [Range(-10f, 0f)] public float minVolume = -4f;
-    [Tooltip("Max Volume (Log10)")]
-    [Range(-10f, 0f)] public float maxVolume = -2f;
 
     public List<MfccData> mfccs = new List<MfccData>();
 

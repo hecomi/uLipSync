@@ -11,7 +11,6 @@ public class uLipSync : MonoBehaviour
 {
     public Profile profile;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
-    [Tooltip("If you want to supress the sound output, set this value to zero instead of setting the AudioSource volume to zero")]
     [Range(0f, 1f)] public float outputSoundGain = 1f;
 
     public uLipSyncAudioSource audioSource;
@@ -29,6 +28,7 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> _distances;
     NativeArray<LipSyncJob.Info> _info;
     List<int> _requestedCalibrationVowels = new List<int>();
+    Dictionary<string, float> _ratios = new Dictionary<string, float>();
 
     public NativeArray<float> mfcc { get { return _mfccForOther; } }
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
@@ -132,26 +132,26 @@ public class uLipSync : MonoBehaviour
                 mainIndex = i;
                 mainPhoneme = profile.GetPhoneme(i);
             }
-            sumInvDistance += Mathf.Exp(-d);
+            sumInvDistance += Mathf.Pow(10f, -d);
         }
 
-        var ratios = new Dictionary<string, float>();
+        _ratios.Clear();
         for (int i = 0; i < _distances.Length; ++i)
         {
             var phoneme = profile.GetPhoneme(i);
             var d = _distances[i];
-            var invDistance = Mathf.Exp(-d);
+            var invDistance = Mathf.Pow(10f, -d);
             var ratio = sumInvDistance > 0f ? invDistance / sumInvDistance : 0f;
-            if (!ratios.TryAdd(phoneme, ratio))
+            if (!_ratios.TryAdd(phoneme, ratio))
             {
-                ratios[phoneme] += ratio;
+                _ratios[phoneme] += ratio;
             }
         }
 
-        float rawVolume = _info[0].volume;
-        float minVol = profile.minVolume;
-        float maxVol = Mathf.Max(profile.maxVolume, minVol + 1e-4f);
-        float normVol = Mathf.Log10(rawVolume);
+        float rawVol = _info[0].volume;
+        float minVol = Common.defaultMinVolume;
+        float maxVol = Common.defaultMaxVolume;
+        float normVol = Mathf.Log10(rawVol);
         normVol = (normVol - minVol) / (maxVol - minVol);
         normVol = Mathf.Clamp(normVol, 0f, 1f);
 
@@ -160,9 +160,9 @@ public class uLipSync : MonoBehaviour
             index = mainIndex,
             phoneme = mainPhoneme,
             volume = normVol,
-            rawVolume = rawVolume,
+            rawVolume = rawVol,
             distance = minDistance,
-            phonemeRatios = ratios,
+            phonemeRatios = _ratios,
         };
     }
 
@@ -201,7 +201,6 @@ public class uLipSync : MonoBehaviour
             startIndex = index,
             outputSampleRate = AudioSettings.outputSampleRate,
             targetSampleRate = profile.targetSampleRate,
-            volumeThresh = Mathf.Pow(10f, profile.minVolume),
             melFilterBankChannels = profile.melFilterBankChannels,
             mfcc = _mfcc,
             phonemes = _phonemes,

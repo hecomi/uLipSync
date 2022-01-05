@@ -9,6 +9,8 @@ public static class Common
     public const string assetName = "uLipSync";
     public const string defaultProfileMale = assetName + "-Profile-Male";
     public const string defaultProfileFemale = assetName + "-Profile-Female";
+    public const float defaultMinVolume = -2.5f;
+    public const float defaultMaxVolume = -1.5f;
 }
 
 public struct LipSyncInfo
