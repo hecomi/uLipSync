@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 namespace uLipSync
 {
@@ -17,10 +19,30 @@ public class uLipSyncEditor : Editor
     float minVolume = 0f;
     float maxVolume = -100f;
     float _smoothVolume = 0f;
+    StringBuilder _recognizedPhonemes = new StringBuilder();
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+
+        if (EditorUtil.Foldout("Parameters", true))
+        {
+            ++EditorGUI.indentLevel;
+
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.audioSource));
+
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space(10f, false);
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.onLipSyncUpdate));
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            --EditorGUI.indentLevel;
+        }
 
         if (EditorUtil.Foldout("Profile", true))
         {
@@ -33,34 +55,6 @@ public class uLipSyncEditor : Editor
             --EditorGUI.indentLevel;
         }
 
-        if (EditorUtil.Foldout("Callback", true))
-        {
-            ++EditorGUI.indentLevel;
-
-            EditorGUILayout.BeginHorizontal();
-
-            EditorGUILayout.Space(10f, false);
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.onLipSyncUpdate));
-
-            EditorGUILayout.EndHorizontal();
-
-            --EditorGUI.indentLevel;
-
-            EditorGUILayout.Separator();
-        }
-
-        if (EditorUtil.Foldout("Parameters", true))
-        {
-            ++EditorGUI.indentLevel;
-
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
-            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.audioSource));
-
-            --EditorGUI.indentLevel;
-
-            EditorGUILayout.Separator();
-        }
-
         if (EditorUtil.Foldout("Runtime Information", false))
         {
             ++EditorGUI.indentLevel;
@@ -69,6 +63,7 @@ public class uLipSyncEditor : Editor
             {
                 DrawRawVolume();
                 DrawRMSVolume();
+                DrawRecognition();
             }
             else
             {
@@ -185,6 +180,26 @@ public class uLipSyncEditor : Editor
         {
             EditorUtil.DrawMfcc(mfcc, editor.max, editor.min, 1f);
         }
+    }
+
+    void DrawRecognition()
+    {
+        var phoeneme = lipSync.result.phoneme;
+        if (Application.isPlaying &&
+            !EditorApplication.isPaused &&
+            lipSync.isActiveAndEnabled &&
+            !string.IsNullOrEmpty(phoeneme))
+        {
+            _recognizedPhonemes.Append(lipSync.result.phoneme[0]);
+            while (_recognizedPhonemes.Length > 64)
+            {
+                _recognizedPhonemes.Remove(0, 1);
+            }
+        }
+        var arr = _recognizedPhonemes.ToString().ToCharArray();
+        System.Array.Reverse(arr);
+        var str = new string(arr);
+        EditorGUILayout.LabelField("Recognized Phoeneme", str);
     }
 }
 

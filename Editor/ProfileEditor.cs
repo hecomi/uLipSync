@@ -33,15 +33,13 @@ public class ProfileEditor : Editor
             --EditorGUI.indentLevel;
         }
 
-        if (EditorUtil.SimpleFoldout("Parameters", true))
+        if (EditorUtil.SimpleFoldout("Advanced Parameters", true))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(profile.mfccDataCount));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.minVolume));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.maxVolume));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
             profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
             profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);

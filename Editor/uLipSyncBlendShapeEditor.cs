@@ -25,19 +25,18 @@ public class uLipSyncBlendShapeEditor : Editor
             EditorGUILayout.Separator();
         }
 
-        if (EditorUtil.Foldout("Blend Shapes", true))
-        {
-            ++EditorGUI.indentLevel;
-            //DrawBlendShapes();
-            DrawBlendShapeReorderableList();
-            --EditorGUI.indentLevel;
-            EditorGUILayout.Separator();
-        }
-
         if (EditorUtil.Foldout("Parameters", true))
         {
             ++EditorGUI.indentLevel;
             DrawParameters();
+            --EditorGUI.indentLevel;
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.Foldout("Blend Shapes", true))
+        {
+            ++EditorGUI.indentLevel;
+            DrawBlendShapeReorderableList();
             --EditorGUI.indentLevel;
             EditorGUILayout.Separator();
         }
@@ -90,7 +89,7 @@ public class uLipSyncBlendShapeEditor : Editor
             reorderableList_.drawHeaderCallback = rect => 
             {
                 rect.xMin -= EditorGUI.indentLevel * 12f;
-                EditorGUI.LabelField(rect, "MFCCs");
+                EditorGUI.LabelField(rect, "Phoneme - BlendShape Table");
             };
             reorderableList_.draggable = true;
             reorderableList_.drawElementCallback = (rect, index, isActive, isFocused) =>
@@ -169,10 +168,50 @@ public class uLipSyncBlendShapeEditor : Editor
 
     void DrawParameters()
     {
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.applyVolume));
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.openDuration));
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.closeDuration));
-        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.vowelChangeDuration));
+        Undo.RecordObject(target, "Change Volume Min/Max");
+        EditorGUILayout.MinMaxSlider(
+            "Volume Min/Max (Log10)",
+            ref blendShape.minVolume, 
+            ref blendShape.maxVolume,
+            -5f, 0f);
+
+        var rect = EditorGUILayout.GetControlRect(GUILayout.Height(0f));
+        rect.x += EditorGUIUtility.labelWidth;
+        rect.width -= EditorGUIUtility.labelWidth;
+        rect.height = EditorGUIUtility.singleLineHeight;
+        EditorGUILayout.BeginHorizontal();
+        {
+            var origColor = GUI.color;
+            var style = new GUIStyle(GUI.skin.label);
+            style.fontSize = 9;
+            GUI.color = Color.gray;
+
+            var minPos = rect;
+            minPos.x -= 24f;
+            minPos.y -= 12f;
+            if (blendShape.minVolume > -4.5f)
+            {
+                minPos.x += (blendShape.minVolume + 5f) / 5f * rect.width - 30f;
+            }
+            EditorGUI.LabelField(minPos, $"{blendShape.minVolume.ToString("F2")}", style);
+
+            var maxPos = rect;
+            var maxX = (blendShape.maxVolume + 5f) / 5f * rect.width;
+            maxPos.y -= 12f;
+            if (maxX < maxPos.width - 48f)
+            {
+                maxPos.x += maxX;
+            }
+            else
+            {
+                maxPos.x += maxPos.width - 48f;
+            }
+            EditorGUI.LabelField(maxPos, $"{blendShape.maxVolume.ToString("F2")}", style);
+            GUI.color = origColor;
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.smoothness));
     }
 }
 

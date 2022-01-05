@@ -12,6 +12,7 @@ public struct LipSyncJob : IJob
     public struct Info
     {
         public float volume;
+        public int mainVowelIndex;
     }
 
     [ReadOnly] public NativeArray<float> input;
@@ -19,7 +20,6 @@ public struct LipSyncJob : IJob
     [ReadOnly] public int outputSampleRate;
     [ReadOnly] public int targetSampleRate;
     [ReadOnly] public int melFilterBankChannels;
-    [ReadOnly] public float volumeThresh;
     public NativeArray<float> mfcc;
     public NativeArray<float> phonemes;
     public NativeArray<float> distances;
@@ -71,6 +71,7 @@ public struct LipSyncJob : IJob
         info[0] = new Info()
         {
             volume = volume,
+            mainVowelIndex = GetVowel(),
         };
 
         melCepstrum.Dispose();
@@ -80,9 +81,10 @@ public struct LipSyncJob : IJob
         buffer.Dispose();
     }
 
-    void GetVowel(ref int index, ref float minDistance)
+    int GetVowel()
     {
-        minDistance = float.MaxValue;
+        int index = -1;
+        float minDistance = float.MaxValue;
         int n = phonemes.Length / 12;
         for (int i = 0; i < n; ++i)
         {
@@ -93,6 +95,7 @@ public struct LipSyncJob : IJob
                 minDistance = distance;
             }
         }
+        return index;
     }
 
     float CalcTotalDistance(int index)
