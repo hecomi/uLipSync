@@ -19,6 +19,7 @@ public class uLipSync : MonoBehaviour
     JobHandle _jobHandle;
     object _lockObject = new object();
     int _index = 0;
+    bool _isDataReceived = false;
 
     NativeArray<float> _rawInputData;
     NativeArray<float> _inputData;
@@ -188,6 +189,9 @@ public class uLipSync : MonoBehaviour
 
     void ScheduleJob()
     {
+        if (!_isDataReceived) return;
+        _isDataReceived = false;
+
         int index = 0;
         lock (_lockObject)
         {
@@ -267,6 +271,8 @@ public class uLipSync : MonoBehaviour
                 input[i] *= outputSoundGain;
             }
         }
+
+        _isDataReceived = true;
     }
 
     void OnAudioFilterRead(float[] input, int channels)
