@@ -80,7 +80,7 @@ public class uLipSyncBlendShape : MonoBehaviour
         }
     }
 
-    void LateUpdateBlendShapes()
+    protected virtual void LateUpdateBlendShapes()
     {
         if (!skinnedMeshRenderer) return;
 

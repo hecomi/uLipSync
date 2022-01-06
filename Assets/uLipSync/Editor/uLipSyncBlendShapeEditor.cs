@@ -11,7 +11,7 @@ namespace uLipSync
 public class uLipSyncBlendShapeEditor : Editor
 {
     uLipSyncBlendShape blendShape { get { return target as uLipSyncBlendShape; } }
-    ReorderableList reorderableList_ = null;
+    ReorderableList _reorderableList = null;
 
     public override void OnInspectorGUI()
     {
@@ -44,7 +44,7 @@ public class uLipSyncBlendShapeEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    void DrawSkinnedMeshRenderer()
+    protected void DrawSkinnedMeshRenderer()
     {
         var findFromChildren = EditorUtil.EditorOnlyToggle("Find From Children", "uLipSyncBlendShape", true);
         EditorUtil.DrawProperty(serializedObject, nameof(findFromChildren));
@@ -59,7 +59,7 @@ public class uLipSyncBlendShapeEditor : Editor
         }
     }
 
-    void DrawSkinnedMeshRendererInChildren()
+    protected void DrawSkinnedMeshRendererInChildren()
     {
         var skinnedMeshRenderers = blendShape.GetComponentsInChildren<SkinnedMeshRenderer>();
         int index = 0;
@@ -81,22 +81,22 @@ public class uLipSyncBlendShapeEditor : Editor
         }
     }
 
-    void DrawBlendShapeReorderableList()
+    protected void DrawBlendShapeReorderableList()
     {
-        if (reorderableList_ == null)
+        if (_reorderableList == null)
         {
-            reorderableList_ = new ReorderableList(blendShape.blendShapes, typeof(MfccData));
-            reorderableList_.drawHeaderCallback = rect => 
+            _reorderableList = new ReorderableList(blendShape.blendShapes, typeof(MfccData));
+            _reorderableList.drawHeaderCallback = rect => 
             {
                 rect.xMin -= EditorGUI.indentLevel * 12f;
                 EditorGUI.LabelField(rect, "Phoneme - BlendShape Table");
             };
-            reorderableList_.draggable = true;
-            reorderableList_.drawElementCallback = (rect, index, isActive, isFocused) =>
+            _reorderableList.draggable = true;
+            _reorderableList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
                 DrawBlendShapeListItem(rect, index);
             };
-            reorderableList_.elementHeightCallback = index =>
+            _reorderableList.elementHeightCallback = index =>
             {
                 return GetBlendShapeListItemHeight(index);
             };
@@ -106,11 +106,11 @@ public class uLipSyncBlendShapeEditor : Editor
         EditorGUILayout.BeginHorizontal();
         var indent = EditorGUI.indentLevel * 12f;
         EditorGUILayout.Space(indent, false);
-        reorderableList_.DoLayoutList();
+        _reorderableList.DoLayoutList();
         EditorGUILayout.EndHorizontal();
     }
 
-    void DrawBlendShapeListItem(Rect rect, int index)
+    protected void DrawBlendShapeListItem(Rect rect, int index)
     {
         rect.y += 2f;
         rect.height = EditorGUIUtility.singleLineHeight;
@@ -133,7 +133,7 @@ public class uLipSyncBlendShapeEditor : Editor
 
         rect.y += singleLineHeight;
 
-        float weight = EditorGUI.Slider(rect, "Max Weight", bs.maxWeight, 0f, 2f);
+        float weight = EditorGUI.Slider(rect, "Max Weight", bs.maxWeight, 0f, 1f);
         if (weight != bs.maxWeight)
         {
             Undo.RecordObject(target, "Change Max Weight");
@@ -143,12 +143,12 @@ public class uLipSyncBlendShapeEditor : Editor
         rect.y += singleLineHeight;
     }
 
-    float GetBlendShapeListItemHeight(int index)
+    protected virtual float GetBlendShapeListItemHeight(int index)
     {
         return 64f;
     }
 
-    string[] GetBlendShapeArray()
+    protected virtual string[] GetBlendShapeArray()
     {
         if (blendShape.skinnedMeshRenderer == null)
         {
@@ -166,7 +166,7 @@ public class uLipSyncBlendShapeEditor : Editor
         return names.ToArray();
     }
 
-    void DrawParameters()
+    protected void DrawParameters()
     {
         Undo.RecordObject(target, "Change Volume Min/Max");
         EditorGUILayout.MinMaxSlider(
