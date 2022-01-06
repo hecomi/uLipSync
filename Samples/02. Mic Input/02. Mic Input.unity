@@ -474,10 +474,15 @@ MonoBehaviour:
   - phoneme: O
     index: 10
     maxWeight: 1
-  applyVolume: 0
-  openDuration: 0.05
-  closeDuration: 0.1
-  vowelChangeDuration: 0.05
+  - phoneme: N
+    index: -1
+    maxWeight: 1
+  - phoneme: '-'
+    index: -1
+    maxWeight: 1
+  minVolume: -2.5
+  maxVolume: -1.5
+  smoothness: 0.05
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0

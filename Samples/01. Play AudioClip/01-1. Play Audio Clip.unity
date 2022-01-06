@@ -477,13 +477,12 @@ MonoBehaviour:
   - phoneme: N
     index: -1
     maxWeight: 1
-  - phoneme: Noise
+  - phoneme: '-'
     index: -1
     maxWeight: 1
-  applyVolume: 1
-  openDuration: 0.03
-  closeDuration: 0.05
-  vowelChangeDuration: 0.05
+  minVolume: -2.5
+  maxVolume: -1.5
+  smoothness: 0.07
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
