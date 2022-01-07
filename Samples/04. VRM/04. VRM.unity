@@ -168,8 +168,8 @@ Camera:
   m_GameObject: {fileID: 180302166}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.8632076, g: 0.95217323, b: 1, a: 0.019607844}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -979,7 +979,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 1
   outputSoundGain: 1
-  audioSource: {fileID: 0}
+  audioSourceProxy: {fileID: 0}
 --- !u!114 &1225114963
 MonoBehaviour:
   m_ObjectHideFlags: 0

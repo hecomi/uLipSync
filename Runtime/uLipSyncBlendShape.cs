@@ -28,6 +28,7 @@ public class uLipSyncBlendShape : MonoBehaviour
     bool _lipSyncUpdated = false;
     float _volume = 0f;
     float _openCloseVelocity = 0f;
+    protected float volume => _volume;
 
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
@@ -94,7 +95,7 @@ public class uLipSyncBlendShape : MonoBehaviour
         {
             if (bs.index < 0) continue;
             float weight = skinnedMeshRenderer.GetBlendShapeWeight(bs.index);
-            weight += bs.normalizedWeight * bs.maxWeight * _volume * 100;
+            weight += bs.normalizedWeight * bs.maxWeight * volume * 100;
             skinnedMeshRenderer.SetBlendShapeWeight(bs.index, weight);
         }
     }
