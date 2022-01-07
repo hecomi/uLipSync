@@ -13,680 +13,2664 @@ MonoBehaviour:
   m_Name: Sample Baked Data 02
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
-  audioClip: {fileID: 8300000, guid: 6ccbc3d284bd849d49fb1f8f94ab2888, type: 3}
+  audioClip: {fileID: 8300000, guid: 32c66f57888d14cc7a1c33026a6a6dee, type: 3}
   bakedProfile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
-  bakedAudioClip: {fileID: 8300000, guid: 6ccbc3d284bd849d49fb1f8f94ab2888, type: 3}
-  duration: 0.69659865
+  bakedAudioClip: {fileID: 8300000, guid: 32c66f57888d14cc7a1c33026a6a6dee, type: 3}
+  duration: 2.7565079
   frames:
-  - volume: 0.00011529866
+  - volume: 0.036946125
     phonemes:
     - phoneme: A
-      ratio: 2.199539e-13
+      ratio: 0.8540313
     - phoneme: I
-      ratio: 9.898306e-10
+      ratio: 9.845164e-13
     - phoneme: U
-      ratio: 0.000000032652203
+      ratio: 0.0000000063243526
     - phoneme: E
-      ratio: 6.1128457e-21
+      ratio: 0.000000008718837
     - phoneme: O
-      ratio: 1.4748853e-14
+      ratio: 0.1438966
     - phoneme: N
-      ratio: 5.612853e-11
+      ratio: 0.00024321076
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.00015741886
+      ratio: 0.0018287792
+  - volume: 0.05486214
     phonemes:
     - phoneme: A
-      ratio: 1.25148685e-11
+      ratio: 0.013288293
     - phoneme: I
-      ratio: 0.000000836567
+      ratio: 0.0001636689
     - phoneme: U
-      ratio: 0.0000013624086
+      ratio: 0.000018055776
     - phoneme: E
-      ratio: 9.509785e-20
+      ratio: 2.3080674e-14
     - phoneme: O
-      ratio: 2.5622875e-14
+      ratio: 0.9031422
     - phoneme: N
-      ratio: 4.2584707e-12
+      ratio: 0.08020903
     - phoneme: Noise
-      ratio: 0.99999785
-  - volume: 0.00013366419
+      ratio: 0.0031789104
+  - volume: 0.10250663
     phonemes:
     - phoneme: A
-      ratio: 3.908012e-13
+      ratio: 0.000035127945
     - phoneme: I
-      ratio: 8.240953e-10
+      ratio: 0.0000022669403
     - phoneme: U
-      ratio: 9.790023e-10
+      ratio: 0.00000011148449
     - phoneme: E
-      ratio: 4.3366973e-22
+      ratio: 1.8158403e-10
     - phoneme: O
-      ratio: 1.810412e-15
+      ratio: 0.9998721
     - phoneme: N
-      ratio: 1.5495934e-13
+      ratio: 0.00003485976
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.00012564154
+      ratio: 0.000055504344
+  - volume: 0.16117385
     phonemes:
     - phoneme: A
-      ratio: 3.1731632e-13
+      ratio: 0.00000041492572
     - phoneme: I
-      ratio: 0.00000022034303
+      ratio: 1.1200322e-11
     - phoneme: U
-      ratio: 0.00000015341092
+      ratio: 0.00000003212463
     - phoneme: E
-      ratio: 5.865018e-21
+      ratio: 5.889601e-10
     - phoneme: O
-      ratio: 2.368918e-15
-    - phoneme: N
-      ratio: 6.088528e-13
-    - phoneme: Noise
       ratio: 0.9999996
-  - volume: 0.00012361523
+    - phoneme: N
+      ratio: 0.000000004474102
+    - phoneme: Noise
+      ratio: 0.0000000077806455
+  - volume: 0.19174848
     phonemes:
     - phoneme: A
-      ratio: 1.6795354e-13
+      ratio: 0.00000008773945
     - phoneme: I
-      ratio: 0.00000038201543
+      ratio: 8.274476e-16
     - phoneme: U
-      ratio: 5.3830795e-10
+      ratio: 7.1504486e-10
     - phoneme: E
-      ratio: 2.0479714e-18
+      ratio: 5.310966e-10
     - phoneme: O
-      ratio: 4.551275e-14
+      ratio: 0.99999994
     - phoneme: N
-      ratio: 5.6733584e-13
+      ratio: 0.0000000012590785
     - phoneme: Noise
+      ratio: 2.7505491e-12
+  - volume: 0.18510836
+    phonemes:
+    - phoneme: A
+      ratio: 0.0037306256
+    - phoneme: I
+      ratio: 5.535429e-14
+    - phoneme: U
+      ratio: 0.013019989
+    - phoneme: E
+      ratio: 0.00007063812
+    - phoneme: O
+      ratio: 0.9831759
+    - phoneme: N
+      ratio: 0.0000029297787
+    - phoneme: Noise
+      ratio: 4.3616605e-10
+  - volume: 0.17180134
+    phonemes:
+    - phoneme: A
+      ratio: 0.7555426
+    - phoneme: I
+      ratio: 3.7250984e-14
+    - phoneme: U
+      ratio: 0.0019440348
+    - phoneme: E
+      ratio: 0.024585681
+    - phoneme: O
+      ratio: 0.21792749
+    - phoneme: N
+      ratio: 0.00000027180567
+    - phoneme: Noise
+      ratio: 0.000000021454362
+  - volume: 0.16005497
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000114861244
+    - phoneme: I
+      ratio: 2.88874e-13
+    - phoneme: U
+      ratio: 0.000039264185
+    - phoneme: E
+      ratio: 9.704721e-10
+    - phoneme: O
+      ratio: 0.9999559
+    - phoneme: N
+      ratio: 0.00000071188515
+    - phoneme: Noise
+      ratio: 0.000003993568
+  - volume: 0.13923769
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000058759785
+    - phoneme: I
+      ratio: 1.1111856e-12
+    - phoneme: U
+      ratio: 0.000002719618
+    - phoneme: E
+      ratio: 5.31589e-10
+    - phoneme: O
+      ratio: 0.99999696
+    - phoneme: N
+      ratio: 0.000000116277846
+    - phoneme: Noise
+      ratio: 0.00000010363113
+  - volume: 0.12085825
+    phonemes:
+    - phoneme: A
+      ratio: 0.000110534995
+    - phoneme: I
+      ratio: 2.5998603e-10
+    - phoneme: U
+      ratio: 0.000009425944
+    - phoneme: E
+      ratio: 0.0000000071392825
+    - phoneme: O
+      ratio: 0.99958724
+    - phoneme: N
+      ratio: 0.00029280537
+    - phoneme: Noise
+      ratio: 0.000000008617248
+  - volume: 0.10116798
+    phonemes:
+    - phoneme: A
+      ratio: 0.0017665252
+    - phoneme: I
+      ratio: 0.0000000074836075
+    - phoneme: U
+      ratio: 0.057817165
+    - phoneme: E
+      ratio: 0.0000000013713024
+    - phoneme: O
+      ratio: 0.93736535
+    - phoneme: N
+      ratio: 0.0030509057
+    - phoneme: Noise
+      ratio: 0.000000025371332
+  - volume: 0.09114202
+    phonemes:
+    - phoneme: A
+      ratio: 0.002881095
+    - phoneme: I
+      ratio: 0.00025702183
+    - phoneme: U
+      ratio: 0.76986444
+    - phoneme: E
+      ratio: 1.090002e-10
+    - phoneme: O
+      ratio: 0.010162928
+    - phoneme: N
+      ratio: 0.2154842
+    - phoneme: Noise
+      ratio: 0.0013503918
+  - volume: 0.09915038
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000002990204
+    - phoneme: I
+      ratio: 0.0070598633
+    - phoneme: U
+      ratio: 0.9923823
+    - phoneme: E
+      ratio: 4.352474e-12
+    - phoneme: O
+      ratio: 0.00007773929
+    - phoneme: N
+      ratio: 0.0004798866
+    - phoneme: Noise
+      ratio: 0.00000010713352
+  - volume: 0.0976302
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000068269235
+    - phoneme: I
+      ratio: 0.41432893
+    - phoneme: U
+      ratio: 0.58566886
+    - phoneme: E
+      ratio: 3.0871583e-11
+    - phoneme: O
+      ratio: 6.896056e-10
+    - phoneme: N
+      ratio: 0.00000001841862
+    - phoneme: Noise
+      ratio: 0.0000021751935
+  - volume: 0.06368065
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000004239738
+    - phoneme: I
+      ratio: 0.99987566
+    - phoneme: U
+      ratio: 0.00012341788
+    - phoneme: E
+      ratio: 2.5918317e-12
+    - phoneme: O
+      ratio: 0.0000000033195466
+    - phoneme: N
+      ratio: 0.0000009758621
+    - phoneme: Noise
+      ratio: 0.000000023647337
+  - volume: 0.015424057
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000061758065
+    - phoneme: I
+      ratio: 0.9998033
+    - phoneme: U
+      ratio: 0.0001708912
+    - phoneme: E
+      ratio: 4.2570635e-12
+    - phoneme: O
+      ratio: 0.000004729045
+    - phoneme: N
+      ratio: 0.0000008866138
+    - phoneme: Noise
+      ratio: 0.00002014987
+  - volume: 0.00008925563
+    phonemes:
+    - phoneme: A
+      ratio: 0.8903074
+    - phoneme: I
+      ratio: 0.011770066
+    - phoneme: U
+      ratio: 0.00032396475
+    - phoneme: E
+      ratio: 0.00000009447267
+    - phoneme: O
+      ratio: 0.0039473125
+    - phoneme: N
+      ratio: 0.0040161763
+    - phoneme: Noise
+      ratio: 0.08963492
+  - volume: 0.023462083
+    phonemes:
+    - phoneme: A
+      ratio: 0.0007872925
+    - phoneme: I
+      ratio: 2.3339713e-10
+    - phoneme: U
+      ratio: 0.0041619563
+    - phoneme: E
+      ratio: 0.0005623629
+    - phoneme: O
+      ratio: 0.00010260369
+    - phoneme: N
+      ratio: 0.000032922275
+    - phoneme: Noise
+      ratio: 0.9943528
+  - volume: 0.06588287
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000692685
+    - phoneme: I
+      ratio: 0.000000027864026
+    - phoneme: U
+      ratio: 0.96903884
+    - phoneme: E
+      ratio: 0.00000045523896
+    - phoneme: O
+      ratio: 0.000021165773
+    - phoneme: N
+      ratio: 0.000032272008
+    - phoneme: Noise
+      ratio: 0.030837975
+  - volume: 0.10728042
+    phonemes:
+    - phoneme: A
+      ratio: 0.000005593316
+    - phoneme: I
+      ratio: 1.2004293e-14
+    - phoneme: U
+      ratio: 0.99075973
+    - phoneme: E
+      ratio: 0.0000000015095083
+    - phoneme: O
+      ratio: 0.009234631
+    - phoneme: N
+      ratio: 9.758826e-10
+    - phoneme: Noise
+      ratio: 4.499793e-16
+  - volume: 0.13937946
+    phonemes:
+    - phoneme: A
+      ratio: 0.9624223
+    - phoneme: I
+      ratio: 1.6383234e-15
+    - phoneme: U
+      ratio: 0.03551349
+    - phoneme: E
+      ratio: 0.0020613922
+    - phoneme: O
+      ratio: 0.0000028600211
+    - phoneme: N
+      ratio: 1.7250981e-12
+    - phoneme: Noise
+      ratio: 1.4796199e-13
+  - volume: 0.1440902
+    phonemes:
+    - phoneme: A
+      ratio: 0.000022313126
+    - phoneme: I
+      ratio: 5.820571e-14
+    - phoneme: U
+      ratio: 0.0000015728363
+    - phoneme: E
+      ratio: 0.00000002054605
+    - phoneme: O
+      ratio: 0.99997604
+    - phoneme: N
+      ratio: 0.000000022245533
+    - phoneme: Noise
+      ratio: 3.710912e-13
+  - volume: 0.13577351
+    phonemes:
+    - phoneme: A
+      ratio: 0.007185788
+    - phoneme: I
+      ratio: 9.512745e-16
+    - phoneme: U
+      ratio: 8.860475e-10
+    - phoneme: E
+      ratio: 0.0004659587
+    - phoneme: O
+      ratio: 0.99233747
+    - phoneme: N
+      ratio: 0.000010707896
+    - phoneme: Noise
+      ratio: 8.76489e-13
+  - volume: 0.11274876
+    phonemes:
+    - phoneme: A
+      ratio: 0.0035046334
+    - phoneme: I
+      ratio: 1.1783664e-13
+    - phoneme: U
+      ratio: 0.00000023234257
+    - phoneme: E
+      ratio: 0.996144
+    - phoneme: O
+      ratio: 0.00035068707
+    - phoneme: N
+      ratio: 0.00000050988524
+    - phoneme: Noise
+      ratio: 2.7878309e-11
+  - volume: 0.0951166
+    phonemes:
+    - phoneme: A
+      ratio: 0.04338122
+    - phoneme: I
+      ratio: 0.00014409739
+    - phoneme: U
+      ratio: 0.00016465993
+    - phoneme: E
+      ratio: 0.94935024
+    - phoneme: O
+      ratio: 0.006902796
+    - phoneme: N
+      ratio: 0.000013924961
+    - phoneme: Noise
+      ratio: 0.000043093853
+  - volume: 0.08970618
+    phonemes:
+    - phoneme: A
+      ratio: 0.009792308
+    - phoneme: I
+      ratio: 0.91592175
+    - phoneme: U
+      ratio: 0.073337
+    - phoneme: E
+      ratio: 0.0000002662288
+    - phoneme: O
+      ratio: 0.0000037539403
+    - phoneme: N
+      ratio: 0.00000003346036
+    - phoneme: Noise
+      ratio: 0.00094508094
+  - volume: 0.072740704
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000004621121
+    - phoneme: I
+      ratio: 0.97955656
+    - phoneme: U
+      ratio: 0.020443333
+    - phoneme: E
+      ratio: 5.86422e-14
+    - phoneme: O
+      ratio: 7.2970986e-13
+    - phoneme: N
+      ratio: 1.0779809e-15
+    - phoneme: Noise
+      ratio: 0.00000005673523
+  - volume: 0.060772337
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000007605829
+    - phoneme: I
+      ratio: 0.54850954
+    - phoneme: U
+      ratio: 0.45148784
+    - phoneme: E
+      ratio: 2.3292306e-11
+    - phoneme: O
+      ratio: 5.5997085e-10
+    - phoneme: N
+      ratio: 1.5522164e-12
+    - phoneme: Noise
+      ratio: 0.0000017740081
+  - volume: 0.058112137
+    phonemes:
+    - phoneme: A
+      ratio: 0.012790856
+    - phoneme: I
+      ratio: 0.7122273
+    - phoneme: U
+      ratio: 0.2749757
+    - phoneme: E
+      ratio: 2.17069e-11
+    - phoneme: O
+      ratio: 0.000006194461
+    - phoneme: N
+      ratio: 0.00000007440129
+    - phoneme: Noise
+      ratio: 2.347484e-10
+  - volume: 0.050817616
+    phonemes:
+    - phoneme: A
+      ratio: 0.1965144
+    - phoneme: I
+      ratio: 0.80191153
+    - phoneme: U
+      ratio: 0.000047511403
+    - phoneme: E
+      ratio: 1.2451277e-13
+    - phoneme: O
+      ratio: 0.000014633564
+    - phoneme: N
+      ratio: 0.0015119355
+    - phoneme: Noise
+      ratio: 0.00000014856396
+  - volume: 0.04551357
+    phonemes:
+    - phoneme: A
+      ratio: 0.0016763823
+    - phoneme: I
+      ratio: 0.15273991
+    - phoneme: U
+      ratio: 0.00005032066
+    - phoneme: E
+      ratio: 2.2385385e-14
+    - phoneme: O
+      ratio: 0.3346017
+    - phoneme: N
+      ratio: 0.5109316
+    - phoneme: Noise
+      ratio: 0.00000009746411
+  - volume: 0.04996884
+    phonemes:
+    - phoneme: A
+      ratio: 0.000222592
+    - phoneme: I
+      ratio: 2.9619768e-10
+    - phoneme: U
+      ratio: 1.3925738e-14
+    - phoneme: E
+      ratio: 2.5012517e-19
+    - phoneme: O
+      ratio: 0.9995371
+    - phoneme: N
+      ratio: 0.00024036012
+    - phoneme: Noise
+      ratio: 1.7351509e-12
+  - volume: 0.052859023
+    phonemes:
+    - phoneme: A
+      ratio: 0.0001214787
+    - phoneme: I
+      ratio: 6.777132e-13
+    - phoneme: U
+      ratio: 1.5844142e-18
+    - phoneme: E
+      ratio: 2.5271476e-20
+    - phoneme: O
+      ratio: 0.041533504
+    - phoneme: N
+      ratio: 0.958345
+    - phoneme: Noise
+      ratio: 0.000000005140835
+  - volume: 0.047496177
+    phonemes:
+    - phoneme: A
+      ratio: 0.92745745
+    - phoneme: I
+      ratio: 0.000000007266488
+    - phoneme: U
+      ratio: 9.6448544e-11
+    - phoneme: E
+      ratio: 3.1774538e-16
+    - phoneme: O
+      ratio: 0.05437867
+    - phoneme: N
+      ratio: 0.018163892
+    - phoneme: Noise
+      ratio: 2.330449e-10
+  - volume: 0.04072488
+    phonemes:
+    - phoneme: A
+      ratio: 0.7328792
+    - phoneme: I
+      ratio: 0.000080421974
+    - phoneme: U
+      ratio: 0.0000013813088
+    - phoneme: E
+      ratio: 2.3357048e-17
+    - phoneme: O
+      ratio: 0.003285523
+    - phoneme: N
+      ratio: 0.26375228
+    - phoneme: Noise
+      ratio: 0.0000012038817
+  - volume: 0.028603118
+    phonemes:
+    - phoneme: A
+      ratio: 0.0012486877
+    - phoneme: I
+      ratio: 0.99800634
+    - phoneme: U
+      ratio: 0.00044833837
+    - phoneme: E
+      ratio: 3.554173e-19
+    - phoneme: O
+      ratio: 0.000021466823
+    - phoneme: N
+      ratio: 0.00027483908
+    - phoneme: Noise
+      ratio: 0.0000002531638
+  - volume: 0.011521168
+    phonemes:
+    - phoneme: A
+      ratio: 0.00009185611
+    - phoneme: I
+      ratio: 0.99239385
+    - phoneme: U
+      ratio: 0.007100292
+    - phoneme: E
+      ratio: 1.7829715e-18
+    - phoneme: O
+      ratio: 0.000008973884
+    - phoneme: N
+      ratio: 0.00024443242
+    - phoneme: Noise
+      ratio: 0.00016054504
+  - volume: 0.0038657724
+    phonemes:
+    - phoneme: A
+      ratio: 0.00007772652
+    - phoneme: I
+      ratio: 0.0018526895
+    - phoneme: U
+      ratio: 0.5437154
+    - phoneme: E
+      ratio: 1.5694018e-14
+    - phoneme: O
+      ratio: 0.00024515067
+    - phoneme: N
+      ratio: 0.38646823
+    - phoneme: Noise
+      ratio: 0.06764086
+  - volume: 0.029008036
+    phonemes:
+    - phoneme: A
+      ratio: 0.53768826
+    - phoneme: I
+      ratio: 0.0000000019434423
+    - phoneme: U
+      ratio: 0.008452258
+    - phoneme: E
+      ratio: 0.00022079905
+    - phoneme: O
+      ratio: 0.2502602
+    - phoneme: N
+      ratio: 0.0006260619
+    - phoneme: Noise
+      ratio: 0.20275232
+  - volume: 0.065844
+    phonemes:
+    - phoneme: A
+      ratio: 0.99993396
+    - phoneme: I
+      ratio: 0.00000003311992
+    - phoneme: U
+      ratio: 0.000000550874
+    - phoneme: E
+      ratio: 1.1367925e-13
+    - phoneme: O
+      ratio: 0.0000010492649
+    - phoneme: N
+      ratio: 0.000064415086
+    - phoneme: Noise
+      ratio: 0.000000012845301
+  - volume: 0.0982671
+    phonemes:
+    - phoneme: A
+      ratio: 0.9798562
+    - phoneme: I
+      ratio: 3.44655e-11
+    - phoneme: U
+      ratio: 9.596979e-11
+    - phoneme: E
+      ratio: 0.0000000076139095
+    - phoneme: O
+      ratio: 0.020084996
+    - phoneme: N
+      ratio: 0.000058858008
+    - phoneme: Noise
+      ratio: 6.3661433e-12
+  - volume: 0.1357349
+    phonemes:
+    - phoneme: A
+      ratio: 0.99245924
+    - phoneme: I
+      ratio: 3.5905667e-13
+    - phoneme: U
+      ratio: 5.0124935e-11
+    - phoneme: E
+      ratio: 0.00000006839951
+    - phoneme: O
+      ratio: 0.00754075
+    - phoneme: N
+      ratio: 0.000000002479847
+    - phoneme: Noise
+      ratio: 6.7033636e-12
+  - volume: 0.17097223
+    phonemes:
+    - phoneme: A
+      ratio: 0.9994888
+    - phoneme: I
+      ratio: 1.9770696e-13
+    - phoneme: U
+      ratio: 4.3917425e-14
+    - phoneme: E
+      ratio: 0.0000000050877005
+    - phoneme: O
+      ratio: 0.00051120034
+    - phoneme: N
+      ratio: 0.0000000021619806
+    - phoneme: Noise
+      ratio: 0.000000025558823
+  - volume: 0.18556799
+    phonemes:
+    - phoneme: A
+      ratio: 0.9999991
+    - phoneme: I
+      ratio: 2.008004e-14
+    - phoneme: U
+      ratio: 2.1952374e-11
+    - phoneme: E
+      ratio: 0.00000010136269
+    - phoneme: O
+      ratio: 0.0000007919308
+    - phoneme: N
+      ratio: 2.266451e-10
+    - phoneme: Noise
+      ratio: 8.297123e-10
+  - volume: 0.17202792
+    phonemes:
+    - phoneme: A
+      ratio: 0.99952775
+    - phoneme: I
+      ratio: 1.2786856e-18
+    - phoneme: U
+      ratio: 0.000008444089
+    - phoneme: E
+      ratio: 0.0003982254
+    - phoneme: O
+      ratio: 0.000013848612
+    - phoneme: N
+      ratio: 0.000000609816
+    - phoneme: Noise
+      ratio: 0.00005113373
+  - volume: 0.1481566
+    phonemes:
+    - phoneme: A
+      ratio: 0.0008836372
+    - phoneme: I
+      ratio: 4.5499735e-16
+    - phoneme: U
+      ratio: 0.000000012220951
+    - phoneme: E
+      ratio: 0.00009023959
+    - phoneme: O
+      ratio: 0.9990236
+    - phoneme: N
+      ratio: 0.0000022048669
+    - phoneme: Noise
+      ratio: 0.000000357768
+  - volume: 0.13510309
+    phonemes:
+    - phoneme: A
+      ratio: 0.99965274
+    - phoneme: I
+      ratio: 9.145059e-20
+    - phoneme: U
+      ratio: 0.00000015729645
+    - phoneme: E
+      ratio: 0.0000011528778
+    - phoneme: O
+      ratio: 0.00034599772
+    - phoneme: N
+      ratio: 0.0000000010657494
+    - phoneme: Noise
+      ratio: 1.1000408e-15
+  - volume: 0.09855117
+    phonemes:
+    - phoneme: A
+      ratio: 0.0010457314
+    - phoneme: I
+      ratio: 7.654428e-14
+    - phoneme: U
+      ratio: 4.0611906e-12
+    - phoneme: E
+      ratio: 1.4160012e-10
+    - phoneme: O
+      ratio: 0.99893343
+    - phoneme: N
+      ratio: 0.000020783567
+    - phoneme: Noise
+      ratio: 4.0483722e-10
+  - volume: 0.05250408
+    phonemes:
+    - phoneme: A
+      ratio: 0.000108995046
+    - phoneme: I
+      ratio: 0.000000018983705
+    - phoneme: U
+      ratio: 0.007976289
+    - phoneme: E
+      ratio: 0.0000000021203401
+    - phoneme: O
+      ratio: 0.9919145
+    - phoneme: N
+      ratio: 0.00000018782974
+    - phoneme: Noise
+      ratio: 1.2075337e-12
+  - volume: 0.03685709
+    phonemes:
+    - phoneme: A
+      ratio: 0.9190851
+    - phoneme: I
+      ratio: 0.0000000032184564
+    - phoneme: U
+      ratio: 0.078093015
+    - phoneme: E
+      ratio: 0.0000000017644785
+    - phoneme: O
+      ratio: 0.0026561762
+    - phoneme: N
+      ratio: 0.00016572015
+    - phoneme: Noise
+      ratio: 0.000000034315672
+  - volume: 0.024593873
+    phonemes:
+    - phoneme: A
+      ratio: 0.028667135
+    - phoneme: I
+      ratio: 0.00000023831547
+    - phoneme: U
+      ratio: 0.00052311976
+    - phoneme: E
+      ratio: 0.000000046641986
+    - phoneme: O
+      ratio: 0.8005014
+    - phoneme: N
+      ratio: 0.17030804
+    - phoneme: Noise
+      ratio: 4.4471968e-10
+  - volume: 0.121999085
+    phonemes:
+    - phoneme: A
+      ratio: 0.00007936607
+    - phoneme: I
+      ratio: 3.411231e-16
+    - phoneme: U
+      ratio: 0.000000042424354
+    - phoneme: E
+      ratio: 6.8884126e-10
+    - phoneme: O
+      ratio: 0.9999014
+    - phoneme: N
+      ratio: 0.000019205709
+    - phoneme: Noise
+      ratio: 1.940497e-10
+  - volume: 0.20806496
+    phonemes:
+    - phoneme: A
+      ratio: 0.005343638
+    - phoneme: I
+      ratio: 1.1146412e-21
+    - phoneme: U
+      ratio: 0.00042045614
+    - phoneme: E
+      ratio: 0.8928756
+    - phoneme: O
+      ratio: 0.10130559
+    - phoneme: N
+      ratio: 0.000000007847203
+    - phoneme: Noise
+      ratio: 0.0000546852
+  - volume: 0.2396326
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000840685
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0.000008244357
+    - phoneme: E
+      ratio: 0.9998639
+    - phoneme: O
+      ratio: 0.00000780108
+    - phoneme: N
+      ratio: 1.0943109e-10
+    - phoneme: Noise
+      ratio: 0.000035898684
+  - volume: 0.20369263
+    phonemes:
+    - phoneme: A
+      ratio: 0.000014193634
+    - phoneme: I
+      ratio: 1.691454e-26
+    - phoneme: U
+      ratio: 0.0000014748107
+    - phoneme: E
+      ratio: 0.99998426
+    - phoneme: O
+      ratio: 0.000000047237833
+    - phoneme: N
+      ratio: 7.645174e-11
+    - phoneme: Noise
+      ratio: 0.000000028074105
+  - volume: 0.14137594
+    phonemes:
+    - phoneme: A
+      ratio: 0.00048643543
+    - phoneme: I
+      ratio: 1.3750089e-23
+    - phoneme: U
+      ratio: 0.0075366613
+    - phoneme: E
+      ratio: 0.97470546
+    - phoneme: O
+      ratio: 7.802306e-10
+    - phoneme: N
+      ratio: 1.8029361e-10
+    - phoneme: Noise
+      ratio: 0.017271435
+  - volume: 0.07049405
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000017560208
+    - phoneme: I
+      ratio: 1.4853799e-20
+    - phoneme: U
+      ratio: 0.9999998
+    - phoneme: E
+      ratio: 0.0000000041702086
+    - phoneme: O
+      ratio: 0.000000008518905
+    - phoneme: N
+      ratio: 7.1925677e-12
+    - phoneme: Noise
+      ratio: 0.0000000017503385
+  - volume: 0.030738408
+    phonemes:
+    - phoneme: A
+      ratio: 0.008224171
+    - phoneme: I
+      ratio: 1.5980394e-12
+    - phoneme: U
+      ratio: 0.9917701
+    - phoneme: E
+      ratio: 5.0194137e-12
+    - phoneme: O
+      ratio: 0.00000062216515
+    - phoneme: N
+      ratio: 0.0000051382035
+    - phoneme: Noise
+      ratio: 0.000000002387712
+  - volume: 0.0021769337
+    phonemes:
+    - phoneme: A
+      ratio: 0.06838239
+    - phoneme: I
+      ratio: 0.000000018515156
+    - phoneme: U
+      ratio: 0.011902221
+    - phoneme: E
+      ratio: 0.000002616581
+    - phoneme: O
+      ratio: 0.0000004237341
+    - phoneme: N
+      ratio: 0.0000050613394
+    - phoneme: Noise
+      ratio: 0.91970724
+  - volume: 0.0008826677
+    phonemes:
+    - phoneme: A
+      ratio: 0.003345734
+    - phoneme: I
+      ratio: 0.000002411473
+    - phoneme: U
+      ratio: 0.059094694
+    - phoneme: E
+      ratio: 0.0000000013820721
+    - phoneme: O
+      ratio: 0.00000002539463
+    - phoneme: N
+      ratio: 0.00000047092703
+    - phoneme: Noise
+      ratio: 0.9375567
+  - volume: 0.0016264665
+    phonemes:
+    - phoneme: A
+      ratio: 0.00016970132
+    - phoneme: I
+      ratio: 0.0000000019598052
+    - phoneme: U
+      ratio: 0.0000019396352
+    - phoneme: E
+      ratio: 1.5701714e-10
+    - phoneme: O
+      ratio: 0.000000008091003
+    - phoneme: N
+      ratio: 0.0000036136223
+    - phoneme: Noise
+      ratio: 0.99982464
+  - volume: 0.08154253
+    phonemes:
+    - phoneme: A
+      ratio: 0.03315225
+    - phoneme: I
+      ratio: 1.4729997e-11
+    - phoneme: U
+      ratio: 0.009704821
+    - phoneme: E
+      ratio: 0.0012781336
+    - phoneme: O
+      ratio: 0.95584077
+    - phoneme: N
+      ratio: 0.000019241725
+    - phoneme: Noise
+      ratio: 0.000004802898
+  - volume: 0.15122527
+    phonemes:
+    - phoneme: A
+      ratio: 0.1634498
+    - phoneme: I
+      ratio: 5.947166e-19
+    - phoneme: U
+      ratio: 0.791559
+    - phoneme: E
+      ratio: 0.04486285
+    - phoneme: O
+      ratio: 0.000117120835
+    - phoneme: N
+      ratio: 0.00000010097532
+    - phoneme: Noise
+      ratio: 0.000011175268
+  - volume: 0.18083188
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000038633772
+    - phoneme: I
+      ratio: 1.2829292e-25
+    - phoneme: U
+      ratio: 0.000000008092753
+    - phoneme: E
       ratio: 0.99999964
-  - volume: 0.000097815566
+    - phoneme: O
+      ratio: 5.269352e-12
+    - phoneme: N
+      ratio: 5.594197e-13
+    - phoneme: Noise
+      ratio: 0.000000003232074
+  - volume: 0.16490576
     phonemes:
     - phoneme: A
-      ratio: 1.6635662e-11
+      ratio: 0.000000077374004
     - phoneme: I
-      ratio: 2.3154512e-10
+      ratio: 4.705865e-25
     - phoneme: U
-      ratio: 3.0835897e-13
+      ratio: 0.000000066046695
     - phoneme: E
-      ratio: 3.5587378e-14
+      ratio: 0.9999998
     - phoneme: O
-      ratio: 0.00000014768813
+      ratio: 1.9542556e-10
     - phoneme: N
-      ratio: 3.3595942e-13
+      ratio: 8.5601936e-13
     - phoneme: Noise
+      ratio: 0.000000013594752
+  - volume: 0.12356263
+    phonemes:
+    - phoneme: A
+      ratio: 0.031820558
+    - phoneme: I
+      ratio: 6.301278e-16
+    - phoneme: U
+      ratio: 0.4358287
+    - phoneme: E
+      ratio: 0.4822562
+    - phoneme: O
+      ratio: 0.050081417
+    - phoneme: N
+      ratio: 0.0000014923604
+    - phoneme: Noise
+      ratio: 0.000011632833
+  - volume: 0.08728042
+    phonemes:
+    - phoneme: A
+      ratio: 0.89427423
+    - phoneme: I
+      ratio: 3.1516836e-10
+    - phoneme: U
+      ratio: 0.0024334502
+    - phoneme: E
+      ratio: 0.019502513
+    - phoneme: O
+      ratio: 0.08374715
+    - phoneme: N
+      ratio: 0.000042604726
+    - phoneme: Noise
+      ratio: 0.0000000013083533
+  - volume: 0.09206748
+    phonemes:
+    - phoneme: A
+      ratio: 0.000009697299
+    - phoneme: I
+      ratio: 0.000019387699
+    - phoneme: U
+      ratio: 0.9999303
+    - phoneme: E
+      ratio: 1.3589624e-11
+    - phoneme: O
+      ratio: 0.00000002150115
+    - phoneme: N
+      ratio: 0.000040610386
+    - phoneme: Noise
+      ratio: 0.0000000017241408
+  - volume: 0.103433885
+    phonemes:
+    - phoneme: A
+      ratio: 4.865482e-10
+    - phoneme: I
+      ratio: 0.9872563
+    - phoneme: U
+      ratio: 0.0127428295
+    - phoneme: E
+      ratio: 1.0826135e-12
+    - phoneme: O
+      ratio: 2.1423708e-11
+    - phoneme: N
+      ratio: 0.000000041648608
+    - phoneme: Noise
+      ratio: 0.00000073335576
+  - volume: 0.09859417
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000044717293
+    - phoneme: I
+      ratio: 0.96933186
+    - phoneme: U
+      ratio: 0.030665928
+    - phoneme: E
+      ratio: 0.0000018515223
+    - phoneme: O
+      ratio: 5.0428065e-12
+    - phoneme: N
+      ratio: 0.0000000013187582
+    - phoneme: Noise
+      ratio: 0.00000024902272
+  - volume: 0.094153315
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000029987323
+    - phoneme: I
+      ratio: 0.8368258
+    - phoneme: U
+      ratio: 0.16317241
+    - phoneme: E
+      ratio: 0.0000018347292
+    - phoneme: O
+      ratio: 0.000000034191192
+    - phoneme: N
+      ratio: 7.0893405e-13
+    - phoneme: Noise
+      ratio: 0.000000018258485
+  - volume: 0.09983166
+    phonemes:
+    - phoneme: A
+      ratio: 3.788308e-11
+    - phoneme: I
+      ratio: 1
+    - phoneme: U
+      ratio: 0.00000004435793
+    - phoneme: E
+      ratio: 8.4208523e-10
+    - phoneme: O
+      ratio: 3.3285137e-13
+    - phoneme: N
+      ratio: 8.876236e-16
+    - phoneme: Noise
+      ratio: 0.00000003065342
+  - volume: 0.112554155
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000061689802
+    - phoneme: I
+      ratio: 0.75439304
+    - phoneme: U
+      ratio: 0.24050899
+    - phoneme: E
+      ratio: 0.0050871903
+    - phoneme: O
+      ratio: 0.000004641723
+    - phoneme: N
+      ratio: 1.0244802e-11
+    - phoneme: Noise
+      ratio: 0.000000012211071
+  - volume: 0.128033
+    phonemes:
+    - phoneme: A
+      ratio: 0.00020828938
+    - phoneme: I
+      ratio: 0.021929853
+    - phoneme: U
+      ratio: 0.06571435
+    - phoneme: E
+      ratio: 0.91214496
+    - phoneme: O
+      ratio: 0.0000023765135
+    - phoneme: N
+      ratio: 0.0000000011183265
+    - phoneme: Noise
+      ratio: 0.00000019265846
+  - volume: 0.13916418
+    phonemes:
+    - phoneme: A
+      ratio: 0.000027347063
+    - phoneme: I
+      ratio: 0.000000004009407
+    - phoneme: U
+      ratio: 0.000004794495
+    - phoneme: E
+      ratio: 0.9999643
+    - phoneme: O
+      ratio: 0.0000036179292
+    - phoneme: N
+      ratio: 5.1110795e-12
+    - phoneme: Noise
+      ratio: 0.000000017593704
+  - volume: 0.14423183
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000005009483
+    - phoneme: I
+      ratio: 2.9778966e-15
+    - phoneme: U
+      ratio: 0.000000024992113
+    - phoneme: E
+      ratio: 0.99999857
+    - phoneme: O
+      ratio: 0.00000076488493
+    - phoneme: N
+      ratio: 2.597085e-14
+    - phoneme: Noise
+      ratio: 0.00000010259896
+  - volume: 0.1497802
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000015646529
+    - phoneme: I
+      ratio: 9.289393e-20
+    - phoneme: U
+      ratio: 0.000000049880775
+    - phoneme: E
       ratio: 0.9999999
-  - volume: 0.00025293772
-    phonemes:
-    - phoneme: A
-      ratio: 0.000020524703
-    - phoneme: I
-      ratio: 0.000000040598586
-    - phoneme: U
-      ratio: 0.000000019545615
-    - phoneme: E
-      ratio: 3.9794947e-12
     - phoneme: O
-      ratio: 0.0000010739375
+      ratio: 7.014831e-14
     - phoneme: N
-      ratio: 0.000000003855153
+      ratio: 4.835831e-20
     - phoneme: Noise
-      ratio: 0.99997836
-  - volume: 0.0018087398
+      ratio: 7.677562e-11
+  - volume: 0.15782188
     phonemes:
     - phoneme: A
-      ratio: 1.9667339e-10
+      ratio: 0.000042694723
     - phoneme: I
-      ratio: 1.2812985e-13
+      ratio: 4.473297e-19
     - phoneme: U
-      ratio: 3.1002098e-10
+      ratio: 0.00000062505103
     - phoneme: E
-      ratio: 0.00000006263796
+      ratio: 0.99995667
     - phoneme: O
-      ratio: 6.115656e-15
+      ratio: 1.9270571e-10
     - phoneme: N
-      ratio: 1.3486486e-16
+      ratio: 2.706147e-15
     - phoneme: Noise
-      ratio: 0.9999999
-  - volume: 0.010173784
+      ratio: 0.000000006624556
+  - volume: 0.16092286
     phonemes:
     - phoneme: A
-      ratio: 6.733766e-16
+      ratio: 0.0013448291
     - phoneme: I
-      ratio: 4.5647922e-23
+      ratio: 1.611105e-19
     - phoneme: U
-      ratio: 6.9086184e-15
+      ratio: 0.021317037
     - phoneme: E
-      ratio: 4.403697e-13
+      ratio: 0.9773381
     - phoneme: O
-      ratio: 6.4379624e-15
+      ratio: 0.000000115878926
     - phoneme: N
-      ratio: 1.1871206e-17
+      ratio: 7.7418125e-15
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.021111034
+      ratio: 6.6153943e-10
+  - volume: 0.14515609
     phonemes:
     - phoneme: A
-      ratio: 4.1741296e-18
+      ratio: 0.000043817603
     - phoneme: I
-      ratio: 6.2485586e-24
+      ratio: 5.233519e-22
     - phoneme: U
-      ratio: 1.3063407e-17
+      ratio: 0.003766272
     - phoneme: E
-      ratio: 1.2521827e-15
+      ratio: 0.9961899
     - phoneme: O
-      ratio: 3.8869093e-18
+      ratio: 5.8918576e-10
     - phoneme: N
-      ratio: 3.1345403e-21
+      ratio: 1.8773424e-15
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.038515627
+      ratio: 9.515484e-10
+  - volume: 0.12507065
     phonemes:
     - phoneme: A
-      ratio: 2.7957019e-16
+      ratio: 0.0000020788875
     - phoneme: I
-      ratio: 7.007826e-19
+      ratio: 5.929007e-20
     - phoneme: U
-      ratio: 1.6043759e-12
+      ratio: 0.9441396
     - phoneme: E
-      ratio: 1.423047e-15
+      ratio: 0.055858277
     - phoneme: O
-      ratio: 9.726275e-18
+      ratio: 5.7287687e-13
     - phoneme: N
-      ratio: 6.09526e-21
+      ratio: 5.1403237e-18
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.048906866
+      ratio: 3.5648057e-11
+  - volume: 0.12068938
     phonemes:
     - phoneme: A
-      ratio: 1.03337424e-16
+      ratio: 0.00008035004
     - phoneme: I
-      ratio: 9.951265e-22
+      ratio: 1.127101e-19
     - phoneme: U
-      ratio: 1.0583229e-14
+      ratio: 0.9980503
     - phoneme: E
-      ratio: 8.61931e-15
+      ratio: 0.0018693829
     - phoneme: O
-      ratio: 2.3339273e-17
+      ratio: 6.6890785e-13
     - phoneme: N
-      ratio: 9.2596524e-20
+      ratio: 2.1440417e-17
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.056942597
+      ratio: 0.0000000021925792
+  - volume: 0.110393226
     phonemes:
     - phoneme: A
-      ratio: 4.3345087e-16
+      ratio: 0.000001470405
     - phoneme: I
-      ratio: 8.311884e-24
+      ratio: 1.8904768e-19
     - phoneme: U
-      ratio: 2.5708691e-13
+      ratio: 0.919485
     - phoneme: E
-      ratio: 1.0612411e-14
+      ratio: 0.08051349
     - phoneme: O
-      ratio: 2.6951687e-17
+      ratio: 1.2791042e-10
     - phoneme: N
-      ratio: 5.296157e-21
+      ratio: 2.1496921e-15
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.06691253
+      ratio: 0.00000007784203
+  - volume: 0.08687768
     phonemes:
     - phoneme: A
-      ratio: 1.6572259e-14
+      ratio: 0.000026843327
     - phoneme: I
-      ratio: 2.184332e-25
+      ratio: 7.201451e-19
     - phoneme: U
-      ratio: 3.584823e-13
+      ratio: 0.7368335
     - phoneme: E
-      ratio: 3.0192557e-11
+      ratio: 0.26313853
     - phoneme: O
-      ratio: 3.5232015e-12
+      ratio: 0.0000000012317385
     - phoneme: N
-      ratio: 4.9115318e-17
+      ratio: 1.1074876e-14
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.07596979
+      ratio: 0.0000011325512
+  - volume: 0.065108195
     phonemes:
     - phoneme: A
-      ratio: 3.50799e-13
+      ratio: 0.000008344156
     - phoneme: I
-      ratio: 5.4767516e-24
+      ratio: 5.8962427e-17
     - phoneme: U
-      ratio: 2.334514e-10
+      ratio: 0.005052903
     - phoneme: E
-      ratio: 2.2409166e-14
+      ratio: 0.9949385
     - phoneme: O
-      ratio: 7.317018e-13
+      ratio: 1.5216173e-12
     - phoneme: N
-      ratio: 5.3433746e-18
+      ratio: 1.1785407e-17
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.07815874
+      ratio: 0.00000019337402
+  - volume: 0.043558273
     phonemes:
     - phoneme: A
-      ratio: 1.4296369e-12
+      ratio: 0.0000005563983
     - phoneme: I
-      ratio: 1.021784e-21
+      ratio: 7.1576425e-14
     - phoneme: U
-      ratio: 2.1424124e-10
+      ratio: 0.08247339
     - phoneme: E
-      ratio: 5.006524e-15
+      ratio: 0.9175243
     - phoneme: O
-      ratio: 5.3531107e-11
+      ratio: 1.0031935e-12
     - phoneme: N
-      ratio: 7.4048356e-16
+      ratio: 1.5516327e-17
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.06450624
+      ratio: 0.0000017768632
+  - volume: 0.023336824
     phonemes:
     - phoneme: A
-      ratio: 1.8429759e-12
+      ratio: 0.0017791011
     - phoneme: I
-      ratio: 1.9895877e-21
+      ratio: 1.1682769e-13
     - phoneme: U
-      ratio: 1.3304693e-12
+      ratio: 0.0000017928016
     - phoneme: E
-      ratio: 2.6294282e-17
+      ratio: 0.99799764
     - phoneme: O
-      ratio: 5.6087767e-14
+      ratio: 0.000000028754684
     - phoneme: N
-      ratio: 9.051346e-18
+      ratio: 2.8370017e-13
     - phoneme: Noise
-      ratio: 1
-  - volume: 0.09189485
+      ratio: 0.0002215215
+  - volume: 0.012329832
     phonemes:
     - phoneme: A
-      ratio: 0.0001367205
+      ratio: 0.010166636
     - phoneme: I
-      ratio: 7.658541e-14
+      ratio: 3.0642794e-11
     - phoneme: U
-      ratio: 0.00000027776838
+      ratio: 0.000001791152
     - phoneme: E
-      ratio: 8.9291266e-14
+      ratio: 0.013191904
     - phoneme: O
-      ratio: 0.15698957
+      ratio: 0.00000004956594
     - phoneme: N
-      ratio: 0.000005019255
+      ratio: 1.0686135e-12
     - phoneme: Noise
-      ratio: 0.8428684
-  - volume: 0.17066218
+      ratio: 0.9766396
+  - volume: 0.007035838
     phonemes:
     - phoneme: A
-      ratio: 0.00000039761093
+      ratio: 0.02286092
     - phoneme: I
-      ratio: 3.5368548e-13
+      ratio: 1.3252566e-12
     - phoneme: U
-      ratio: 0.00000014756661
+      ratio: 0.00000017278906
     - phoneme: E
-      ratio: 6.433986e-17
+      ratio: 0.7974853
     - phoneme: O
-      ratio: 0.9912681
+      ratio: 0.000027760321
     - phoneme: N
-      ratio: 0.00046180043
+      ratio: 7.268026e-10
     - phoneme: Noise
-      ratio: 0.008269581
-  - volume: 0.1922182
+      ratio: 0.17962591
+  - volume: 0.0035060032
     phonemes:
     - phoneme: A
-      ratio: 0.00007451211
+      ratio: 0.00894415
     - phoneme: I
-      ratio: 9.058555e-20
+      ratio: 0.0000004668452
     - phoneme: U
-      ratio: 0.9997964
+      ratio: 0.00000041259668
     - phoneme: E
-      ratio: 0.00000017891419
+      ratio: 0.99059826
     - phoneme: O
-      ratio: 0.000128395
+      ratio: 0.00000034508233
     - phoneme: N
-      ratio: 2.6969281e-11
+      ratio: 9.493196e-11
     - phoneme: Noise
-      ratio: 0.0000005029402
-  - volume: 0.15840092
+      ratio: 0.00045635394
+  - volume: 0.0016475511
     phonemes:
     - phoneme: A
-      ratio: 0.0000042108895
+      ratio: 0.00001983417
     - phoneme: I
-      ratio: 3.8338747e-21
+      ratio: 0.00076209026
     - phoneme: U
-      ratio: 0.9988638
+      ratio: 0.0041222186
     - phoneme: E
-      ratio: 5.7846855e-10
+      ratio: 0.000026714992
     - phoneme: O
-      ratio: 0.0011320378
+      ratio: 0.000002917911
     - phoneme: N
-      ratio: 2.6607921e-10
+      ratio: 0.0000000028666716
     - phoneme: Noise
-      ratio: 0.0000000051037383
-  - volume: 0.18749993
+      ratio: 0.9950662
+  - volume: 0.0006170747
     phonemes:
     - phoneme: A
-      ratio: 0.0015059345
+      ratio: 0.0000053309277
     - phoneme: I
-      ratio: 3.061945e-18
+      ratio: 0.022979327
     - phoneme: U
-      ratio: 0.0000000015419386
+      ratio: 0.000017386283
     - phoneme: E
-      ratio: 8.266756e-11
+      ratio: 0.0000026098144
     - phoneme: O
-      ratio: 0.9984941
+      ratio: 0.0000015581261
     - phoneme: N
-      ratio: 0.000000028026847
+      ratio: 1.246954e-10
     - phoneme: Noise
-      ratio: 3.1436173e-11
-  - volume: 0.2392765
+      ratio: 0.9769938
+  - volume: 0.0002253014
     phonemes:
     - phoneme: A
-      ratio: 1
+      ratio: 2.2148151e-12
     - phoneme: I
-      ratio: 7.31628e-24
+      ratio: 1.490723e-11
     - phoneme: U
-      ratio: 3.7841857e-10
+      ratio: 0.0000000030314269
     - phoneme: E
-      ratio: 2.4125845e-15
+      ratio: 5.5646007e-15
     - phoneme: O
-      ratio: 0.000000001492383
+      ratio: 1.3969124e-13
     - phoneme: N
-      ratio: 1.10435315e-13
-    - phoneme: Noise
-      ratio: 7.961288e-17
-  - volume: 0.19724837
-    phonemes:
-    - phoneme: A
-      ratio: 0.9999985
-    - phoneme: I
-      ratio: 1.7581084e-25
-    - phoneme: U
-      ratio: 6.485937e-12
-    - phoneme: E
-      ratio: 0.000001484517
-    - phoneme: O
-      ratio: 3.8235765e-10
-    - phoneme: N
-      ratio: 1.1627365e-13
-    - phoneme: Noise
-      ratio: 1.8839964e-13
-  - volume: 0.10238923
-    phonemes:
-    - phoneme: A
-      ratio: 0.0135352705
-    - phoneme: I
-      ratio: 3.4322754e-16
-    - phoneme: U
-      ratio: 0.98589087
-    - phoneme: E
-      ratio: 0.00057381764
-    - phoneme: O
-      ratio: 0.000000008505734
-    - phoneme: N
-      ratio: 4.474795e-12
-    - phoneme: Noise
-      ratio: 1.3749406e-10
-  - volume: 0.13369311
-    phonemes:
-    - phoneme: A
-      ratio: 0.9989482
-    - phoneme: I
-      ratio: 6.163149e-15
-    - phoneme: U
-      ratio: 0.0010090761
-    - phoneme: E
-      ratio: 0.000037038197
-    - phoneme: O
-      ratio: 0.0000056330837
-    - phoneme: N
-      ratio: 2.9194697e-10
-    - phoneme: Noise
-      ratio: 0.00000000760112
-  - volume: 0.16611375
-    phonemes:
-    - phoneme: A
-      ratio: 0.0041043293
-    - phoneme: I
-      ratio: 2.200585e-17
-    - phoneme: U
-      ratio: 0.000100600075
-    - phoneme: E
-      ratio: 0.99535656
-    - phoneme: O
-      ratio: 0.0004354452
-    - phoneme: N
-      ratio: 0.0000000030501428
-    - phoneme: Noise
-      ratio: 0.0000029608875
-  - volume: 0.15731597
-    phonemes:
-    - phoneme: A
-      ratio: 0.0077607967
-    - phoneme: I
-      ratio: 4.4186988e-16
-    - phoneme: U
-      ratio: 0.00000021485711
-    - phoneme: E
-      ratio: 0.8448561
-    - phoneme: O
-      ratio: 0.14721934
-    - phoneme: N
-      ratio: 0.00003103924
-    - phoneme: Noise
-      ratio: 0.0001324772
-  - volume: 0.16133396
-    phonemes:
-    - phoneme: A
-      ratio: 0.00006421924
-    - phoneme: I
-      ratio: 1.8516403e-15
-    - phoneme: U
-      ratio: 0.00000092738145
-    - phoneme: E
-      ratio: 0.034642704
-    - phoneme: O
-      ratio: 0.005216221
-    - phoneme: N
-      ratio: 0.000000112183905
-    - phoneme: Noise
-      ratio: 0.9600758
-  - volume: 0.13705589
-    phonemes:
-    - phoneme: A
-      ratio: 0.0000078030525
-    - phoneme: I
-      ratio: 2.8308948e-21
-    - phoneme: U
-      ratio: 0.000000012107805
-    - phoneme: E
-      ratio: 0.99999213
-    - phoneme: O
-      ratio: 1.4286894e-11
-    - phoneme: N
-      ratio: 4.3809626e-17
-    - phoneme: Noise
-      ratio: 0.000000036372914
-  - volume: 0.085802786
-    phonemes:
-    - phoneme: A
-      ratio: 0.46701714
-    - phoneme: I
-      ratio: 5.344854e-12
-    - phoneme: U
-      ratio: 0.00000040587258
-    - phoneme: E
-      ratio: 0.52840555
-    - phoneme: O
-      ratio: 0.00045215728
-    - phoneme: N
-      ratio: 0.0000000012244967
-    - phoneme: Noise
-      ratio: 0.0041247597
-  - volume: 0.051298384
-    phonemes:
-    - phoneme: A
-      ratio: 0.006724783
-    - phoneme: I
-      ratio: 1.762802e-12
-    - phoneme: U
-      ratio: 0.0000034008801
-    - phoneme: E
-      ratio: 0.000017421624
-    - phoneme: O
-      ratio: 0.0036636645
-    - phoneme: N
-      ratio: 0.00000010970966
-    - phoneme: Noise
-      ratio: 0.9895906
-  - volume: 0.013677909
-    phonemes:
-    - phoneme: A
-      ratio: 0.0010075967
-    - phoneme: I
-      ratio: 2.5186644e-10
-    - phoneme: U
-      ratio: 0.0000032332082
-    - phoneme: E
-      ratio: 0.000000008392027
-    - phoneme: O
-      ratio: 0.034355607
-    - phoneme: N
-      ratio: 0.00000007310025
-    - phoneme: Noise
-      ratio: 0.96463346
-  - volume: 0.0027231693
-    phonemes:
-    - phoneme: A
-      ratio: 0.99386156
-    - phoneme: I
-      ratio: 0.000000045259952
-    - phoneme: U
-      ratio: 2.9558418e-11
-    - phoneme: E
-      ratio: 7.3627264e-13
-    - phoneme: O
-      ratio: 0.005610994
-    - phoneme: N
-      ratio: 0.000068554604
-    - phoneme: Noise
-      ratio: 0.000459032
-  - volume: 0.0018230127
-    phonemes:
-    - phoneme: A
-      ratio: 0.8410316
-    - phoneme: I
-      ratio: 0.00000025333526
-    - phoneme: U
-      ratio: 3.8537162e-10
-    - phoneme: E
-      ratio: 1.5702975e-11
-    - phoneme: O
-      ratio: 0.09547053
-    - phoneme: N
-      ratio: 0.026011014
-    - phoneme: Noise
-      ratio: 0.037486706
-  - volume: 0.0013132452
-    phonemes:
-    - phoneme: A
-      ratio: 0.008336615
-    - phoneme: I
-      ratio: 0.000000013058075
-    - phoneme: U
-      ratio: 1.525212e-14
-    - phoneme: E
-      ratio: 1.3924495e-17
-    - phoneme: O
-      ratio: 0.043795202
-    - phoneme: N
-      ratio: 0.9472445
-    - phoneme: Noise
-      ratio: 0.00062362367
-  - volume: 0.0009248766
-    phonemes:
-    - phoneme: A
-      ratio: 0.000000028017826
-    - phoneme: I
-      ratio: 6.3361066e-12
-    - phoneme: U
-      ratio: 1.2599e-16
-    - phoneme: E
-      ratio: 2.4964707e-21
-    - phoneme: O
-      ratio: 0.0000010984579
-    - phoneme: N
-      ratio: 0.12974155
-    - phoneme: Noise
-      ratio: 0.8702573
-  - volume: 0.00074924255
-    phonemes:
-    - phoneme: A
-      ratio: 0.0012360469
-    - phoneme: I
-      ratio: 0.0000012096915
-    - phoneme: U
-      ratio: 9.960727e-11
-    - phoneme: E
-      ratio: 1.785411e-20
-    - phoneme: O
-      ratio: 0.000012266233
-    - phoneme: N
-      ratio: 0.99756473
-    - phoneme: Noise
-      ratio: 0.0011857376
-  - volume: 0.0006554789
-    phonemes:
-    - phoneme: A
-      ratio: 0.0000001514108
-    - phoneme: I
-      ratio: 0.00000009985322
-    - phoneme: U
-      ratio: 2.3106472e-11
-    - phoneme: E
-      ratio: 6.772955e-19
-    - phoneme: O
-      ratio: 0.000002352382
-    - phoneme: N
-      ratio: 0.0038239313
-    - phoneme: Noise
-      ratio: 0.99617344
-  - volume: 0.00043350135
-    phonemes:
-    - phoneme: A
-      ratio: 2.2778701e-10
-    - phoneme: I
-      ratio: 0.000000016181895
-    - phoneme: U
-      ratio: 0.0000000019348636
-    - phoneme: E
-      ratio: 5.624376e-19
-    - phoneme: O
-      ratio: 0.0000000024564797
-    - phoneme: N
-      ratio: 0.00000011629249
-    - phoneme: Noise
-      ratio: 0.9999999
-  - volume: 0.00034587845
-    phonemes:
-    - phoneme: A
-      ratio: 1.690901e-12
-    - phoneme: I
-      ratio: 2.9650724e-12
-    - phoneme: U
-      ratio: 2.271645e-13
-    - phoneme: E
-      ratio: 4.8429302e-26
-    - phoneme: O
-      ratio: 1.5416895e-12
-    - phoneme: N
-      ratio: 2.9222114e-10
+      ratio: 9.844737e-13
     - phoneme: Noise
       ratio: 1
-  - volume: 0.0003318668
+  - volume: 0.00009147323
     phonemes:
     - phoneme: A
-      ratio: 4.75134e-13
+      ratio: 1.6071497e-11
     - phoneme: I
-      ratio: 0.000000013325971
+      ratio: 0.0000000044202864
     - phoneme: U
-      ratio: 6.8758033e-12
+      ratio: 7.803301e-13
     - phoneme: E
-      ratio: 2.4981265e-25
+      ratio: 1.3338137e-14
     - phoneme: O
-      ratio: 3.18583e-12
+      ratio: 5.223136e-13
     - phoneme: N
-      ratio: 0.00000008924647
+      ratio: 1.1615561e-12
     - phoneme: Noise
-      ratio: 0.9999999
+      ratio: 1
+  - volume: 0.00009923102
+    phonemes:
+    - phoneme: A
+      ratio: 3.3379296e-11
+    - phoneme: I
+      ratio: 0.0000000019198874
+    - phoneme: U
+      ratio: 1.8158145e-11
+    - phoneme: E
+      ratio: 3.1929258e-17
+    - phoneme: O
+      ratio: 8.599757e-13
+    - phoneme: N
+      ratio: 4.913864e-13
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.00022838857
+    phonemes:
+    - phoneme: A
+      ratio: 1.8754187e-12
+    - phoneme: I
+      ratio: 3.0284147e-10
+    - phoneme: U
+      ratio: 2.327571e-12
+    - phoneme: E
+      ratio: 7.055172e-14
+    - phoneme: O
+      ratio: 1.5059166e-12
+    - phoneme: N
+      ratio: 2.1056731e-11
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.00037216116
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000012986301
+    - phoneme: I
+      ratio: 0.000005006263
+    - phoneme: U
+      ratio: 0.00000018778427
+    - phoneme: E
+      ratio: 2.589974e-10
+    - phoneme: O
+      ratio: 0.000000040459742
+    - phoneme: N
+      ratio: 0.000000019051944
+    - phoneme: Noise
+      ratio: 0.99999475
+  - volume: 0.000494983
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000003103309
+    - phoneme: I
+      ratio: 0.0000000018218479
+    - phoneme: U
+      ratio: 0.00000001788749
+    - phoneme: E
+      ratio: 0.0000000034853762
+    - phoneme: O
+      ratio: 8.5853824e-11
+    - phoneme: N
+      ratio: 0.00000002173483
+    - phoneme: Noise
+      ratio: 0.99999994
+  - volume: 0.0006320446
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000038672777
+    - phoneme: I
+      ratio: 6.62328e-13
+    - phoneme: U
+      ratio: 1.167459e-11
+    - phoneme: E
+      ratio: 0.00000020524749
+    - phoneme: O
+      ratio: 8.021069e-11
+    - phoneme: N
+      ratio: 0.0000018234581
+    - phoneme: Noise
+      ratio: 0.9999979
+  - volume: 0.00065897586
+    phonemes:
+    - phoneme: A
+      ratio: 0.00010980313
+    - phoneme: I
+      ratio: 1.6465318e-13
+    - phoneme: U
+      ratio: 1.1788068e-11
+    - phoneme: E
+      ratio: 0.000009571203
+    - phoneme: O
+      ratio: 6.247892e-10
+    - phoneme: N
+      ratio: 0.00074552995
+    - phoneme: Noise
+      ratio: 0.9991351
+  - volume: 0.0005024672
+    phonemes:
+    - phoneme: A
+      ratio: 0.0035080235
+    - phoneme: I
+      ratio: 1.5828734e-10
+    - phoneme: U
+      ratio: 1.4796182e-10
+    - phoneme: E
+      ratio: 0.0010686185
+    - phoneme: O
+      ratio: 0.000001922702
+    - phoneme: N
+      ratio: 0.0013160284
+    - phoneme: Noise
+      ratio: 0.9941054
+  - volume: 0.0004550249
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000000265175
+    - phoneme: I
+      ratio: 3.2462122e-16
+    - phoneme: U
+      ratio: 9.94974e-13
+    - phoneme: E
+      ratio: 1.4731697e-15
+    - phoneme: O
+      ratio: 7.4460264e-12
+    - phoneme: N
+      ratio: 0.0000006059118
+    - phoneme: Noise
+      ratio: 0.9999994
+  - volume: 0.00064961205
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000045200195
+    - phoneme: I
+      ratio: 1.0303531e-11
+    - phoneme: U
+      ratio: 2.449194e-12
+    - phoneme: E
+      ratio: 2.2729597e-16
+    - phoneme: O
+      ratio: 0.00004854925
+    - phoneme: N
+      ratio: 0.00000008223462
+    - phoneme: Noise
+      ratio: 0.99995136
+  - volume: 0.024023784
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000004507024
+    - phoneme: I
+      ratio: 5.3164005e-13
+    - phoneme: U
+      ratio: 1.665055e-16
+    - phoneme: E
+      ratio: 9.125763e-16
+    - phoneme: O
+      ratio: 0.00069373153
+    - phoneme: N
+      ratio: 0.015773313
+    - phoneme: Noise
+      ratio: 0.9835329
+  - volume: 0.12301192
+    phonemes:
+    - phoneme: A
+      ratio: 2.3901509e-10
+    - phoneme: I
+      ratio: 2.4406451e-23
+    - phoneme: U
+      ratio: 1.8863213e-16
+    - phoneme: E
+      ratio: 7.48926e-13
+    - phoneme: O
+      ratio: 1
+    - phoneme: N
+      ratio: 1.8857167e-10
+    - phoneme: Noise
+      ratio: 0.0000000019390693
+  - volume: 0.15688351
+    phonemes:
+    - phoneme: A
+      ratio: 0.0004013081
+    - phoneme: I
+      ratio: 6.066466e-22
+    - phoneme: U
+      ratio: 0.021364631
+    - phoneme: E
+      ratio: 0.00000009380879
+    - phoneme: O
+      ratio: 0.97035205
+    - phoneme: N
+      ratio: 0.000000015583868
+    - phoneme: Noise
+      ratio: 0.007881986
+  - volume: 0.12981433
+    phonemes:
+    - phoneme: A
+      ratio: 0.000012813505
+    - phoneme: I
+      ratio: 1.1733949e-19
+    - phoneme: U
+      ratio: 0.000000013587856
+    - phoneme: E
+      ratio: 0.00000039242514
+    - phoneme: O
+      ratio: 0.9999863
+    - phoneme: N
+      ratio: 0.00000046765356
+    - phoneme: Noise
+      ratio: 0.0000000011394512
+  - volume: 0.14138931
+    phonemes:
+    - phoneme: A
+      ratio: 0.020979155
+    - phoneme: I
+      ratio: 1.3959486e-12
+    - phoneme: U
+      ratio: 1.9584266e-10
+    - phoneme: E
+      ratio: 0.000000050966015
+    - phoneme: O
+      ratio: 0.9752557
+    - phoneme: N
+      ratio: 0.0037650543
+    - phoneme: Noise
+      ratio: 3.4165276e-10
+  - volume: 0.14034836
+    phonemes:
+    - phoneme: A
+      ratio: 0.00044107658
+    - phoneme: I
+      ratio: 6.231855e-14
+    - phoneme: U
+      ratio: 5.768231e-14
+    - phoneme: E
+      ratio: 0.00000025853907
+    - phoneme: O
+      ratio: 0.99955857
+    - phoneme: N
+      ratio: 0.000000059192082
+    - phoneme: Noise
+      ratio: 1.127135e-12
+  - volume: 0.09946166
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000013334825
+    - phoneme: I
+      ratio: 2.8440251e-15
+    - phoneme: U
+      ratio: 3.4768783e-13
+    - phoneme: E
+      ratio: 2.8603763e-13
+    - phoneme: O
+      ratio: 0.9999986
+    - phoneme: N
+      ratio: 8.6565705e-13
+    - phoneme: Noise
+      ratio: 1.1312531e-16
+  - volume: 0.06725912
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000048316195
+    - phoneme: I
+      ratio: 0.037628993
+    - phoneme: U
+      ratio: 0.000009465576
+    - phoneme: E
+      ratio: 2.270005e-15
+    - phoneme: O
+      ratio: 0.96236086
+    - phoneme: N
+      ratio: 0.00000017590514
+    - phoneme: Noise
+      ratio: 7.925836e-11
+  - volume: 0.06580683
+    phonemes:
+    - phoneme: A
+      ratio: 4.117534e-10
+    - phoneme: I
+      ratio: 0.9999952
+    - phoneme: U
+      ratio: 0.000003578691
+    - phoneme: E
+      ratio: 2.740909e-19
+    - phoneme: O
+      ratio: 0.000000003657519
+    - phoneme: N
+      ratio: 0.000000036817568
+    - phoneme: Noise
+      ratio: 0.0000012934212
+  - volume: 0.07382117
+    phonemes:
+    - phoneme: A
+      ratio: 1.4079608e-10
+    - phoneme: I
+      ratio: 0.9999725
+    - phoneme: U
+      ratio: 0.000027544927
+    - phoneme: E
+      ratio: 1.1802144e-23
+    - phoneme: O
+      ratio: 1.7331471e-11
+    - phoneme: N
+      ratio: 2.0270759e-10
+    - phoneme: Noise
+      ratio: 6.956778e-12
+  - volume: 0.074053414
+    phonemes:
+    - phoneme: A
+      ratio: 0.0023787033
+    - phoneme: I
+      ratio: 0.99627256
+    - phoneme: U
+      ratio: 0.000006356653
+    - phoneme: E
+      ratio: 1.0421049e-17
+    - phoneme: O
+      ratio: 0.00033952514
+    - phoneme: N
+      ratio: 0.001002831
+    - phoneme: Noise
+      ratio: 3.0488294e-12
+  - volume: 0.07302682
+    phonemes:
+    - phoneme: A
+      ratio: 0.96577454
+    - phoneme: I
+      ratio: 0.00000021009994
+    - phoneme: U
+      ratio: 0.000013059556
+    - phoneme: E
+      ratio: 0.0000000033023404
+    - phoneme: O
+      ratio: 0.034212105
+    - phoneme: N
+      ratio: 0.0000000017974937
+    - phoneme: Noise
+      ratio: 1.41521155e-14
+  - volume: 0.07551015
+    phonemes:
+    - phoneme: A
+      ratio: 0.38233492
+    - phoneme: I
+      ratio: 0.000720677
+    - phoneme: U
+      ratio: 0.0018018016
+    - phoneme: E
+      ratio: 0.6149486
+    - phoneme: O
+      ratio: 0.00002522048
+    - phoneme: N
+      ratio: 8.571471e-12
+    - phoneme: Noise
+      ratio: 0.00016882917
+  - volume: 0.0768824
+    phonemes:
+    - phoneme: A
+      ratio: 0.0630543
+    - phoneme: I
+      ratio: 0.13282017
+    - phoneme: U
+      ratio: 0.6976343
+    - phoneme: E
+      ratio: 0.06382639
+    - phoneme: O
+      ratio: 0.0000034170348
+    - phoneme: N
+      ratio: 1.8917632e-12
+    - phoneme: Noise
+      ratio: 0.042661387
+  - volume: 0.058785968
+    phonemes:
+    - phoneme: A
+      ratio: 0.0009198551
+    - phoneme: I
+      ratio: 0.010802228
+    - phoneme: U
+      ratio: 0.96663755
+    - phoneme: E
+      ratio: 0.015568631
+    - phoneme: O
+      ratio: 0.000004151573
+    - phoneme: N
+      ratio: 1.2414371e-10
+    - phoneme: Noise
+      ratio: 0.006067588
+  - volume: 0.023423893
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000019824111
+    - phoneme: I
+      ratio: 0.13722907
+    - phoneme: U
+      ratio: 0.8627709
+    - phoneme: E
+      ratio: 4.3940095e-14
+    - phoneme: O
+      ratio: 2.6309083e-11
+    - phoneme: N
+      ratio: 1.8153858e-16
+    - phoneme: Noise
+      ratio: 4.4700718e-10
+  - volume: 0.014621114
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000068840986
+    - phoneme: I
+      ratio: 0.08327955
+    - phoneme: U
+      ratio: 0.9164906
+    - phoneme: E
+      ratio: 1.3605585e-13
+    - phoneme: O
+      ratio: 0.0000000081988
+    - phoneme: N
+      ratio: 1.25427065e-11
+    - phoneme: Noise
+      ratio: 0.00022296976
+  - volume: 0.06460041
+    phonemes:
+    - phoneme: A
+      ratio: 0.000018453242
+    - phoneme: I
+      ratio: 0.45726714
+    - phoneme: U
+      ratio: 0.54254115
+    - phoneme: E
+      ratio: 0.0001733039
+    - phoneme: O
+      ratio: 0.000000014268216
+    - phoneme: N
+      ratio: 1.216302e-13
+    - phoneme: Noise
+      ratio: 0.000000018956232
+  - volume: 0.10359292
+    phonemes:
+    - phoneme: A
+      ratio: 0.0007448574
+    - phoneme: I
+      ratio: 0.00000042856698
+    - phoneme: U
+      ratio: 0.00080261164
+    - phoneme: E
+      ratio: 0.9984521
+    - phoneme: O
+      ratio: 1.3163818e-11
+    - phoneme: N
+      ratio: 1.0533279e-17
+    - phoneme: Noise
+      ratio: 2.7545694e-10
+  - volume: 0.11616937
+    phonemes:
+    - phoneme: A
+      ratio: 4.872917e-12
+    - phoneme: I
+      ratio: 2.0158077e-17
+    - phoneme: U
+      ratio: 0.0000000025850895
+    - phoneme: E
+      ratio: 1
+    - phoneme: O
+      ratio: 8.770251e-19
+    - phoneme: N
+      ratio: 2.1849106e-23
+    - phoneme: Noise
+      ratio: 1.9148511e-14
+  - volume: 0.10081671
+    phonemes:
+    - phoneme: A
+      ratio: 3.805672e-11
+    - phoneme: I
+      ratio: 1.5132208e-18
+    - phoneme: U
+      ratio: 0.032362144
+    - phoneme: E
+      ratio: 0.96763784
+    - phoneme: O
+      ratio: 1.0546476e-17
+    - phoneme: N
+      ratio: 2.907584e-20
+    - phoneme: Noise
+      ratio: 1.5055894e-11
+  - volume: 0.06443832
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000022849869
+    - phoneme: I
+      ratio: 1.7535448e-12
+    - phoneme: U
+      ratio: 1
+    - phoneme: E
+      ratio: 7.688713e-10
+    - phoneme: O
+      ratio: 1.593036e-10
+    - phoneme: N
+      ratio: 6.021743e-13
+    - phoneme: Noise
+      ratio: 9.744459e-10
+  - volume: 0.0046395017
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000000011596721
+    - phoneme: I
+      ratio: 0.000000009896329
+    - phoneme: U
+      ratio: 1
+    - phoneme: E
+      ratio: 0.000000022438465
+    - phoneme: O
+      ratio: 0.0000000029498528
+    - phoneme: N
+      ratio: 4.758282e-13
+    - phoneme: Noise
+      ratio: 0.000000012284385
+  - volume: 0.0019304799
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000004809929
+    - phoneme: I
+      ratio: 0.00007230743
+    - phoneme: U
+      ratio: 0.999913
+    - phoneme: E
+      ratio: 0.00000003306119
+    - phoneme: O
+      ratio: 1.5199413e-10
+    - phoneme: N
+      ratio: 1.09314366e-13
+    - phoneme: Noise
+      ratio: 0.000014837939
+  - volume: 0.102270044
+    phonemes:
+    - phoneme: A
+      ratio: 0.2549971
+    - phoneme: I
+      ratio: 0.000000071285214
+    - phoneme: U
+      ratio: 2.484111e-10
+    - phoneme: E
+      ratio: 0.00045585426
+    - phoneme: O
+      ratio: 0.123192064
+    - phoneme: N
+      ratio: 0.55327135
+    - phoneme: Noise
+      ratio: 0.06808356
+  - volume: 0.16550846
+    phonemes:
+    - phoneme: A
+      ratio: 0.00007869668
+    - phoneme: I
+      ratio: 3.5981834e-19
+    - phoneme: U
+      ratio: 1.6463705e-10
+    - phoneme: E
+      ratio: 0.92343336
+    - phoneme: O
+      ratio: 0.07648781
+    - phoneme: N
+      ratio: 0.00000006312516
+    - phoneme: Noise
+      ratio: 1.4457842e-10
+  - volume: 0.17216727
+    phonemes:
+    - phoneme: A
+      ratio: 0.03186857
+    - phoneme: I
+      ratio: 4.637481e-17
+    - phoneme: U
+      ratio: 0.0000025151026
+    - phoneme: E
+      ratio: 0.7012699
+    - phoneme: O
+      ratio: 0.26557466
+    - phoneme: N
+      ratio: 0.000010235702
+    - phoneme: Noise
+      ratio: 0.0012740922
+  - volume: 0.15694232
+    phonemes:
+    - phoneme: A
+      ratio: 0.000036068464
+    - phoneme: I
+      ratio: 1.8757745e-19
+    - phoneme: U
+      ratio: 0.000028655611
+    - phoneme: E
+      ratio: 0.00148768
+    - phoneme: O
+      ratio: 0.16384435
+    - phoneme: N
+      ratio: 0.0000014451507
+    - phoneme: Noise
+      ratio: 0.8346018
+  - volume: 0.18092564
+    phonemes:
+    - phoneme: A
+      ratio: 9.47815e-10
+    - phoneme: I
+      ratio: 1.9600111e-21
+    - phoneme: U
+      ratio: 0.012253812
+    - phoneme: E
+      ratio: 4.3710122e-10
+    - phoneme: O
+      ratio: 0.0021194196
+    - phoneme: N
+      ratio: 0.0000000010594134
+    - phoneme: Noise
+      ratio: 0.98562676
+  - volume: 0.20899333
+    phonemes:
+    - phoneme: A
+      ratio: 9.517532e-12
+    - phoneme: I
+      ratio: 1.2469604e-23
+    - phoneme: U
+      ratio: 7.1695594e-11
+    - phoneme: E
+      ratio: 2.7707517e-12
+    - phoneme: O
+      ratio: 0.98213917
+    - phoneme: N
+      ratio: 1.12982644e-10
+    - phoneme: Noise
+      ratio: 0.017860785
+  - volume: 0.22482902
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000058644194
+    - phoneme: I
+      ratio: 5.2936994e-22
+    - phoneme: U
+      ratio: 0.0000000015690087
+    - phoneme: E
+      ratio: 0.0000013360554
+    - phoneme: O
+      ratio: 0.96775
+    - phoneme: N
+      ratio: 0.0000000055945435
+    - phoneme: Noise
+      ratio: 0.032248583
+  - volume: 0.20276354
+    phonemes:
+    - phoneme: A
+      ratio: 0.000000008038247
+    - phoneme: I
+      ratio: 9.179338e-23
+    - phoneme: U
+      ratio: 6.7109556e-13
+    - phoneme: E
+      ratio: 3.1134392e-12
+    - phoneme: O
+      ratio: 0.9999988
+    - phoneme: N
+      ratio: 2.6294453e-10
+    - phoneme: Noise
+      ratio: 0.0000011582141
+  - volume: 0.19115475
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000031006605
+    - phoneme: I
+      ratio: 1.7746974e-18
+    - phoneme: U
+      ratio: 0.00000005959681
+    - phoneme: E
+      ratio: 0.00000001268475
+    - phoneme: O
+      ratio: 0.9999312
+    - phoneme: N
+      ratio: 0.00006525133
+    - phoneme: Noise
+      ratio: 0.00000036177522
+  - volume: 0.21112956
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000035235115
+    - phoneme: I
+      ratio: 3.0885568e-22
+    - phoneme: U
+      ratio: 1.003601e-11
+    - phoneme: E
+      ratio: 0.000006789073
+    - phoneme: O
+      ratio: 0.99999297
+    - phoneme: N
+      ratio: 0.000000045586358
+    - phoneme: Noise
+      ratio: 6.339216e-10
+  - volume: 0.20662834
+    phonemes:
+    - phoneme: A
+      ratio: 0.000029634577
+    - phoneme: I
+      ratio: 5.1246143e-18
+    - phoneme: U
+      ratio: 6.7795397e-10
+    - phoneme: E
+      ratio: 5.506041e-10
+    - phoneme: O
+      ratio: 0.9993463
+    - phoneme: N
+      ratio: 0.0006240754
+    - phoneme: Noise
+      ratio: 0.00000002534021
+  - volume: 0.20546755
+    phonemes:
+    - phoneme: A
+      ratio: 0.00039588296
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 2.0699818e-13
+    - phoneme: E
+      ratio: 0.000000002027869
+    - phoneme: O
+      ratio: 0.99960417
+    - phoneme: N
+      ratio: 0.0000000010994574
+    - phoneme: Noise
+      ratio: 1.227079e-10
+  - volume: 0.20536847
+    phonemes:
+    - phoneme: A
+      ratio: 0.00000020474886
+    - phoneme: I
+      ratio: 8.5085275e-23
+    - phoneme: U
+      ratio: 9.830511e-15
+    - phoneme: E
+      ratio: 2.093538e-13
+    - phoneme: O
+      ratio: 0.99999976
+    - phoneme: N
+      ratio: 1.3872428e-10
+    - phoneme: Noise
+      ratio: 1.7167332e-12
+  - volume: 0.18842177
+    phonemes:
+    - phoneme: A
+      ratio: 0.00025933425
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 3.3520121e-13
+    - phoneme: E
+      ratio: 0.000000064161085
+    - phoneme: O
+      ratio: 0.9997406
+    - phoneme: N
+      ratio: 7.2065715e-11
+    - phoneme: Noise
+      ratio: 0.0000000058006475
+  - volume: 0.15711273
+    phonemes:
+    - phoneme: A
+      ratio: 0.0005399576
+    - phoneme: I
+      ratio: 2.6595488e-19
+    - phoneme: U
+      ratio: 0.0000000013326406
+    - phoneme: E
+      ratio: 0.000002150671
+    - phoneme: O
+      ratio: 0.9994534
+    - phoneme: N
+      ratio: 0.0000041798767
+    - phoneme: Noise
+      ratio: 0.00000028453897
+  - volume: 0.111802235
+    phonemes:
+    - phoneme: A
+      ratio: 0.00013379885
+    - phoneme: I
+      ratio: 7.067985e-16
+    - phoneme: U
+      ratio: 0.00025063264
+    - phoneme: E
+      ratio: 0.00000006743475
+    - phoneme: O
+      ratio: 0.99960214
+    - phoneme: N
+      ratio: 0.000013285738
+    - phoneme: Noise
+      ratio: 0.000000051214954
+  - volume: 0.0598057
+    phonemes:
+    - phoneme: A
+      ratio: 0.000021047135
+    - phoneme: I
+      ratio: 6.35411e-19
+    - phoneme: U
+      ratio: 0.97187746
+    - phoneme: E
+      ratio: 3.7316414e-10
+    - phoneme: O
+      ratio: 0.028101495
+    - phoneme: N
+      ratio: 0.0000000015213121
+    - phoneme: Noise
+      ratio: 3.8426564e-11
+  - volume: 0.031061824
+    phonemes:
+    - phoneme: A
+      ratio: 0.021858307
+    - phoneme: I
+      ratio: 2.9595355e-14
+    - phoneme: U
+      ratio: 0.043351177
+    - phoneme: E
+      ratio: 0.00007784084
+    - phoneme: O
+      ratio: 0.9346677
+    - phoneme: N
+      ratio: 0.000029853045
+    - phoneme: Noise
+      ratio: 0.000015098671
+  - volume: 0.019135445
+    phonemes:
+    - phoneme: A
+      ratio: 0.04275666
+    - phoneme: I
+      ratio: 2.0725695e-10
+    - phoneme: U
+      ratio: 0.00022621964
+    - phoneme: E
+      ratio: 0.00005662002
+    - phoneme: O
+      ratio: 0.95689404
+    - phoneme: N
+      ratio: 0.00003811739
+    - phoneme: Noise
+      ratio: 0.000028274128
+  - volume: 0.010793591
+    phonemes:
+    - phoneme: A
+      ratio: 0.06991437
+    - phoneme: I
+      ratio: 3.6680395e-11
+    - phoneme: U
+      ratio: 0.00024662126
+    - phoneme: E
+      ratio: 0.00002278445
+    - phoneme: O
+      ratio: 0.92978233
+    - phoneme: N
+      ratio: 0.000001818937
+    - phoneme: Noise
+      ratio: 0.000032062686
+  - volume: 0.004826186
+    phonemes:
+    - phoneme: A
+      ratio: 0.45522416
+    - phoneme: I
+      ratio: 1.1397731e-11
+    - phoneme: U
+      ratio: 0.00002284895
+    - phoneme: E
+      ratio: 0.000000056142124
+    - phoneme: O
+      ratio: 0.54474735
+    - phoneme: N
+      ratio: 0.0000030218698
+    - phoneme: Noise
+      ratio: 0.000002613103
+  - volume: 0.0017395447
+    phonemes:
+    - phoneme: A
+      ratio: 0.7870801
+    - phoneme: I
+      ratio: 7.017164e-10
+    - phoneme: U
+      ratio: 0.00000044666234
+    - phoneme: E
+      ratio: 0.00000021288842
+    - phoneme: O
+      ratio: 0.21008103
+    - phoneme: N
+      ratio: 0.00014439695
+    - phoneme: Noise
+      ratio: 0.002693922
+  - volume: 0.00083742273
+    phonemes:
+    - phoneme: A
+      ratio: 0.00052488374
+    - phoneme: I
+      ratio: 3.3619774e-10
+    - phoneme: U
+      ratio: 0.000000010603876
+    - phoneme: E
+      ratio: 2.2035897e-11
+    - phoneme: O
+      ratio: 0.0000014412351
+    - phoneme: N
+      ratio: 0.000009675379
+    - phoneme: Noise
+      ratio: 0.999464
+  - volume: 0.0002976625
+    phonemes:
+    - phoneme: A
+      ratio: 1.8727245e-10
+    - phoneme: I
+      ratio: 4.8969093e-12
+    - phoneme: U
+      ratio: 1.9958004e-11
+    - phoneme: E
+      ratio: 7.2944294e-17
+    - phoneme: O
+      ratio: 1.8888795e-12
+    - phoneme: N
+      ratio: 7.8613965e-10
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.00008936426
+    phonemes:
+    - phoneme: A
+      ratio: 1.4302699e-11
+    - phoneme: I
+      ratio: 0.0000000041417207
+    - phoneme: U
+      ratio: 2.2468845e-12
+    - phoneme: E
+      ratio: 1.5548148e-11
+    - phoneme: O
+      ratio: 2.925091e-12
+    - phoneme: N
+      ratio: 1.4808893e-12
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.00005010195
+    phonemes:
+    - phoneme: A
+      ratio: 1.1358031e-11
+    - phoneme: I
+      ratio: 4.5422634e-13
+    - phoneme: U
+      ratio: 2.1060424e-14
+    - phoneme: E
+      ratio: 5.021033e-13
+    - phoneme: O
+      ratio: 1.0821984e-13
+    - phoneme: N
+      ratio: 1.3163429e-13
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.00003372647
+    phonemes:
+    - phoneme: A
+      ratio: 1.0848865e-12
+    - phoneme: I
+      ratio: 1.3728836e-10
+    - phoneme: U
+      ratio: 2.5632154e-14
+    - phoneme: E
+      ratio: 1.1934335e-13
+    - phoneme: O
+      ratio: 2.1420801e-12
+    - phoneme: N
+      ratio: 8.438149e-13
+    - phoneme: Noise
+      ratio: 0.99999994
+  - volume: 0.000021522917
+    phonemes:
+    - phoneme: A
+      ratio: 0.0000022498068
+    - phoneme: I
+      ratio: 2.418365e-11
+    - phoneme: U
+      ratio: 0.000002507043
+    - phoneme: E
+      ratio: 0.000008064024
+    - phoneme: O
+      ratio: 0.000019052419
+    - phoneme: N
+      ratio: 0.00000036890162
+    - phoneme: Noise
+      ratio: 0.9999678
+  - volume: 0.0000083865525
+    phonemes:
+    - phoneme: A
+      ratio: 6.0788622e-18
+    - phoneme: I
+      ratio: 6.0942895e-21
+    - phoneme: U
+      ratio: 5.999134e-14
+    - phoneme: E
+      ratio: 3.7231035e-19
+    - phoneme: O
+      ratio: 3.0485265e-17
+    - phoneme: N
+      ratio: 4.3460134e-21
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0.0000015573437
+    phonemes:
+    - phoneme: A
+      ratio: 7.560147e-14
+    - phoneme: I
+      ratio: 5.7451137e-23
+    - phoneme: U
+      ratio: 7.838909e-13
+    - phoneme: E
+      ratio: 7.944115e-14
+    - phoneme: O
+      ratio: 3.1197167e-13
+    - phoneme: N
+      ratio: 2.8133236e-16
+    - phoneme: Noise
+      ratio: 1
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0
+    phonemes:
+    - phoneme: A
+      ratio: 0
+    - phoneme: I
+      ratio: 0
+    - phoneme: U
+      ratio: 0
+    - phoneme: E
+      ratio: 0
+    - phoneme: O
+      ratio: 0
+    - phoneme: N
+      ratio: 0
+    - phoneme: Noise
+      ratio: 0
+  - volume: 0.023563847
+    phonemes:
+    - phoneme: A
+      ratio: 0.8335747
+    - phoneme: I
+      ratio: 6.2854305e-10
+    - phoneme: U
+      ratio: 0.000000013902222
+    - phoneme: E
+      ratio: 0.000020683014
+    - phoneme: O
+      ratio: 0.13501072
+    - phoneme: N
+      ratio: 0.0003138697
+    - phoneme: Noise
+      ratio: 0.031080129
