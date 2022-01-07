@@ -83,6 +83,8 @@ public class uLipSync : MonoBehaviour
         }
         _allocated = true;
 
+        _jobHandle.Complete();
+
         lock (_lockObject)
         {
             int n = inputSampleCount;
@@ -100,6 +102,9 @@ public class uLipSync : MonoBehaviour
     void DisposeBuffers()
     {
         if (!_allocated) return;
+        _allocated = false;
+
+        _jobHandle.Complete();
 
         lock (_lockObject)
         {

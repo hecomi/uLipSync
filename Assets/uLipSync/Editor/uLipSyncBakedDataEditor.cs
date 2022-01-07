@@ -96,19 +96,37 @@ public class BakedDataEditor : Editor
     {
         EditorGUILayout.LabelField("Duration", data.duration.ToString("F3") + " (Sec)");
         EditorGUILayout.Separator();
-        DrawWave();
-        DrawFrames();
-    }
 
-    void DrawWave()
-    {
         var rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
         rect.xMin += 16;
-
         EditorUtil.DrawBackgroundRect(rect);
+        DrawWave(rect);
+
+        rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
+        rect.xMin += 16;
+        EditorUtil.DrawBackgroundRect(rect);
+        DrawFrames(rect);
+    }
+
+    void DrawWave(Rect rect)
+    {
         if (data.audioClip)
         {
-            EditorUtil.DrawWave(rect, data.audioClip);
+            bool hasFrame = !data.isDataChanged && data.frames.Count > 0;
+            var currentColor = new Color();
+            var smooth = 0.15f;
+            EditorUtil.DrawWave(rect, data.audioClip, hasFrame ? x => {
+                var t = x * data.duration;
+                var frame = data.GetFrame(t);
+                var color = new Color();
+                for (int i = 0; i < frame.phonemes.Count; ++i)
+                {
+                    var colorIndex = i % phonemeColors.Length;
+                    color += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
+                }
+                currentColor += (color - currentColor) * smooth;
+                return currentColor;
+            } : null);
         }
 
         EditorGUILayout.BeginHorizontal();
@@ -125,32 +143,27 @@ public class BakedDataEditor : Editor
         EditorGUILayout.Separator();
     }
 
-    void DrawFrames()
+    void DrawFrames(Rect rect)
     {
-        var rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
-        rect.xMin += 16;
-
-        EditorUtil.DrawBackgroundRect(rect);
-
         if (!data.audioClip) return;
 
         var n = data.frames.Count;
         if (n == 0) return;
 
         var phonemeCount = data.frames[0].phonemes.Count;
-        var pointsList = new List<Vector3[]>();
+        var ratioPointsList = new List<Vector3[]>();
 
-        float max = 0f;
+        float maxRatio = 0f;
         for (int j = 0; j < phonemeCount; ++j)
         {
             for (int i = 0; i < n; ++i)
             {
                 var frame = data.frames[i];
                 var val = frame.phonemes[j].ratio * frame.volume;
-                max = Mathf.Max(val, max);
+                maxRatio = Mathf.Max(val, maxRatio);
             }
         }
-        max = Mathf.Max(max, 0.01f);
+        maxRatio = Mathf.Max(maxRatio, 0.01f);
 
         for (int j = 0; j < phonemeCount; ++j)
         {
@@ -160,20 +173,20 @@ public class BakedDataEditor : Editor
             {
                 var frame = data.frames[i];
                 var x = (float)i / Mathf.Max(n - 1, 1);
-                var y = frame.phonemes[j].ratio * frame.volume / max;
+                var y = frame.phonemes[j].ratio * frame.volume / maxRatio;
                 x = rect.x + x * rect.width;
                 y = rect.y + (1f - y) * rect.height;
                 points[i] = new Vector3(x, y, 0f);
             }
 
-            pointsList.Add(points);
+            ratioPointsList.Add(points);
         }
 
-        for (int i = 0; i < pointsList.Count; ++i)
+        for (int i = 0; i < ratioPointsList.Count; ++i)
         {
             var colorIndex = i % phonemeColors.Length;
             Handles.color = phonemeColors[colorIndex];
-            Handles.DrawAAPolyLine(2f, pointsList[i]);
+            Handles.DrawAAPolyLine(2f, ratioPointsList[i]);
         }
 
         EditorGUILayout.Separator();

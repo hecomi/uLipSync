@@ -148,7 +148,7 @@ public static class EditorUtil
             new Color(1f, 1f, 1f, 0.2f));
     }
 
-    public static void DrawWave(Rect rect, AudioClip clip)
+    public static void DrawWave(Rect rect, AudioClip clip, System.Func<float, Color> colorFunc = null)
     {
         if (!clip) return;
 
@@ -167,7 +167,7 @@ public static class EditorUtil
                 out float minValue, 
                 out float maxValue)
             {
-                col = curveColor;
+                col = colorFunc != null ? colorFunc(x) : curveColor;
 
                 if (samples <= 0)
                 {

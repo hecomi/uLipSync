@@ -359,7 +359,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 5545b4aa0573e4c96b26e3b6d6514d5f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -483,7 +483,7 @@ MonoBehaviour:
   minVolume: -2.999837
   maxVolume: -1.9998369
   smoothness: 0.06
---- !u!114 &496503030
+--- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -492,12 +492,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 496503018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7061170aeebc645308bdc5f396f9c539, type: 3}
+  m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
-  playOnAwake: 1
-  playAudioSource: 1
+  profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -513,6 +511,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  outputSoundGain: 1
+  audioSourceProxy: {fileID: 0}
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0
