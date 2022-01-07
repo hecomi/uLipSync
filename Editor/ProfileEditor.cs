@@ -120,19 +120,16 @@ public class ProfileEditor : Editor
     void DrawMFCC(Rect position, int index, bool showCalibration)
     {
         var data = profile.mfccs[index];
-        float singleLineHeight = 
-            EditorGUIUtility.singleLineHeight + 
-            EditorGUIUtility.standardVerticalSpacing;
 
         position = EditorGUI.IndentedRect(position);
         position.xMin += 12;
-        position.height = singleLineHeight;
+        position.height = EditorUtil.lineHeightWithMargin;
 
         if (!EditorUtil.SimpleFoldout(position, data.name, true, "MfccData")) return;
-        position.y += singleLineHeight;
+        position.y += EditorUtil.lineHeightWithMargin;
 
         data.name = EditorGUI.TextField(position, "Phoneme", data.name);
-        position.y += singleLineHeight;
+        position.y += EditorUtil.lineHeightWithMargin;
         position.y += 5f;
 
         var mfccPos = new Rect(position);
