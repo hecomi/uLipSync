@@ -187,8 +187,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 60
+  near clip plane: 0.05
+  far clip plane: 10
   field of view: 30
   orthographic: 0
   orthographic size: 5
@@ -359,7 +359,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5ce5e31b4113b41d4b0537bd71771881, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -475,15 +475,15 @@ MonoBehaviour:
     index: 10
     maxWeight: 1
   - phoneme: N
-    index: 8
-    maxWeight: 0.3
+    index: -1
+    maxWeight: 1
   - phoneme: '-'
     index: -1
     maxWeight: 1
-  minVolume: -2.5
-  maxVolume: -1.5
-  smoothness: 0.05
---- !u!114 &496503021
+  minVolume: -2.999837
+  maxVolume: -1.9998369
+  smoothness: 0.06
+--- !u!114 &496503030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -492,15 +492,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 496503018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
+  m_Script: {fileID: 11500000, guid: 7061170aeebc645308bdc5f396f9c539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
+  bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
+  playOnAwake: 1
+  playAudioSource: 1
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 496503020}
-        m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync
+        m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync.Runtime
         m_MethodName: OnLipSyncUpdate
         m_Mode: 0
         m_Arguments:
@@ -511,24 +513,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  outputSoundGain: 1
-  audioSourceProxy: {fileID: 0}
---- !u!114 &496503025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496503018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 354cff4bd7e4344c898201f2bf926e51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 5f1962b28971041f3b08aa2185cca6ae, type: 3}
-  start: 0.4745396
-  end: 0.49439377
-  crossFadeDuration: 0.05
 --- !u!850595691 &1359427199
 LightingSettings:
   m_ObjectHideFlags: 0
