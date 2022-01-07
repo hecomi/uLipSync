@@ -90,18 +90,14 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
     void DrawWave()
     {
         var rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
-
-        Handles.DrawSolidRectangleWithOutline(
-            rect,
-            new Color(0f, 0f, 0f, 0.2f),
-            new Color(1f, 1f, 1f, 0.2f));
+        EditorUtil.DrawBackgroundRect(rect);
 
         if (!player.clip) return;
 
+        EditorUtil.DrawWave(rect, player.clip);
         var preWaveStart = player.start;
         var preWaveEnd = player.end;
 
-        EditorUtil.DrawWave(rect, player.clip);
         DrawTrimArea(rect, true, ref player.start, ref _isDraggingStart, ref _isDraggingEnd);
         DrawTrimArea(rect, false, ref player.end, ref _isDraggingEnd, ref _isDraggingStart);
         DrawCrossFadeArea(rect);

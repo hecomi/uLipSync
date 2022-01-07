@@ -7,6 +7,13 @@ namespace uLipSync
 
 public static class EditorUtil
 {
+    public static float lineHeightWithMargin 
+    { 
+        get=>
+            EditorGUIUtility.singleLineHeight + 
+            EditorGUIUtility.standardVerticalSpacing;
+    }
+
     public static string GetKey(string title, string category)
     {
         return $"{Common.assetName}-{category}-{title}";
@@ -131,6 +138,14 @@ public static class EditorUtil
             var color = ToRGB(value);
             Handles.DrawSolidRectangleWithOutline(rect, color, color);
         }
+    }
+
+    public static void DrawBackgroundRect(Rect rect)
+    {
+        Handles.DrawSolidRectangleWithOutline(
+            rect,
+            new Color(0f, 0f, 0f, 0.2f),
+            new Color(1f, 1f, 1f, 0.2f));
     }
 
     public static void DrawWave(Rect rect, AudioClip clip)

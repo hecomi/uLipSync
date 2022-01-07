@@ -13,11 +13,12 @@ public class uLipSync : MonoBehaviour
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
     [Range(0f, 1f)] public float outputSoundGain = 1f;
 
-    public uLipSyncAudioSource audioSource;
-    uLipSyncAudioSource currentAudioSource_;
+    public uLipSyncAudioSource audioSourceProxy;
+    uLipSyncAudioSource _currentAudioSourceProxy;
 
     JobHandle _jobHandle;
     object _lockObject = new object();
+    bool _allocated = false;
     int _index = 0;
     bool _isDataReceived = false;
 
@@ -38,6 +39,7 @@ public class uLipSync : MonoBehaviour
     {
         get 
         {  
+            if (!profile) return AudioSettings.outputSampleRate;
             float r = (float)AudioSettings.outputSampleRate / profile.targetSampleRate;
             return Mathf.CeilToInt(profile.sampleCount * r);
         }
@@ -55,6 +57,7 @@ public class uLipSync : MonoBehaviour
 
     void OnDisable()
     {
+        _jobHandle.Complete();
         DisposeBuffers();
     }
 
@@ -74,24 +77,32 @@ public class uLipSync : MonoBehaviour
 
     void AllocateBuffers()
     {
+        if (_allocated)
+        {
+            DisposeBuffers();
+        }
+        _allocated = true;
+
         lock (_lockObject)
         {
             int n = inputSampleCount;
+            int phonemeCount = profile ? profile.mfccs.Count : 1;
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
             _inputData = new NativeArray<float>(n, Allocator.Persistent); 
             _mfcc = new NativeArray<float>(12, Allocator.Persistent); 
-            _distances = new NativeArray<float>(profile.mfccs.Count, Allocator.Persistent);
+            _distances = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _mfccForOther = new NativeArray<float>(12, Allocator.Persistent); 
-            _phonemes = new NativeArray<float>(12 * profile.mfccs.Count, Allocator.Persistent);
+            _phonemes = new NativeArray<float>(12 * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
         }
     }
 
     void DisposeBuffers()
     {
+        if (!_allocated) return;
+
         lock (_lockObject)
         {
-            _jobHandle.Complete();
             _rawInputData.Dispose();
             _inputData.Dispose();
             _mfcc.Dispose();
@@ -122,7 +133,6 @@ public class uLipSync : MonoBehaviour
 
         float sumInvDistance = 0f;
         float minDistance = float.MaxValue;
-        int mainIndex = -1;
         string mainPhoneme = "";
         for (int i = 0; i < _distances.Length; ++i)
         {
@@ -130,7 +140,6 @@ public class uLipSync : MonoBehaviour
             if (d < minDistance)
             {
                 minDistance = d;
-                mainIndex = i;
                 mainPhoneme = profile.GetPhoneme(i);
             }
             sumInvDistance += Mathf.Pow(10f, -d);
@@ -158,11 +167,9 @@ public class uLipSync : MonoBehaviour
 
         result = new LipSyncInfo()
         {
-            index = mainIndex,
             phoneme = mainPhoneme,
             volume = normVol,
             rawVolume = rawVol,
-            distance = minDistance,
             phonemeRatios = _ratios,
         };
     }
@@ -234,19 +241,19 @@ public class uLipSync : MonoBehaviour
 
     void UpdateAudioSource()
     {
-        if (audioSource == currentAudioSource_) return;
+        if (audioSourceProxy == _currentAudioSourceProxy) return;
 
-        if (currentAudioSource_)
+        if (_currentAudioSourceProxy)
         {
-            currentAudioSource_.onAudioFilterRead.RemoveListener(OnDataReceived);
+            _currentAudioSourceProxy.onAudioFilterRead.RemoveListener(OnDataReceived);
         }
 
-        if (audioSource)
+        if (audioSourceProxy)
         {
-            audioSource.onAudioFilterRead.AddListener(OnDataReceived);
+            audioSourceProxy.onAudioFilterRead.AddListener(OnDataReceived);
         }
 
-        currentAudioSource_ = audioSource;
+        _currentAudioSourceProxy = audioSourceProxy;
     }
 
     public void OnDataReceived(float[] input, int channels)
@@ -277,11 +284,34 @@ public class uLipSync : MonoBehaviour
 
     void OnAudioFilterRead(float[] input, int channels)
     {
-        if (!audioSource)
+        if (!audioSourceProxy)
         {
             OnDataReceived(input, channels);
         }
     }
+
+#if UNITY_EDITOR
+    public void OnBakeStart(Profile profile)
+    {
+        this.profile = profile;
+        AllocateBuffers();
+    }
+
+    public void OnBakeEnd()
+    {
+        DisposeBuffers();
+    }
+
+    public void OnBakeUpdate(float[] input, int channels)
+    {
+        OnDataReceived(input, channels);
+        UpdateBuffers();
+        UpdatePhonemes();
+        ScheduleJob();
+        _jobHandle.Complete();
+        UpdateResult();
+    }
+#endif
 }
 
 }

@@ -15,11 +15,9 @@ public static class Common
 
 public struct LipSyncInfo
 {
-    public int index;
     public string phoneme;
     public float volume;
     public float rawVolume;
-    public float distance;
     public Dictionary<string, float> phonemeRatios;
 }
 

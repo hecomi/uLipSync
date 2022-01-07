@@ -13,9 +13,6 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
 
         if (info.volume < Mathf.Epsilon) return;
 
-        Debug.LogFormat(
-            $"PHENOME: {info.phoneme}, " +
-            $"VOL: {info.volume}, " +
-            $"DIST: {info.distance} ");
+        Debug.LogFormat($"PHENOME: {info.phoneme}, VOL: {info.volume} ");
     }
 }
