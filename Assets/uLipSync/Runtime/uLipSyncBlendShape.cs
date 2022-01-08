@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
+[ExecuteAlways]
 public class uLipSyncBlendShape : MonoBehaviour
 {
     [System.Serializable]

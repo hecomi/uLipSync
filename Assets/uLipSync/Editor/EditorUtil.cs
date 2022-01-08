@@ -148,7 +148,13 @@ public static class EditorUtil
             new Color(1f, 1f, 1f, 0.2f));
     }
 
-    public static void DrawWave(Rect rect, AudioClip clip, System.Func<float, Color> colorFunc = null)
+    public class DrawWaveOption
+    {
+        public System.Func<float, Color> colorFunc = null;
+        public float waveScale = 0.95f;
+    }
+
+    public static void DrawWave(Rect rect, AudioClip clip, DrawWaveOption option = null)
     {
         if (!clip) return;
 
@@ -167,7 +173,9 @@ public static class EditorUtil
                 out float minValue, 
                 out float maxValue)
             {
-                col = colorFunc != null ? colorFunc(x) : curveColor;
+                col = (option != null && option.colorFunc != null) ? 
+                    option.colorFunc(x) : 
+                    curveColor;
 
                 if (samples <= 0)
                 {
@@ -180,8 +188,9 @@ public static class EditorUtil
                     int i = (int)Mathf.Floor(p);
                     int offset1 = (i * channels + ch) * 2;
                     int offset2 = offset1 + channels * 2;
-                    minValue = Mathf.Min(minMaxData[offset1 + 1], minMaxData[offset2 + 1]) * 0.95f;
-                    maxValue = Mathf.Max(minMaxData[offset1 + 0], minMaxData[offset2 + 0]) * 0.95f;
+                    var scale = option != null ? option.waveScale : 0.95f;
+                    minValue = Mathf.Min(minMaxData[offset1 + 1], minMaxData[offset2 + 1]) * scale;
+                    maxValue = Mathf.Max(minMaxData[offset1 + 0], minMaxData[offset2 + 0]) * scale;
                     if (minValue > maxValue) { float tmp = minValue; minValue = maxValue; maxValue = tmp; }
                 }
             };

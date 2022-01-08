@@ -72,6 +72,34 @@ public class BakedData : ScriptableObject
 
         return frame;
     }
+
+    public LipSyncInfo GetLipSyncInfo(float t)
+    {
+        var frame = GetFrame(t);
+        var info = new LipSyncInfo();
+        info.phonemeRatios = new Dictionary<string, float>();
+
+        float maxRatio = 0f;
+        foreach (var pr in frame.phonemes)
+        {
+            if (pr.ratio > maxRatio)
+            {
+                info.phoneme = pr.phoneme;
+                maxRatio = pr.ratio;
+            }
+            info.phonemeRatios.Add(pr.phoneme, pr.ratio);
+        }
+
+        float minVol = Common.defaultMinVolume;
+        float maxVol = Common.defaultMaxVolume;
+        float normVol = Mathf.Log10(frame.volume);
+        normVol = (normVol - minVol) / (maxVol - minVol);
+        normVol = Mathf.Clamp(normVol, 0f, 1f);
+        info.volume = normVol;
+        info.rawVolume = frame.volume;
+
+        return info;
+    }
 }
 
 }
