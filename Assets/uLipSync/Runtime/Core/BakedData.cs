@@ -58,11 +58,12 @@ public class BakedData : ScriptableObject
         index1 = Mathf.Clamp(index1, 0, frames.Count - 1);
         var frame0 = frames[index0];
         var frame1 = frames[index1];
-
+        bool isOutOfRange = index0 == index1;
         float a = t * 60f - index0;
+
         for (int i = 0; i < phonemeCount; ++i)
         {
-            frame.volume = Mathf.Lerp(frame0.volume, frame1.volume, a);
+            frame.volume = isOutOfRange ? 0f : Mathf.Lerp(frame0.volume, frame1.volume, a);
             frame.phonemes.Add(new BakedPhonemeRatio()
             {
                 phoneme = frame0.phonemes[i].phoneme,

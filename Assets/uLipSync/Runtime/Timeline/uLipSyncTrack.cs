@@ -20,13 +20,13 @@ public class uLipSyncTrack : TrackAsset
 {
     public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
     {
-        var audioTracks = timelineAsset.GetOutputTracks();
-        var audioTrack = audioTracks.FirstOrDefault(x => x.GetType() == typeof(AudioTrack));
-        foreach (var clip in audioTrack.GetClips())
+        foreach (var clip in GetClips())
         {
-            var start = clip.start;
-            var end = clip.end;
-            var clipIn = clip.clipIn;
+            var asset = clip.asset as uLipSyncClip;
+            if (asset.bakedData && asset.bakedData.audioClip)
+            {
+                clip.displayName = asset.bakedData.audioClip.name;
+            }
         }
         return ScriptPlayable<uLipSyncMixer>.Create(graph, inputCount);
     }

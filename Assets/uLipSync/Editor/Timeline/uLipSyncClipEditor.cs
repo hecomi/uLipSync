@@ -91,10 +91,23 @@ public class uLipSyncClipTimelineEditor : ClipEditor
     {
         var ls = clip.asset as uLipSyncClip;
         var data = ls.bakedData;
+        if (!data) return;
+
+        var audioClip = data.audioClip;
+        if (!audioClip) return;
+
+        EditorUtil.DrawBackgroundRect(region.position, new Color(0f, 0f, 0f, 0.3f), new Color());
+
+        var rect = region.position;
+        var width = (float)(rect.width * audioClip.length / clip.duration);
+        var offset = (float)(width * clip.clipIn / audioClip.length);
+        rect.x -= offset;
+        rect.width = width;
+
         var phonemeColors = BakedDataEditor.phonemeColors;
         var currentColor = new Color();
         var smooth = 0.15f;
-        EditorUtil.DrawWave(region.position, data.audioClip, new EditorUtil.DrawWaveOption()
+        EditorUtil.DrawWave(rect, data.audioClip, new EditorUtil.DrawWaveOption()
         {
             colorFunc = x => {
                 var t = x * data.duration;
