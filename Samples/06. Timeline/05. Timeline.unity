@@ -2866,7 +2866,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!1 &615430986
 GameObject:
   m_ObjectHideFlags: 0
@@ -2904,7 +2904,7 @@ PlayableDirector:
   - key: {fileID: 3708567250363299831, guid: bfe49d8a9bc074c3e8cb59dd02bfb1a6, type: 2}
     value: {fileID: 496503019}
   - key: {fileID: -8863445692703013094, guid: bfe49d8a9bc074c3e8cb59dd02bfb1a6, type: 2}
-    value: {fileID: 0}
+    value: {fileID: 496503023}
   m_ExposedReferences:
     m_References:
     - 0ee7de5d76b9e44f382c05f64586fb8b: {fileID: 180302166}
