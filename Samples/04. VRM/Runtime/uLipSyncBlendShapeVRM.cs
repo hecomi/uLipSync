@@ -4,6 +4,7 @@ using VRM;
 namespace uLipSync
 {
 
+[ExecuteAlways]
 [RequireComponent(typeof(VRMBlendShapeProxy))]
 public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
 {

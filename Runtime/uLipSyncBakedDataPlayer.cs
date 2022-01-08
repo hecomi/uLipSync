@@ -60,29 +60,10 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
 
     void UpdateCallback()
     {
+        if (!bakedData) return;
+
         var t = AudioSettings.dspTime - _startTime;
-        var frame = bakedData.GetFrame((float)t + timeOffset);
-        var info = new LipSyncInfo();
-        info.phonemeRatios = new Dictionary<string, float>();
-
-        float maxRatio = 0f;
-        foreach (var pr in frame.phonemes)
-        {
-            if (pr.ratio > maxRatio)
-            {
-                info.phoneme = pr.phoneme;
-            }
-            info.phonemeRatios.Add(pr.phoneme, pr.ratio);
-        }
-
-        float minVol = Common.defaultMinVolume;
-        float maxVol = Common.defaultMaxVolume;
-        float normVol = Mathf.Log10(frame.volume);
-        normVol = (normVol - minVol) / (maxVol - minVol);
-        normVol = Mathf.Clamp(normVol, 0f, 1f);
-        info.volume = normVol;
-        info.rawVolume = frame.volume;
-
+        var info = bakedData.GetLipSyncInfo((float)t + timeOffset);
         onLipSyncUpdate.Invoke(info);
     }
 

@@ -11,7 +11,7 @@ public class BakedDataEditor : Editor
 {
     BakedData data { get => target as BakedData; }
     StringBuilder _msg = new StringBuilder();
-    static Color[] phonemeColors = new Color[]
+    public static Color[] phonemeColors = new Color[]
     {
         Color.red,
         Color.blue,
@@ -116,18 +116,22 @@ public class BakedDataEditor : Editor
             bool hasFrame = !data.isDataChanged && data.frames.Count > 0;
             var currentColor = new Color();
             var smooth = 0.15f;
-            EditorUtil.DrawWave(rect, data.audioClip, hasFrame ? x => {
-                var t = x * data.duration;
-                var frame = data.GetFrame(t);
-                var color = new Color();
-                for (int i = 0; i < frame.phonemes.Count; ++i)
-                {
-                    var colorIndex = i % phonemeColors.Length;
-                    color += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
-                }
-                currentColor += (color - currentColor) * smooth;
-                return currentColor;
-            } : null);
+            EditorUtil.DrawWave(rect, data.audioClip, new EditorUtil.DrawWaveOption()
+            {
+                waveScale = 1f,
+                colorFunc = hasFrame ? x => {
+                    var t = x * data.duration;
+                    var frame = data.GetFrame(t);
+                    var color = new Color();
+                    for (int i = 0; i < frame.phonemes.Count; ++i)
+                    {
+                        var colorIndex = i % phonemeColors.Length;
+                        color += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
+                    }
+                    currentColor += (color - currentColor) * smooth;
+                    return currentColor;
+                } : null
+            });
         }
 
         EditorGUILayout.BeginHorizontal();
