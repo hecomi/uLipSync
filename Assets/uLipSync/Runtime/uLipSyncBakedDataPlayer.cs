@@ -4,29 +4,44 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-[RequireComponent(typeof(AudioSource))]
 public class uLipSyncBakedDataPlayer : MonoBehaviour
 {
+    public AudioSource audioSource = null;
     public BakedData bakedData = null;
     public bool playOnAwake = true;
     public bool playAudioSource = true;
+    [Range(0f, 0.3f)] public float timeOffset = 0.1f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
+    bool _isFirstPlay = true;
     bool _isPlaying = false;
-    float _startTime = 0f;
+    double _startTime = 0.0;
     public bool isPlaying { get => _isPlaying; }
 
-    void Awake()
+    void OnEnable()
     {
-        if (playOnAwake)
-        {
-            Play();
-        }
+        _isFirstPlay = true;
+    }
+
+    void OnDisable()
+    {
+        _isFirstPlay = false;
     }
 
     void Update()
     {
-        if (!_isPlaying) return;
+        if (!_isPlaying)
+        {
+            if (_isFirstPlay && playOnAwake)
+            {
+                _isFirstPlay = false;
+                Play();
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!bakedData)
         {
@@ -34,14 +49,19 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
             return;
         }
 
-        var t = Time.time - _startTime;
-        if (t > bakedData.duration)
+        if (AudioSettings.dspTime - _startTime > bakedData.duration)
         {
             Stop();
             return;
         }
 
-        var frame = bakedData.GetFrame(t);
+        UpdateCallback();
+    }
+
+    void UpdateCallback()
+    {
+        var t = AudioSettings.dspTime - _startTime;
+        var frame = bakedData.GetFrame((float)t + timeOffset);
         var info = new LipSyncInfo();
         info.phonemeRatios = new Dictionary<string, float>();
 
@@ -71,7 +91,7 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
         if (!bakedData) return;
 
         _isPlaying = true;
-        _startTime = Time.time;
+        _startTime = AudioSettings.dspTime;
 
         if (playAudioSource) PlayAudioSource();
     }
@@ -93,20 +113,20 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
 
     void PlayAudioSource()
     {
-        var source = GetComponent<AudioSource>();
-        if (!source) return;
-
-        source.clip = bakedData.audioClip;
-        source.loop = false;
-        source.Play();
+        if (!audioSource)
+        {
+            audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.clip = bakedData.audioClip;
+        audioSource.loop = false;
+        audioSource.PlayDelayed(0.01f);
     }
 
     void StopAudioSource()
     {
-        var source = GetComponent<AudioSource>();
-        if (!source) return;
+        if (!audioSource) return;
 
-        source.Stop();
+        audioSource.Stop();
     }
 }
 
