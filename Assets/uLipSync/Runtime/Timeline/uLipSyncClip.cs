@@ -15,6 +15,9 @@ namespace uLipSync.Timeline
 public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 {
     public BakedData bakedData;
+    [Range(0f, 0.3f)] public float timeOffset = 0.1f;
+
+    public uLipSyncBehaviour behaviour { get; private set; }
 
     public ClipCaps clipCaps
     {
@@ -26,9 +29,9 @@ public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
     {
-        var behaviour = new uLipSyncBehaviour();
+        var playable = ScriptPlayable<uLipSyncBehaviour>.Create(graph);
+        behaviour = playable.GetBehaviour();
         behaviour.asset = this;
-        var playable = ScriptPlayable<uLipSyncBehaviour>.Create(graph, behaviour);
         return playable;
     }
 }

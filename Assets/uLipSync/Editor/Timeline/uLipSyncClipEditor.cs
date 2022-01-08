@@ -63,6 +63,7 @@ public class uLipSyncClipEditor : Editor
 
     void DrawParameters()
     {
+        EditorUtil.DrawProperty(serializedObject, nameof(clip.timeOffset));
     }
 
     void DrawPlay()
@@ -96,7 +97,7 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         var audioClip = data.audioClip;
         if (!audioClip) return;
 
-        EditorUtil.DrawBackgroundRect(region.position, new Color(0f, 0f, 0f, 0.3f), new Color());
+        EditorUtil.DrawBackgroundRect(region.position, new Color(0f, 0f, 0f, 0.3f), Color.clear);
 
         var rect = region.position;
         var width = (float)(rect.width * audioClip.length / clip.duration);

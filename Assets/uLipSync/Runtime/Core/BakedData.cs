@@ -77,6 +77,11 @@ public class BakedData : ScriptableObject
     public LipSyncInfo GetLipSyncInfo(float t)
     {
         var frame = GetFrame(t);
+        return GetLipSyncInfo(frame);
+    }
+
+    public static LipSyncInfo GetLipSyncInfo(BakedFrame frame)
+    {
         var info = new LipSyncInfo();
         info.phonemeRatios = new Dictionary<string, float>();
 
@@ -88,7 +93,15 @@ public class BakedData : ScriptableObject
                 info.phoneme = pr.phoneme;
                 maxRatio = pr.ratio;
             }
-            info.phonemeRatios.Add(pr.phoneme, pr.ratio);
+
+            if (info.phonemeRatios.ContainsKey(pr.phoneme))
+            {
+                info.phonemeRatios[pr.phoneme] += pr.ratio;
+            }
+            else
+            {
+                info.phonemeRatios.Add(pr.phoneme, pr.ratio);
+            }
         }
 
         float minVol = Common.defaultMinVolume;
