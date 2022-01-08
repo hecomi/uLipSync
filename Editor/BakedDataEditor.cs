@@ -35,7 +35,7 @@ public class BakedDataEditor : Editor
             EditorGUILayout.Separator();
         }
 
-        if (EditorUtil.Foldout("Data", false))
+        if (EditorUtil.Foldout("Data", false, "-BakedData"))
         {
             ++EditorGUI.indentLevel;
             DrawBakedData();
@@ -50,18 +50,19 @@ public class BakedDataEditor : Editor
     {
         EditorUtil.DrawProperty(serializedObject, nameof(data.profile));
         EditorUtil.DrawProperty(serializedObject, nameof(data.audioClip));
+
         bool isValid = data.profile && data.audioClip;
 
         EditorGUILayout.Separator();
+        EditorGUI.BeginDisabledGroup(!isValid);
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        EditorGUI.BeginDisabledGroup(!isValid);
         if (GUILayout.Button(data.isDataChanged ? "  * Bake  " : "  Bake  "))
         {
             Bake();
         }
-        EditorGUI.EndDisabledGroup();
         EditorGUILayout.EndHorizontal();
+        EditorGUI.EndDisabledGroup();
     }
 
     void DrawMessage()
@@ -98,12 +99,12 @@ public class BakedDataEditor : Editor
         EditorGUILayout.Separator();
 
         var rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
-        rect.xMin += 16;
+        rect.xMin += 15 * EditorGUI.indentLevel;
         EditorUtil.DrawBackgroundRect(rect);
         DrawWave(rect);
 
         rect = EditorGUILayout.GetControlRect(GUILayout.Height(100));
-        rect.xMin += 16;
+        rect.xMin += 15 * EditorGUI.indentLevel;
         EditorUtil.DrawBackgroundRect(rect);
         DrawFrames(rect);
     }
@@ -131,7 +132,7 @@ public class BakedDataEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button(" Play "))
+        if (GUILayout.Button(" Preview "))
         {
             AudioUtil.PlayClip(data.audioClip);
         }
@@ -191,9 +192,9 @@ public class BakedDataEditor : Editor
 
         EditorGUILayout.Separator();
 
-        var legendHeight = EditorUtil.lineHeightWithMargin * phonemeCount;
+        var legendHeight = EditorGUIUtility.singleLineHeight * phonemeCount;
         rect = EditorGUILayout.GetControlRect(GUILayout.Height(legendHeight));
-        rect.xMin += 16;
+        rect.xMin += 15 * EditorGUI.indentLevel;
         rect.height = EditorGUIUtility.singleLineHeight;
         for (int j = 0; j < phonemeCount; ++j)
         {
@@ -207,11 +208,11 @@ public class BakedDataEditor : Editor
             labelRect.xMin += 48f;
             GUI.Label(labelRect, data.frames[0].phonemes[j].phoneme);
 
-            rect.y += EditorUtil.lineHeightWithMargin;
+            rect.y += EditorGUIUtility.singleLineHeight;
         }
     }
 
-    void Bake()
+    public void Bake()
     {
         data.bakedProfile = data.profile;
         data.bakedAudioClip = data.audioClip;

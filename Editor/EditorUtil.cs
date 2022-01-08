@@ -44,7 +44,7 @@ public static class EditorUtil
         return EditorPrefs.GetBool(key);
     }
 
-    public static bool Foldout(string title, bool initialState)
+    public static bool Foldout(string title, bool initialState, string additionalKey = "")
     {
         var style = new GUIStyle("ShurikenModuleTitle");
         style.font = new GUIStyle(EditorStyles.label).font;
@@ -53,7 +53,7 @@ public static class EditorUtil
         style.contentOffset = new Vector2(20f, -2f);
         style.margin = new RectOffset((EditorGUI.indentLevel + 1) * 16, 0, 0, 0);
 
-        var key = GetFoldOutKey(title);
+        var key = GetFoldOutKey(title + additionalKey);
         bool display = EditorPrefs.GetBool(key, initialState);
 
         var rect = GUILayoutUtility.GetRect(16f, 22f, style);

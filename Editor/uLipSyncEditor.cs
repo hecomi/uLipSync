@@ -13,8 +13,8 @@ public class uLipSyncEditor : Editor
     uLipSync lipSync { get { return target as uLipSync; } }
     Profile profile { get { return lipSync.profile; } }
 
-    Editor profileEditor_;
-    List<float[]> mfccHistory_ = new List<float[]>();
+    Editor _profileEditor;
+    List<float[]> _mfccHistory = new List<float[]>();
 
     float minVolume = 0f;
     float maxVolume = -100f;
@@ -117,8 +117,8 @@ public class uLipSyncEditor : Editor
         }
         EditorGUILayout.EndHorizontal();
 
-        CreateCachedEditor(profile, typeof(ProfileEditor), ref profileEditor_);
-        var editor = profileEditor_ as ProfileEditor;
+        CreateCachedEditor(profile, typeof(ProfileEditor), ref _profileEditor);
+        var editor = _profileEditor as ProfileEditor;
         if (editor) 
         {
             editor.uLipSync = lipSync;
@@ -164,19 +164,19 @@ public class uLipSyncEditor : Editor
     {
         if (!lipSync.mfcc.IsCreated) return;
 
-        var editor = profileEditor_ as ProfileEditor;
+        var editor = _profileEditor as ProfileEditor;
         if (!editor) return;
 
         if (!EditorApplication.isPaused)
         {
             var array = new float[lipSync.mfcc.Length];
             lipSync.mfcc.CopyTo(array);
-            mfccHistory_.Add(array);
-            while (mfccHistory_.Count > 64) mfccHistory_.RemoveAt(0);
-            while (mfccHistory_.Count < 64) mfccHistory_.Add(array);
+            _mfccHistory.Add(array);
+            while (_mfccHistory.Count > 64) _mfccHistory.RemoveAt(0);
+            while (_mfccHistory.Count < 64) _mfccHistory.Add(array);
         }
 
-        foreach (var mfcc in mfccHistory_)
+        foreach (var mfcc in _mfccHistory)
         {
             EditorUtil.DrawMfcc(mfcc, editor.max, editor.min, 1f);
         }
