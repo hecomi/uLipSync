@@ -18,7 +18,10 @@ public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 
     public ClipCaps clipCaps
     {
-        get { return ClipCaps.None; }
+        get => 
+            ClipCaps.ClipIn | 
+            ClipCaps.SpeedMultiplier |
+            ClipCaps.Blending;
     }
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject go)

@@ -140,10 +140,15 @@ public static class EditorUtil
         }
     }
 
+    public static void DrawBackgroundRect(Rect rect, Color bg, Color line)
+    {
+        Handles.DrawSolidRectangleWithOutline(rect, bg, line);
+    }
+
     public static void DrawBackgroundRect(Rect rect)
     {
-        Handles.DrawSolidRectangleWithOutline(
-            rect,
+        DrawBackgroundRect(
+            rect, 
             new Color(0f, 0f, 0f, 0.2f),
             new Color(1f, 1f, 1f, 0.2f));
     }
