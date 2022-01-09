@@ -14,11 +14,11 @@ public class BakedDataEditor : Editor
     public static Color[] phonemeColors = new Color[]
     {
         Color.red,
-        Color.blue,
+        Color.cyan,
         Color.yellow,
         Color.magenta,
         Color.green,
-        Color.cyan,
+        Color.blue,
         Color.gray,
     };
 
