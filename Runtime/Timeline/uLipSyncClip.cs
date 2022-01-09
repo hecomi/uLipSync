@@ -15,9 +15,14 @@ namespace uLipSync.Timeline
 public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 {
     public BakedData bakedData;
-    [Range(0f, 0.3f)] public float timeOffset = 0.1f;
+    [Range(0f, 0.3f)] public float timeOffset = 0f;
 
     public uLipSyncBehaviour behaviour { get; private set; }
+
+    public override double duration
+    {
+        get { return bakedData ? bakedData.duration : base.duration; }
+    }
 
     public ClipCaps clipCaps
     {
