@@ -73,10 +73,10 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: univ1183
   - m_Version: 1
-    m_Start: 6.016666666666667
+    m_Start: 6.016666558778206
     m_ClipIn: 0
-    m_Asset: {fileID: -7483293804969452475}
-    m_Duration: 2.6470749378204337
+    m_Asset: {fileID: -3044149855641381409}
+    m_Duration: 2.6470749378204346
     m_TimeScale: 1
     m_ParentTrack: {fileID: -8863445692703013094}
     m_EaseInDuration: 0
@@ -160,20 +160,6 @@ MonoBehaviour:
   m_bufferingTime: 0.1
   m_ClipProperties:
     volume: 1
---- !u!114 &-7483293804969452475
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a26d8e83b7dde433fa66b6cb4b73fae5, type: 3}
-  m_Name: uLipSyncClip(Clone)
-  m_EditorClassIdentifier: 
-  bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
-  timeOffset: 0
 --- !u!114 &-6477047427694590623
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -299,25 +285,7 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -375,6 +343,20 @@ MonoBehaviour:
   m_OpenClipOffsetRotation: {x: 0, y: 0, z: 0, w: 1}
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
   m_ApplyOffsets: 0
+--- !u!114 &-3044149855641381409
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26d8e83b7dde433fa66b6cb4b73fae5, type: 3}
+  m_Name: uLipSyncClip
+  m_EditorClassIdentifier: 
+  bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
+  timeOffset: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
