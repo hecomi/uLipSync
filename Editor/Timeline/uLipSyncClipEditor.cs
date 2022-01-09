@@ -33,14 +33,6 @@ public class uLipSyncClipEditor : Editor
             EditorGUILayout.Separator();
         }
 
-        if (EditorUtil.Foldout("Play", true, "-uLipSyncClip"))
-        {
-            ++EditorGUI.indentLevel;
-            DrawPlay();
-            --EditorGUI.indentLevel;
-            EditorGUILayout.Separator();
-        }
-
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -64,24 +56,6 @@ public class uLipSyncClipEditor : Editor
     void DrawParameters()
     {
         EditorUtil.DrawProperty(serializedObject, nameof(clip.timeOffset));
-    }
-
-    void DrawPlay()
-    {
-        EditorGUI.BeginDisabledGroup(data == null);
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button(" Preview "))
-        {
-            AudioUtil.PlayClip(data ? data.audioClip : null);
-        }
-        if (GUILayout.Button(" Stop "))
-        {
-            AudioUtil.StopClip(data ? data.audioClip : null);
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Separator();
-        EditorGUI.EndDisabledGroup();
     }
 }
 
