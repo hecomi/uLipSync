@@ -197,23 +197,41 @@ public class BakedDataEditor : Editor
         EditorGUILayout.Separator();
 
         var legendHeight = EditorGUIUtility.singleLineHeight * phonemeCount;
-        rect = EditorGUILayout.GetControlRect(GUILayout.Height(legendHeight));
-        rect.xMin += 15 * EditorGUI.indentLevel;
+        var legendBaseRect = EditorGUILayout.GetControlRect(GUILayout.Height(EditorGUIUtility.singleLineHeight));
+        legendBaseRect.xMin += 15 * EditorGUI.indentLevel;
+
+        rect = legendBaseRect;
         rect.height = EditorGUIUtility.singleLineHeight;
+        var width = EditorGUIUtility.currentViewWidth - rect.xMin;
+        var lineWidth = 32f;
+        var lineMargin = 6f;
+        var legendMargin = 12f;
+        var legendAddLines = 0;
+
         for (int j = 0; j < phonemeCount; ++j)
         {
+            var phoneme = data.frames[0].phonemes[j].phoneme;
+            var labelWidth = GUI.skin.label.CalcSize(new GUIContent(phoneme)).x;
+
+            if (rect.x + lineWidth + lineMargin + labelWidth > width)
+            {
+                rect.xMin = legendBaseRect.xMin;
+                rect.y += EditorGUIUtility.singleLineHeight;
+                ++legendAddLines;
+            }
+
             var colorIndex = j % phonemeColors.Length;
             var p0 = new Vector3(rect.x, rect.y + rect.height / 2, 0f);
-            var p1 = p0 + new Vector3(32f, 0f, 0f);
+            var p1 = p0 + new Vector3(lineWidth, 0f, 0f);
             Handles.color = phonemeColors[colorIndex];
             Handles.DrawAAPolyLine(2f, new Vector3[] { p0, p1 });
 
-            var labelRect = rect;
-            labelRect.xMin += 48f;
-            GUI.Label(labelRect, data.frames[0].phonemes[j].phoneme);
-
-            rect.y += EditorGUIUtility.singleLineHeight;
+            rect.xMin += lineWidth + lineMargin;
+            GUI.Label(rect, phoneme);
+            rect.xMin += labelWidth + legendMargin;
         }
+
+        EditorGUILayout.GetControlRect(GUILayout.Height(EditorGUIUtility.singleLineHeight * legendAddLines));
     }
 
     public void Bake()
