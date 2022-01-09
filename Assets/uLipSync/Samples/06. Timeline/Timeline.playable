@@ -25,7 +25,7 @@ MonoBehaviour:
     m_Start: 2.0833333333333335
     m_ClipIn: 0
     m_Asset: {fileID: 8050070988284933527}
-    m_Duration: 2.7565079365079366
+    m_Duration: 2.7565078735351567
     m_TimeScale: 1
     m_ParentTrack: {fileID: -8863445692703013094}
     m_EaseInDuration: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
     m_Start: 6.016666666666667
     m_ClipIn: 0
     m_Asset: {fileID: -7483293804969452475}
-    m_Duration: 2.647074829931973
+    m_Duration: 2.6470749378204337
     m_TimeScale: 1
     m_ParentTrack: {fileID: -8863445692703013094}
     m_EaseInDuration: 0
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: uLipSyncClip(Clone)
   m_EditorClassIdentifier: 
   bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
-  timeOffset: 0.1
+  timeOffset: 0
 --- !u!114 &-6477047427694590623
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -621,4 +621,4 @@ MonoBehaviour:
   m_Name: uLipSyncClip
   m_EditorClassIdentifier: 
   bakedData: {fileID: 11400000, guid: 5c100bdf4c65f4026b28a10c73c2def3, type: 2}
-  timeOffset: 0.1
+  timeOffset: 0
