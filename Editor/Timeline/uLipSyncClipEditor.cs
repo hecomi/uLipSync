@@ -74,8 +74,10 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         EditorUtil.DrawBackgroundRect(region.position, new Color(0f, 0f, 0f, 0.3f), Color.clear);
 
         var rect = region.position;
-        var width = (float)(rect.width * audioClip.length / clip.duration);
-        var offset = (float)(width * clip.clipIn / audioClip.length);
+        var duration = region.endTime - region.startTime;
+        var width = (float)(rect.width * audioClip.length / duration);
+        var left = Mathf.Max((float)clip.clipIn, (float)region.startTime);
+        var offset = (float)(width * left / audioClip.length);
         rect.x -= offset;
         rect.width = width;
 
