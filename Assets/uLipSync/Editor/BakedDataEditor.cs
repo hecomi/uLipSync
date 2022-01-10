@@ -270,10 +270,7 @@ public class BakedDataEditor : Editor
             data.frames.Add(frame);
 
             var progress = (float)offset / clip.samples;
-            EditorUtility.DisplayProgressBar("uLipSync Bake", "Baking...", progress);
         }
-
-        EditorUtility.ClearProgressBar();
 
         ls.OnBakeEnd();
         DestroyImmediate(go);
