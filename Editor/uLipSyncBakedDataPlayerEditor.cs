@@ -64,6 +64,7 @@ public class uLipSyncBakedDataPlayerEditor : Editor
         EditorUtil.DrawProperty(serializedObject, nameof(player.audioSource));
         EditorUtil.DrawProperty(serializedObject, nameof(player.playOnAwake));
         EditorUtil.DrawProperty(serializedObject, nameof(player.playAudioSource));
+        EditorUtil.DrawProperty(serializedObject, nameof(player.volume));
         EditorUtil.DrawProperty(serializedObject, nameof(player.timeOffset));
 
         EditorGUILayout.BeginHorizontal();

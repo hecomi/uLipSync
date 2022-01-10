@@ -15,7 +15,8 @@ namespace uLipSync.Timeline
 public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 {
     public BakedData bakedData;
-    [Range(0f, 0.3f)] public float timeOffset = 0f;
+    [Range(0f, 1f)] public float volume = 1f;
+    [Range(-0.3f, 0.3f)] public float timeOffset = 0f;
 
     public uLipSyncBehaviour behaviour { get; private set; }
 
