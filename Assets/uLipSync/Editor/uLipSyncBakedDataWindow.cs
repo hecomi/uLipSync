@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Text;
 
 namespace uLipSync
 {
@@ -38,6 +38,8 @@ public class BakedDataWizard : ScriptableWizard
     [SerializeField]
     bool foldoutOutput = true;
 
+    StringBuilder _message = new StringBuilder();
+
     [MenuItem("Window/uLipSync/Baked Data Generator")]
     static void Open()
     {
@@ -47,6 +49,8 @@ public class BakedDataWizard : ScriptableWizard
 
     protected override bool DrawWizardGUI()
     {
+        _message.Clear();
+
         if (_serializedObject == null)
         {
             _serializedObject = new SerializedObject(this);
@@ -78,6 +82,8 @@ public class BakedDataWizard : ScriptableWizard
             EditorGUILayout.Separator();
         }
 
+        DrawMessage();
+
         _serializedObject.ApplyModifiedProperties();
 
         return true;
@@ -106,13 +112,21 @@ public class BakedDataWizard : ScriptableWizard
             dataList.Add(data);
 
             var progress = (float)dataList.Count / audioClips.Count;
-            EditorUtility.DisplayProgressBar("uLipSync Bake", "Baking...", progress);
+            var msg = $"Baking... {dataList.Count}/{audioClips.Count}";
+            EditorUtility.DisplayProgressBar("uLipSync", msg, progress);
         }
 
+        EditorUtility.DisplayProgressBar("uLipSync", "Create output directory...", 1f);
+        CreateOutputDirectory();
+
+        int i = 0;
         foreach (var data in dataList)
         {
             var path = Path.Combine(outputDirectory, data.name + ".asset");
             AssetDatabase.CreateAsset(data, path);
+            var progress = (float)(i++) / dataList.Count;
+            var msg = $"Create asset... {i}/{dataList.Count}";
+            EditorUtility.DisplayProgressBar("uLipSync", msg, progress);
         }
 
         EditorUtility.ClearProgressBar();
@@ -130,6 +144,18 @@ public class BakedDataWizard : ScriptableWizard
         else
         {
             DrawDirectoryInput();
+        }
+
+        if (!profile)
+        {
+            if (_message.Length > 0) _message.AppendLine();
+            _message.Append("* Profile is not set.");
+        }
+
+        if (audioClips.Count == 0)
+        {
+            if (_message.Length > 0) _message.AppendLine();
+            _message.Append("* There is no input AudioClip.");
         }
     }
 
@@ -179,6 +205,23 @@ public class BakedDataWizard : ScriptableWizard
         EditorGUILayout.EndHorizontal();
 
         EditorUtil.DrawProperty(_serializedObject, nameof(audioClips));
+    }
+
+    void DrawMessage()
+    {
+        if (_message.Length > 0)
+        {
+            EditorGUILayout.HelpBox(_message.ToString(), MessageType.Warning);
+        }
+    }
+
+    void CreateOutputDirectory()
+    {
+        var path = Path.Combine(Directory.GetParent(Application.dataPath).FullName, outputDirectory);
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
     }
 }
 
