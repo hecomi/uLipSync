@@ -10,7 +10,8 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
     public BakedData bakedData = null;
     public bool playOnAwake = true;
     public bool playAudioSource = true;
-    [Range(0f, 0.3f)] public float timeOffset = 0.1f;
+    [Range(0f, 1f)] public float volume = 1f;
+    [Range(-0.3f, 0.3f)] public float timeOffset = 0.1f;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
 
     bool _isFirstPlay = true;
@@ -63,7 +64,9 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
         if (!bakedData) return;
 
         var t = AudioSettings.dspTime - _startTime;
-        var info = bakedData.GetLipSyncInfo((float)t + timeOffset);
+        var frame = bakedData.GetFrame((float)t + timeOffset);
+        frame.volume *= volume;
+        var info = BakedData.GetLipSyncInfo(frame);
         onLipSyncUpdate.Invoke(info);
     }
 
@@ -99,6 +102,7 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
             audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
         }
         audioSource.clip = bakedData.audioClip;
+        audioSource.volume = volume;
         audioSource.loop = false;
         audioSource.PlayDelayed(0.01f);
     }

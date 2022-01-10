@@ -22,7 +22,7 @@ public class uLipSyncMixer : PlayableBehaviour
             var behaviour = asset.behaviour;
             var weight = playable.GetInputWeight(i);
 
-            frame.volume += behaviour.frame.volume * weight;
+            frame.volume += behaviour.frame.volume * asset.volume * weight;
             foreach (var phoneme in behaviour.frame.phonemes)
             {
                 frame.phonemes.Add(new BakedPhonemeRatio() {

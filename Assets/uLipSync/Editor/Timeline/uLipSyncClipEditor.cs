@@ -55,6 +55,7 @@ public class uLipSyncClipEditor : Editor
 
     void DrawParameters()
     {
+        EditorUtil.DrawProperty(serializedObject, nameof(clip.volume));
         EditorUtil.DrawProperty(serializedObject, nameof(clip.timeOffset));
     }
 }
