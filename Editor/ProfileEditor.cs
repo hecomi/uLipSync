@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
+using System.Collections.Generic;
 
 namespace uLipSync
 {
@@ -13,8 +14,14 @@ public class ProfileEditor : Editor
     public float min = 0f;
     public float max = 0f;
     public uLipSync uLipSync { get; set; }
-    bool isCalibrating_ = false;
-    ReorderableList reorderableList_ = null;
+    bool _isCalibrating = false;
+    ReorderableList _reorderableList = null;
+    List<BakedData> _bakedDataList = new List<BakedData>();
+
+    void OnEnable()
+    {
+        InitBakedData();
+    }
 
     public override void OnInspectorGUI()
     {
@@ -25,7 +32,7 @@ public class ProfileEditor : Editor
     {
         serializedObject.Update();
 
-        if (EditorUtil.SimpleFoldout("MFCC", true))
+        if (EditorUtil.SimpleFoldout("MFCC", true, "-uLipSync-Profile"))
         {
             ++EditorGUI.indentLevel;
             CalcMinMax();
@@ -33,7 +40,7 @@ public class ProfileEditor : Editor
             --EditorGUI.indentLevel;
         }
 
-        if (EditorUtil.SimpleFoldout("Advanced Parameters", true))
+        if (EditorUtil.SimpleFoldout("Advanced Parameters", true, "-uLipSync-Profile"))
         {
             ++EditorGUI.indentLevel;
             EditorUtil.DrawProperty(serializedObject, nameof(profile.mfccDataCount));
@@ -49,10 +56,19 @@ public class ProfileEditor : Editor
             EditorGUILayout.Separator();
         }
 
-        if (EditorUtil.SimpleFoldout("Import / Export JSON", false))
+        if (EditorUtil.SimpleFoldout("Import / Export JSON", false, "-uLipSync-Profile"))
         {
             ++EditorGUI.indentLevel;
             DrawImportExport();
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.SimpleFoldout("Baked Data", false, "-uLipSync-Profile"))
+        {
+            ++EditorGUI.indentLevel;
+            DrawBakedData();
             --EditorGUI.indentLevel;
 
             EditorGUILayout.Separator();
@@ -63,28 +79,28 @@ public class ProfileEditor : Editor
 
     void DrawMfccReorderableList(bool showCalibration)
     {
-        if (reorderableList_ == null)
+        if (_reorderableList == null)
         {
-            reorderableList_ = new ReorderableList(profile.mfccs, typeof(MfccData));
-            reorderableList_.drawHeaderCallback = rect => 
+            _reorderableList = new ReorderableList(profile.mfccs, typeof(MfccData));
+            _reorderableList.drawHeaderCallback = rect => 
             {
                 rect.xMin -= EditorGUI.indentLevel * 12f;
                 EditorGUI.LabelField(rect, "MFCCs");
             };
-            reorderableList_.draggable = true;
-            reorderableList_.drawElementCallback = (rect, index, isActive, isFocused) =>
+            _reorderableList.draggable = true;
+            _reorderableList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
                 DrawMFCC(rect, index, showCalibration);
             };
-            reorderableList_.elementHeightCallback = index =>
+            _reorderableList.elementHeightCallback = index =>
             {
                 return GetMFCCHeight(index);
             };
-            reorderableList_.onAddCallback = index =>
+            _reorderableList.onAddCallback = index =>
             {
                 profile.AddMfcc("New Phoneme");
             };
-            reorderableList_.onRemoveCallback = list =>
+            _reorderableList.onRemoveCallback = list =>
             {
                 profile.RemoveMfcc(list.index);
             };
@@ -94,7 +110,7 @@ public class ProfileEditor : Editor
         EditorGUILayout.BeginHorizontal();
         var indent = EditorGUI.indentLevel * 12f;
         EditorGUILayout.Space(indent, false);
-        reorderableList_.DoLayoutList();
+        _reorderableList.DoLayoutList();
         EditorGUILayout.EndHorizontal();
     }
 
@@ -155,14 +171,14 @@ public class ProfileEditor : Editor
             {
                 if (e.type == EventType.MouseDown)
                 {
-                    isCalibrating_ = true;
+                    _isCalibrating = true;
                 }
                 else if (e.type == EventType.MouseUp)
                 {
-                    isCalibrating_ = false;
+                    _isCalibrating = false;
                 }
 
-                if (isCalibrating_)
+                if (_isCalibrating)
                 {
                     uLipSync.RequestCalibration(index);
                 }
@@ -171,7 +187,7 @@ public class ProfileEditor : Editor
             }
             else if (e.isMouse)
             {
-                isCalibrating_ = false;
+                _isCalibrating = false;
             }
 
             var style = new GUIStyle(GUI.skin.button);
@@ -231,6 +247,51 @@ public class ProfileEditor : Editor
             profile.Export(profile.jsonPath);
         }
         EditorGUILayout.EndHorizontal();
+    }
+
+    void InitBakedData()
+    {
+        _bakedDataList.Clear();
+        var bakedDataGuids = AssetDatabase.FindAssets("t:BakedData");
+        foreach (var guid in bakedDataGuids)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var data = AssetDatabase.LoadAssetAtPath<BakedData>(path);
+            if (data && data.profile == profile)
+            {
+                _bakedDataList.Add(data);
+            }
+        }
+    }
+
+    void DrawBakedData()
+    {
+        EditorGUILayout.LabelField("Asset Count", _bakedDataList.Count.ToString());
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button(" Reconvert "))
+        {
+            ReconvertBakedData();
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    void ReconvertBakedData()
+    {
+        int i = 0;
+
+        foreach (var data in _bakedDataList)
+        {
+            var editor = (BakedDataEditor)Editor.CreateEditor(data, typeof(BakedDataEditor));
+            editor.Bake();
+
+            var progress = (float)(i++) / _bakedDataList.Count;
+            var msg = $"Baking... {i}/{_bakedDataList.Count}";
+            EditorUtility.DisplayProgressBar("uLipSync", msg, progress);
+        }
+
+        EditorUtility.ClearProgressBar();
     }
 }
 
