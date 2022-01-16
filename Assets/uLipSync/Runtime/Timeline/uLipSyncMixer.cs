@@ -6,12 +6,19 @@ namespace uLipSync.Timeline
 
 public class uLipSyncMixer : PlayableBehaviour
 {
+    public uLipSyncTrack track { get; set; }
     public TimelineClip[] clips { get; set; }
+    uLipSyncTimelineEvent _target = null;
+
+    public override void OnBehaviourPause(Playable playable, FrameData info)
+    {
+        if (_target) _target.OnStop();
+    }
 
     public override void ProcessFrame(Playable playable, FrameData info, object playerData)
     {
-        var target = playerData as uLipSyncTimelineEvent;
-        if (!target) return;
+        _target = playerData as uLipSyncTimelineEvent;
+        if (!_target) return;
 
         var frame = BakedFrame.zero;
 
@@ -32,7 +39,7 @@ public class uLipSyncMixer : PlayableBehaviour
             }
         }
 
-        target.OnFrame(frame);
+        _target.OnFrame(frame);
     }
 }
 
