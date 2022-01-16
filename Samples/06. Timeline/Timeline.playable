@@ -25,7 +25,7 @@ MonoBehaviour:
     m_Start: 2.0833333333333335
     m_ClipIn: 0
     m_Asset: {fileID: 8050070988284933527}
-    m_Duration: 2.7565078735351567
+    m_Duration: 2.7565079365079366
     m_TimeScale: 1
     m_ParentTrack: {fileID: -8863445692703013094}
     m_EaseInDuration: 0
@@ -58,7 +58,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -73,7 +91,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: univ1183
   - m_Version: 1
-    m_Start: 6.016666558778206
+    m_Start: 6.016666666666667
     m_ClipIn: 0
     m_Asset: {fileID: -3044149855641381409}
     m_Duration: 2.6470749378204346
@@ -285,7 +303,25 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -356,6 +392,7 @@ MonoBehaviour:
   m_Name: uLipSyncClip
   m_EditorClassIdentifier: 
   bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
+  volume: 1
   timeOffset: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -446,7 +483,7 @@ MonoBehaviour:
     m_Start: 2.0833333333333335
     m_ClipIn: 0
     m_Asset: {fileID: -7568715713821897151}
-    m_Duration: 2.7565079365079366
+    m_Duration: 2.7565078735351567
     m_TimeScale: 1
     m_ParentTrack: {fileID: 3708567250363299831}
     m_EaseInDuration: 0
@@ -603,4 +640,5 @@ MonoBehaviour:
   m_Name: uLipSyncClip
   m_EditorClassIdentifier: 
   bakedData: {fileID: 11400000, guid: 5c100bdf4c65f4026b28a10c73c2def3, type: 2}
+  volume: 1
   timeOffset: 0
