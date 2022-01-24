@@ -93,23 +93,10 @@ public class uLipSyncEditor : Editor
 
     void DrawProfile()
     {
-        EditorUtil.DrawProperty(serializedObject, nameof(profile));
-
         EditorGUILayout.BeginHorizontal();
         {
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Male", EditorStyles.miniButtonLeft, GUILayout.Width(80)))
-            {
-                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileMale);
-            }
-
-            if (GUILayout.Button("Female", EditorStyles.miniButtonMid, GUILayout.Width(80)))
-            {
-                lipSync.profile = EditorUtil.FindAsset<Profile>(Common.defaultProfileFemale);
-            }
-
-            if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(80)))
+            EditorUtil.DrawProperty(serializedObject, nameof(profile));
+            if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(60)))
             {
                 lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.assetName}-Profile-New");
             }

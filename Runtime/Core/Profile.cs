@@ -92,7 +92,7 @@ public class Profile : ScriptableObject
     [HideInInspector] public string jsonPath = "";
 
     [Tooltip("The number of MFCC data to calculate the average MFCC values")]
-    public int mfccDataCount = 32;
+    public int mfccDataCount = 16;
     [Tooltip("The number of Mel Filter Bank channels")]
     public int melFilterBankChannels = 24;
     [Tooltip("Target sampling rate to apply downsampling")]
@@ -193,7 +193,7 @@ public class Profile : ScriptableObject
         JsonUtility.FromJsonOverwrite(json, this);
     }
 
-    public Profile Create(string path)
+    public static Profile Create(string path)
     {
         var profile = new Profile();
         return profile;

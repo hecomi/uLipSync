@@ -480,8 +480,8 @@ MonoBehaviour:
   - phoneme: '-'
     index: -1
     maxWeight: 1
-  minVolume: -2.5
-  maxVolume: -1.5
+  minVolume: -2.9951982
+  maxVolume: -1.9951982
   smoothness: 0.05
 --- !u!114 &496503021
 MonoBehaviour:

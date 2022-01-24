@@ -3,10 +3,6 @@ using uLipSync;
 
 public class DebugPrintLipSyncInfo : MonoBehaviour
 {
-    void Start()
-    {
-    }
-
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
         if (!isActiveAndEnabled) return;

@@ -499,6 +499,7 @@ MonoBehaviour:
   bakedData: {fileID: 11400000, guid: 378122b788ffb43b8b416fc3a37497f4, type: 2}
   playOnAwake: 1
   playAudioSource: 1
+  volume: 1
   timeOffset: 0.1
   onLipSyncUpdate:
     m_PersistentCalls:
