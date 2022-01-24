@@ -2650,6 +2650,10 @@ PrefabInstance:
       propertyPath: targetObj
       value: 
       objectReference: {fileID: 331358591}
+    - target: {fileID: 11400116, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[0]
       value: 0
@@ -2832,8 +2836,8 @@ MonoBehaviour:
   - phoneme: '-'
     index: -1
     maxWeight: 1
-  minVolume: -2.5
-  maxVolume: -1.5
+  minVolume: -3.0092762
+  maxVolume: -2.0092762
   smoothness: 0.07
 --- !u!95 &496503022 stripped
 Animator:

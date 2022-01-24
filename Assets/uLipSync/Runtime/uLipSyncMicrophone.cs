@@ -10,7 +10,7 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     public int index = 0;
     private int preIndex_ = 0;
-    public bool isAutoStart = false;
+    public bool isAutoStart = true;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
