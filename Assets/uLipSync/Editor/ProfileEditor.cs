@@ -144,7 +144,13 @@ public class ProfileEditor : Editor
         if (!EditorUtil.SimpleFoldout(position, data.name, true, "MfccData")) return;
         position.y += EditorUtil.lineHeightWithMargin;
 
-        data.name = EditorGUI.TextField(position, "Phoneme", data.name);
+        var newName = EditorGUI.TextField(position, "Phoneme", data.name);
+        if (newName != data.name)
+        {
+            Undo.RecordObject(target, "Change Phoneme");
+            data.name = newName;
+            EditorUtility.SetDirty(target);
+        }
         position.y += EditorUtil.lineHeightWithMargin;
         position.y += 5f;
 
@@ -219,7 +225,13 @@ public class ProfileEditor : Editor
     void DrawImportExport()
     {
         EditorGUILayout.BeginHorizontal();
-        profile.jsonPath = EditorGUILayout.TextField("File Path", profile.jsonPath);
+        var newJsonPath = EditorGUILayout.TextField("File Path", profile.jsonPath);
+        if (newJsonPath != profile.jsonPath)
+        {
+            Undo.RecordObject(target, "Change File Path");
+            profile.jsonPath = newJsonPath;
+            EditorUtility.SetDirty(target);
+        }
         if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(24)))
         {
             try
