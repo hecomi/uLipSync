@@ -34,10 +34,17 @@ public class ProfileEditor : Editor
 
         if (EditorUtil.SimpleFoldout("MFCC", true, "-uLipSync-Profile"))
         {
+            EditorGUI.BeginChangeCheck();
+            
             ++EditorGUI.indentLevel;
             CalcMinMax();
             DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
+            
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(target);
+            }
         }
 
         if (EditorUtil.SimpleFoldout("Advanced Parameters", true, "-uLipSync-Profile"))
