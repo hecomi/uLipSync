@@ -204,10 +204,11 @@ public static class EditorUtil
         }
     }
 
-    public static Color ToRGB(float hue)
+    public static Color ToRGB(float hue, bool cosInterp = true)
     {
+        if (cosInterp) hue = (1f - Mathf.Cos(Mathf.PI * hue)) * 0.5f;
         hue = 1f - hue;
-        hue = hue * 5f;
+        hue *= 5f;
         var x = 1 - Mathf.Abs(hue % 2f - 1f);
         return
             hue < 1f ? new Color(1f, x, 0f) :

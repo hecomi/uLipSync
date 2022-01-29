@@ -356,7 +356,7 @@ PlayerSettings:
   enableCrashReportAPI: 0
   cameraUsageDescription: 
   locationUsageDescription: 
-  microphoneUsageDescription: 
+  microphoneUsageDescription: uLipSync
   bluetoothUsageDescription: 
   switchNMETAOverride: 
   switchNetLibKey: 
