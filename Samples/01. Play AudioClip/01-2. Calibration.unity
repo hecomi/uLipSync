@@ -359,7 +359,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5ce5e31b4113b41d4b0537bd71771881, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -480,6 +480,9 @@ MonoBehaviour:
   - phoneme: '-'
     index: -1
     maxWeight: 1
+  - phoneme: S
+    index: -1
+    maxWeight: 1
   minVolume: -2.5
   maxVolume: -1.5
   smoothness: 0.05
@@ -495,7 +498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
+  profile: {fileID: 11400000, guid: 6a8b92b3698e04722bba15d0d60ab55a, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:

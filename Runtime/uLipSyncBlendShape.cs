@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace uLipSync
@@ -69,7 +69,10 @@ public class uLipSyncBlendShape : MonoBehaviour
         foreach (var bs in blendShapes)
         {
             float targetWeight = 0f;
-            if (ratios != null) ratios.TryGetValue(bs.phoneme, out targetWeight);
+            if (ratios != null && !string.IsNullOrEmpty(bs.phoneme)) 
+            {
+                ratios.TryGetValue(bs.phoneme, out targetWeight);
+            }
             float weightVel = bs.weightVelocity;
             bs.weight = Mathf.SmoothDamp(bs.weight, targetWeight, ref weightVel, smoothness);
             bs.weightVelocity = weightVel;
