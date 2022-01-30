@@ -1,6 +1,6 @@
 {
     "name": "com.hecomi.ulipsync",
-    "version": "1.1.2",
+    "version": "2.0.1",
     "displayName": "uLipSync",
     "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
     "author": {
@@ -27,14 +27,34 @@
             "path": "Samples~/00. Common"
         },
         {
-            "displayName": "01. Basic",
-            "description": "A basic sample.",
-            "path": "Samples~/01. Basic"
+            "displayName": "01. Play AudioClip",
+            "description": "A basic sample to play AudioSource and analyze it at runtime.",
+            "path": "Samples~/01. Play AudioClip"
         },
         {
-            "displayName": "02. AudioSource-Proxy",
+            "displayName": "02. Mic Input",
+            "description": "A sample to analyze AudioSource that plays mic input in realtime.",
+            "path": "Samples~/02. Mic Input"
+        },
+        {
+            "displayName": "03. AudioSource Proxy",
             "description": "A sample for using an AudioSource that belongs to a different GameObject.",
-            "path": "Samples~/02. AudioSource-Proxy"
+            "path": "Samples~/03. AudioSource Proxy"
+        },
+        {
+            "displayName": "04. VRM",
+            "description": "A sample to move blendshapes in VRM. VRM assets and Alicia VRM model should be setup beforehand.",
+            "path": "Samples~/04. VRM"
+        },
+        {
+            "displayName": "05. Bake",
+            "description": "A sample to play pre-calculated data.",
+            "path": "Samples~/05. Bake"
+        },
+        {
+            "displayName": "06. Timeline",
+            "description": "A sample to play lipsync with Timeline.",
+            "path": "Samples~/05. TImeline"
         }
     ]
 }
