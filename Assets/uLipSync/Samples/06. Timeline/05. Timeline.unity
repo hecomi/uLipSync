@@ -2838,7 +2838,7 @@ MonoBehaviour:
     maxWeight: 1
   minVolume: -3.0092762
   maxVolume: -2.0092762
-  smoothness: 0.07
+  smoothness: 0.06
 --- !u!95 &496503022 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
