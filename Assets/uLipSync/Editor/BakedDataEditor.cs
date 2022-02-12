@@ -116,10 +116,11 @@ public class BakedDataEditor : Editor
             bool hasFrame = !data.isDataChanged && data.frames.Count > 0;
             var currentColor = new Color();
             var smooth = 0.15f;
-            EditorUtil.DrawWave(rect, data.audioClip, new EditorUtil.DrawWaveOption()
+            var option = new EditorUtil.DrawWaveOption();
+            option.waveScale = 1f;
+            if (hasFrame)
             {
-                waveScale = 1f,
-                colorFunc = hasFrame ? x => {
+                option.colorFunc = x => {
                     var t = x * data.duration;
                     var frame = data.GetFrame(t);
                     var color = new Color();
@@ -130,8 +131,9 @@ public class BakedDataEditor : Editor
                     }
                     currentColor += (color - currentColor) * smooth;
                     return currentColor;
-                } : null
-            });
+                };
+            }
+            EditorUtil.DrawWave(rect, data.audioClip, option);
         }
 
         EditorGUILayout.BeginHorizontal();

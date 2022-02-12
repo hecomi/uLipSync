@@ -44,7 +44,6 @@ public class BakedDataWizard : ScriptableWizard
     static void Open()
     {
         var path = DisplayWizard<BakedDataWizard>("uLipSync Baked Data Generator", "", "Generate");
-        Debug.Log(path);
     }
 
     protected override bool DrawWizardGUI()
@@ -166,7 +165,7 @@ public class BakedDataWizard : ScriptableWizard
         if (GUILayout.Button("...", GUILayout.Width(24)))
         {
             var path = EditorUtility.OpenFolderPanel("uLipSync Baked Data Output Directory", Application.dataPath, "BakedData");
-            outputDirectory = Path.Combine("Assets", Path.GetRelativePath(Application.dataPath, path));
+            outputDirectory = EditorUtil.GetAssetPath(path);
         }
         EditorGUILayout.EndHorizontal();
     }
@@ -188,7 +187,7 @@ public class BakedDataWizard : ScriptableWizard
             var path = EditorUtility.OpenFolderPanel("uLipSync Baked Data Input Directory", defaultPath, "");
             if (!string.IsNullOrEmpty(path))
             {
-                inputDirectory = Path.Combine("Assets", Path.GetRelativePath(Application.dataPath, path));
+                inputDirectory = EditorUtil.GetAssetPath(path);
                 audioClips.Clear();
             }
             var clipIdList = AssetDatabase.FindAssets("t:AudioClip", new string[] { inputDirectory });
