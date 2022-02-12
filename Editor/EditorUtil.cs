@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.IO;
 
 namespace uLipSync
 {
@@ -232,6 +233,14 @@ public static class EditorUtil
             .Select(x => AssetDatabase.GUIDToAssetPath(x))
             .FirstOrDefault();
         return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
+
+    public static string GetAssetPath(string path)
+    {
+        path = path.Replace(Application.dataPath, "");
+        path = path.TrimStart('/');
+        path = path.TrimStart('\\');
+        return Path.Combine("Assets", path);
     }
 }
 

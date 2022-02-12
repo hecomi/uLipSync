@@ -157,10 +157,11 @@ public class uLipSync : MonoBehaviour
             var d = _distances[i];
             var invDistance = Mathf.Pow(10f, -d);
             var ratio = sumInvDistance > 0f ? invDistance / sumInvDistance : 0f;
-            if (!_ratios.TryAdd(phoneme, ratio))
+            if (!_ratios.ContainsKey(phoneme))
             {
-                _ratios[phoneme] += ratio;
+                _ratios.Add(phoneme, 0f);
             }
+            _ratios[phoneme] += ratio;
         }
 
         float rawVol = _info[0].volume;
