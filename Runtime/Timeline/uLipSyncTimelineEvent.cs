@@ -13,9 +13,6 @@ public class uLipSyncTimelineEvent : MonoBehaviour
 
     public void OnFrame(BakedFrame frame)
     {
-        var info = BakedData.GetLipSyncInfo(frame);
-        onLipSyncUpdate.Invoke(info);
-
         _frame = frame;
         _isTimelineActive = true;
     }
