@@ -116,7 +116,7 @@ public class BakedDataWizard : ScriptableWizard
         }
 
         EditorUtility.DisplayProgressBar("uLipSync", "Create output directory...", 1f);
-        CreateOutputDirectory();
+        EditorUtil.CreateOutputDirectory(outputDirectory);
 
         int i = 0;
         foreach (var data in dataList)
@@ -172,9 +172,7 @@ public class BakedDataWizard : ScriptableWizard
 
     void DrawListInput()
     {
-        --EditorGUI.indentLevel;
         EditorUtil.DrawProperty(_serializedObject, nameof(audioClips));
-        ++EditorGUI.indentLevel;
     }
 
     void DrawDirectoryInput()
@@ -208,19 +206,9 @@ public class BakedDataWizard : ScriptableWizard
 
     void DrawMessage()
     {
-        if (_message.Length > 0)
-        {
-            EditorGUILayout.HelpBox(_message.ToString(), MessageType.Warning);
-        }
-    }
+        if (_message.Length == 0) return;
 
-    void CreateOutputDirectory()
-    {
-        var path = Path.Combine(Directory.GetParent(Application.dataPath).FullName, outputDirectory);
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
+        EditorGUILayout.HelpBox(_message.ToString(), MessageType.Warning);
     }
 }
 

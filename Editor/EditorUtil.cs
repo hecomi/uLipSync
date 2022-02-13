@@ -242,6 +242,15 @@ public static class EditorUtil
         path = path.TrimStart('\\');
         return Path.Combine("Assets", path);
     }
+
+    public static void CreateOutputDirectory(string dir)
+    {
+        var path = Path.Combine(Directory.GetParent(Application.dataPath).FullName, dir);
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+    }
 }
 
 }

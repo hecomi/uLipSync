@@ -237,11 +237,6 @@ MonoBehaviour:
   focus: {x: 0, y: 0.8, z: 0}
   focusObj: {fileID: 8757139}
   showInstWindow: 1
---- !u!137 &187725991 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
-  m_PrefabInstance: {fileID: 460735845}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &331358591 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 88eeda7d3a9f2492da9213d1c1ab46d0, type: 3}
@@ -2801,76 +2796,11 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &496503020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496503018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2163de355e8fd8e4b83b631e07455323, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skinnedMeshRenderer: {fileID: 187725991}
-  blendShapes:
-  - phoneme: A
-    index: 6
-    maxWeight: 1
-  - phoneme: I
-    index: 7
-    maxWeight: 1
-  - phoneme: U
-    index: 8
-    maxWeight: 1
-  - phoneme: E
-    index: 9
-    maxWeight: 1
-  - phoneme: O
-    index: 10
-    maxWeight: 1
-  - phoneme: N
-    index: -1
-    maxWeight: 1
-  - phoneme: '-'
-    index: -1
-    maxWeight: 1
-  minVolume: -3.0092762
-  maxVolume: -2.0092762
-  smoothness: 0.06
 --- !u!95 &496503022 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
   m_PrefabInstance: {fileID: 460735845}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &496503023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496503018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21bcb2e2ed14243d29475c9d8de28c42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onLipSyncUpdate:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 496503020}
-        m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync.Runtime
-        m_MethodName: OnLipSyncUpdate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
 --- !u!1 &615430986
 GameObject:
   m_ObjectHideFlags: 0
@@ -2897,7 +2827,7 @@ PlayableDirector:
   m_GameObject: {fileID: 615430986}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: bfe49d8a9bc074c3e8cb59dd02bfb1a6, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 4a649b97dc013475d948d9f197f05d5e, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -2908,7 +2838,13 @@ PlayableDirector:
   - key: {fileID: 3708567250363299831, guid: bfe49d8a9bc074c3e8cb59dd02bfb1a6, type: 2}
     value: {fileID: 496503019}
   - key: {fileID: -8863445692703013094, guid: bfe49d8a9bc074c3e8cb59dd02bfb1a6, type: 2}
-    value: {fileID: 496503023}
+    value: {fileID: 0}
+  - key: {fileID: -5563131741724102663, guid: 4a649b97dc013475d948d9f197f05d5e, type: 2}
+    value: {fileID: 496503022}
+  - key: {fileID: 3708567250363299831, guid: 4a649b97dc013475d948d9f197f05d5e, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -8863445692703013094, guid: 4a649b97dc013475d948d9f197f05d5e, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References:
     - 0ee7de5d76b9e44f382c05f64586fb8b: {fileID: 180302166}
