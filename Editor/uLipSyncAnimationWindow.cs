@@ -111,14 +111,22 @@ public class AnimationWizard : ScriptableWizard
     {
         if (!animator || !blendShape || bakedDataList.Length == 0) return;
 
+        EditorUtility.DisplayProgressBar("uLipSync", "Create output directory...", 1f);
+        EditorUtil.CreateOutputDirectory(outputDirectory);
+
         var binding = new EditorCurveBinding();
         binding.path = GetRelativeHierarchyPath(
             blendShape.skinnedMeshRenderer.gameObject, 
             animator.gameObject);
         binding.type = typeof(SkinnedMeshRenderer);
 
+        int i = 0;
         foreach (var bakedData in bakedDataList)
         {
+            var progress = (float)(i++) / bakedDataList.Length;
+            var msg = $"Create animation... {i}/{bakedDataList.Length}";
+            EditorUtility.DisplayProgressBar("uLipSync", msg, progress);
+
             var clip = new AnimationClip();
             var dataList = new Dictionary<int, AnimationCurveBindingData>();
 
@@ -172,6 +180,8 @@ public class AnimationWizard : ScriptableWizard
             AssetDatabase.CreateAsset(clip, path);
         }
 
+        EditorUtility.ClearProgressBar();
+        
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
