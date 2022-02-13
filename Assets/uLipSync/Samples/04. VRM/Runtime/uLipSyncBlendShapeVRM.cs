@@ -22,7 +22,7 @@ public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
             var index = bs.index + 1;
             if (index < 0 || index >= clips.Count) continue;
             var key = clips[index].Key;
-            var weight = bs.normalizedWeight * bs.maxWeight * volume;
+            var weight = bs.weight * bs.maxWeight * volume;
             proxy.AccumulateValue(key, weight);
         }
         proxy.Apply();
