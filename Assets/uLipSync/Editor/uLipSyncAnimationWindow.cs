@@ -25,8 +25,11 @@ public class AnimationWizard : ScriptableWizard
     [SerializeField][NonReorderable] 
     BakedData[] bakedDataList = new BakedData[0];
 
-    [SerializeField]
+    [SerializeField][Tooltip("Sampling interval at which keyframes are inserted")]
     float sampleFrameRate = 60f;
+
+    [SerializeField][Range(0f, 20f)][Tooltip("Differential weight from the previous keyframe when inserting a keyframe")]
+    float threshold = 0f;
 
     [SerializeField]
     string outputDirectory = "";
@@ -114,11 +117,11 @@ public class AnimationWizard : ScriptableWizard
         EditorUtility.DisplayProgressBar("uLipSync", "Create output directory...", 1f);
         EditorUtil.CreateOutputDirectory(outputDirectory);
 
-        var binding = new EditorCurveBinding();
-        binding.path = GetRelativeHierarchyPath(
+        var bindingBase = new EditorCurveBinding();
+        bindingBase.path = GetRelativeHierarchyPath(
             blendShape.skinnedMeshRenderer.gameObject, 
             animator.gameObject);
-        binding.type = typeof(SkinnedMeshRenderer);
+        bindingBase.type = typeof(SkinnedMeshRenderer);
 
         int i = 0;
         foreach (var bakedData in bakedDataList)
@@ -136,6 +139,7 @@ public class AnimationWizard : ScriptableWizard
 
                 var mesh = blendShape.skinnedMeshRenderer.sharedMesh;
                 var name = mesh.GetBlendShapeName(bs.index);
+                var binding = bindingBase;
                 binding.propertyName = "blendShape." + name;
 
                 dataList.Add(bs.index, new AnimationCurveBindingData()
@@ -147,6 +151,8 @@ public class AnimationWizard : ScriptableWizard
 
             blendShape.OnAnimationBakeStart();
 
+            var preKeyWeights = new Dictionary<int, float>();
+            var preFrameWeights = new Dictionary<int, float>();
             float dt = 1f / sampleFrameRate;
             for (float time = 0f; time <= bakedData.duration; time += dt)
             {
@@ -154,17 +160,43 @@ public class AnimationWizard : ScriptableWizard
                 var info = BakedData.GetLipSyncInfo(frame);
                 blendShape.OnAnimationBakeUpdate(info, dt);
 
-                var blendShapes = blendShape.GetAnimationBakeBlendShapes();
+                var nextWeights = blendShape.GetAnimationBakeBlendShapes();
+                if (preFrameWeights.Count == 0) preFrameWeights = nextWeights;
+
                 foreach (var kv in dataList)
                 {
                     var index = kv.Key;
-                    if (!blendShapes.ContainsKey(index)) continue;
+                    if (!nextWeights.ContainsKey(index)) continue;
                     var curve = kv.Value.curve;
-                    var weight = blendShapes[index];
-                    var key = new Keyframe(time, weight);
-                    key.weightedMode = WeightedMode.Both;
-                    var pos = curve.AddKey(key);
+                    var weight = nextWeights[index];
+
+                    // Points where the weight changes from 0 or 1 are added regardless of the threshold.
+                    var preFrameWeight = preFrameWeights[index];
+                    if ((preFrameWeight < 1f && weight > 1f) ||
+                        (preFrameWeight > 99f && weight < 99f))
+                    {
+                        curve.AddKey(time - dt, preFrameWeight);
+                        preKeyWeights[index] = preFrameWeight;
+                    }
+
+                    if (!preKeyWeights.ContainsKey(index))
+                    {
+                        preKeyWeights.Add(index, -100f);
+                    }
+                    var preKeyWeight = preKeyWeights[index];
+
+                    // Start points with a weight of 0 or 1 are added regardless of the threshold.
+                    bool skipCheckingThreshold = 
+                        (weight < 1f && preFrameWeight > 1f) ||
+                        (weight > 99f && preFrameWeight < 99f);
+                    if (Mathf.Abs(preKeyWeight - weight) > threshold || skipCheckingThreshold)
+                    {
+                        preKeyWeights[index] = weight;
+                        curve.AddKey(time, weight);
+                    }
                 }
+
+                preFrameWeights = nextWeights;
             }
 
             blendShape.OnAnimationBakeEnd();
@@ -172,6 +204,26 @@ public class AnimationWizard : ScriptableWizard
             foreach (var kv in dataList)
             {
                 var data = kv.Value;
+                var binding = data.binding;
+                var curve = data.curve;
+                for (int j = 0; j < curve.length; ++j)
+                {
+                    var key = curve[j];
+                    key.weightedMode = WeightedMode.Both;
+                    key.inWeight = 1f / 3f;
+                    if (j == 0 || j == curve.length - 1 || key.value < 1f || key.value > 99f)
+                    {
+                        key.inTangent = key.outTangent = 0f;
+                    }
+                    else
+                    {
+                        var prevKey = curve[j - 1];
+                        var nextKey = curve[j + 1];
+                        var a = (nextKey.value - prevKey.value) / (nextKey.time - prevKey.time);
+                        key.inTangent = key.outTangent = a;
+                    }
+                    curve.MoveKey(j, key);
+                }
                 AnimationUtility.SetEditorCurve(clip, data.binding, data.curve);
             }
 
@@ -181,7 +233,7 @@ public class AnimationWizard : ScriptableWizard
         }
 
         EditorUtility.ClearProgressBar();
-        
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -197,6 +249,7 @@ public class AnimationWizard : ScriptableWizard
         EditorUtil.DrawProperty(_serializedObject, nameof(blendShape));
         EditorUtil.DrawProperty(_serializedObject, nameof(bakedDataList));
         EditorUtil.DrawProperty(_serializedObject, nameof(sampleFrameRate));
+        EditorUtil.DrawProperty(_serializedObject, nameof(threshold));
 
         if (!animator) 
         {
