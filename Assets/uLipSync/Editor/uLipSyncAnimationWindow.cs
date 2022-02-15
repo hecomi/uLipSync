@@ -210,7 +210,7 @@ public class AnimationWizard : ScriptableWizard
                 {
                     var key = curve[j];
                     key.weightedMode = WeightedMode.Both;
-                    key.inWeight = 1f / 3f;
+                    key.inWeight = key.outWeight = 1f / 3f;
                     if (j == 0 || j == curve.length - 1 || key.value < 1f || key.value > 99f)
                     {
                         key.inTangent = key.outTangent = 0f;
@@ -219,8 +219,15 @@ public class AnimationWizard : ScriptableWizard
                     {
                         var prevKey = curve[j - 1];
                         var nextKey = curve[j + 1];
-                        var a = (nextKey.value - prevKey.value) / (nextKey.time - prevKey.time);
-                        key.inTangent = key.outTangent = a;
+                        if ((key.value - prevKey.value) * (nextKey.value - key.value) < 0f)
+                        {
+                            key.inTangent = key.outTangent = 0f;
+                        }
+                        else
+                        {
+                            var a = (nextKey.value - prevKey.value) / (nextKey.time - prevKey.time);
+                            key.inTangent = key.outTangent = a;
+                        }
                     }
                     curve.MoveKey(j, key);
                 }
