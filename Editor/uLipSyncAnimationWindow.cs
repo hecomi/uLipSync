@@ -114,6 +114,11 @@ public class AnimationWizard : ScriptableWizard
     {
         if (!animator || !blendShape || bakedDataList.Length == 0) return;
 
+        if (string.IsNullOrEmpty(outputDirectory))
+        {
+            outputDirectory = "Assets";
+        }
+
         EditorUtility.DisplayProgressBar("uLipSync", "Create output directory...", 1f);
         EditorUtil.CreateOutputDirectory(outputDirectory);
 
