@@ -7,6 +7,7 @@ uLipSync
 - Can be calibrated to create a per-character **profile**.
 - Both **run-time** analysis and **pre-bake** processing are available.
 - Pre-bake processing can be integrated with **Timeline**.
+- Pre-bake data can be converted to **AnimationClip**
 
 
 Features
@@ -39,6 +40,10 @@ Features
 ### Timeline
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" />
+
+### AnimationClip
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-AnimationClip.gif" />
 
 
 Install
@@ -102,8 +107,6 @@ The range of the volume to be recognized and the response speed of the mouth can
   - The response speed of the mouth.
 
 As for the volume, you can see the information about the current, maximum, and minimum volume in the *Runtime Information* of the `uLipSync` component, so try to set it based on this information.
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-RunTime-Information.png" width="640" />
 
 ### AudioSource potiion
 
@@ -263,6 +266,44 @@ Now the lipsync information will be sent to `uLipSyncTimelineEvent`, and the con
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" />
 
 
+Animation Bake
+--------------
+
+You can also convert `BakedData`, which is pre-calculated lip-sync data, into an `AnimationClip`. Saving it as an animation makes it easy to combine it with other animations, to integrate it into your existing workflow, and to adjust it later by moving the keys. The sample scene is *Samples / 07. Animation Bake*.
+
+### Setup
+
+Select *Window > uLipSync > Animation Clip Generator* to open the *uLipSync Animation Clip Generator* window.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncAnimationClipGenerator.png" width="640" />
+
+To run the animation bake, you need to open the scene where you have set up a `uLipSyncBlendShape` component. Then, please set the components in the scene to the fields in this window.
+
+- Animator
+  - Select an `Animator` component in the scene.
+  - An `AnimationClip` will be created in a hierarchical structure starting from this Animator.
+- Blend Shape
+  - Select a `uLipSyncBlendShape` component that exists in the scene.
+- Baked Data List
+  - Select the BakedData assets that you want to convert into `AnimationClip`s.
+- Sample Frame Rate
+  - Specify the sampling rate (fps) at which you want to add the keys.
+- Threshold
+  - The keys will be added only when the weight changes by this value.
+  - The maximum value of the weight is 100, so 10 means when the weight changes by 10%.
+- Output Directory
+  - Specify the directory to output the baked animation clip.
+  - If the directory is empty, create it under *Assets* (root).
+
+The following image is an example setup.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncAnimationClipGeneratorSetup.png" width="640" />
+
+Varying *Threshold* from 0, 10, and 20, you'll get the following.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/AnimClip-Threshold-Change.gif" width="640" />
+
+
 VRM Support
 -----------
 
@@ -272,7 +313,7 @@ VRM Support
 
 With `uLipSyncBlendShape`, the blendshapes in the `SkinnedMeshRenderer` was controlled directly, but there is a modified component named `uLipSyncBlendShapeVRM` that controls `VRMBlendShapeProxy` instead. 
 
-For more details, please refer to *Samples / 04 VRM*. The scene can be played if you have set up VRM and imported [Alicia](https://3d.nicovideo.jp/works/td32797).
+For more details, please refer to *Samples / VRM*. The scene can be played if you have set up VRM and imported [Alicia](https://3d.nicovideo.jp/works/td32797).
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncBlendShapeVRM.png" width="640" />
 
@@ -362,12 +403,6 @@ When building on a Mac, you may encounter the following error.
 This may be related to the microphone access code, which can be fixed by writing something in *Project Settings > Player's Other Settings > Mac Configuration > Microphone Usage Description*.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Mic-Setting.png" width="640" />
-
-Future Update
--------------
-
-- Bake blendshapes to animation
-- Improvement of the method for comparing the current MFCC with the ones in `Profile`
 
 
 3rd-Party License
