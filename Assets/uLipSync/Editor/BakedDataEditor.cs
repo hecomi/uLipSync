@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.Text;
 using System.Collections.Generic;
@@ -244,7 +245,8 @@ public class BakedDataEditor : Editor
 
         var clip = data.audioClip;
         int samplePerFrame = clip.frequency / 60 * clip.channels;
-        var buf = new float[samplePerFrame];
+        var buffer = new float[clip.samples * clip.channels];
+        var tempBuffer = new float[samplePerFrame];
 
         data.duration = clip.length;
 
@@ -252,10 +254,12 @@ public class BakedDataEditor : Editor
         var ls = go.AddComponent<uLipSync>();
         ls.OnBakeStart(data.profile);
 
-        for (int offset = 0; offset < clip.samples; offset += samplePerFrame)
+        clip.GetData(buffer, 0);
+
+        for (int offset = 0; offset < buffer.Length - samplePerFrame; offset += samplePerFrame)
         {
-            clip.GetData(buf, offset);
-            ls.OnBakeUpdate(buf, clip.channels);
+            Array.Copy(buffer, offset, tempBuffer, 0, samplePerFrame);
+            ls.OnBakeUpdate(tempBuffer, clip.channels);
 
             var frame = new BakedFrame();
             frame.volume = ls.result.rawVolume;
