@@ -31,4 +31,13 @@ public class AudioFilterReadEvent : UnityEvent<float[], int>
 {
 }
 
+public enum UpdateMethod
+{
+    LateUpdate,
+    Update,
+    FixedUpdate,
+    LipSyncUpdateEvent,
+    External,
+}
+
 }
