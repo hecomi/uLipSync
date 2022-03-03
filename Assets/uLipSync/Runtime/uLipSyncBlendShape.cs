@@ -45,7 +45,7 @@ public class uLipSyncBlendShape : MonoBehaviour
             UpdateVolume();
             UpdateVowels();
             _lipSyncUpdated = false;
-            LateUpdateBlendShapes();
+            OnApplyBlendShapes();
         }
     }
 
@@ -63,7 +63,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 
         if (updateMethod == UpdateMethod.Update)
         {
-            LateUpdateBlendShapes();
+            OnApplyBlendShapes();
         }
     }
 
@@ -74,7 +74,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 #endif
         if (updateMethod == UpdateMethod.LateUpdate)
         {
-            LateUpdateBlendShapes();
+            OnApplyBlendShapes();
         }
     }
 
@@ -85,7 +85,7 @@ public class uLipSyncBlendShape : MonoBehaviour
 #endif
         if (updateMethod == UpdateMethod.FixedUpdate)
         {
-            LateUpdateBlendShapes();
+            OnApplyBlendShapes();
         }
     }
 
@@ -142,11 +142,11 @@ public class uLipSyncBlendShape : MonoBehaviour
     {
         if (updateMethod == UpdateMethod.External)
         {
-            LateUpdateBlendShapes();
+            OnApplyBlendShapes();
         }
     }
     
-    protected virtual void LateUpdateBlendShapes()
+    protected virtual void OnApplyBlendShapes()
     {
         if (!skinnedMeshRenderer) return;
 
