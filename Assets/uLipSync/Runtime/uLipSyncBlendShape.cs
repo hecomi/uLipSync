@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -137,11 +136,6 @@ public class uLipSyncBlendShape : MonoBehaviour
         {
             bs.weight = sum > 0f ? bs.weight / sum : 0f;
         }
-    }
-    
-    [Obsolete("Use OnApplyBlendShapes", true)]
-    protected virtual void LateUpdateBlendShapes()
-    {
     }
 
     public void ApplyBlendShapes()
