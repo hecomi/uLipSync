@@ -94,7 +94,6 @@ Finally, to connect the two, in the `uLipSync` component, go to *Parameters > On
 
 Now when you run the game, Unity-chan moves its mouth as it speaks.
 
-
 ### Adjust lipsync
 
 The range of the volume to be recognized and the response speed of the mouth can be set in the *Paramteters* of the `uLipSyncBlendShape` component.
@@ -393,6 +392,20 @@ for (int i = 0; i < lipSync.profile.mfccs.Count; ++i)
 ```
 
 Please refer to *CalibrationByKeyboardInput.cs* to see how it actually works. Also, it is better to save and restore the profile as JSON after building the app because the changes to `ScriptableObject` can not be saved.
+
+### Update Method
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UpdateMethod.png" width="640" />
+
+*Update Method* can be used to adjust the timing of updating blendshapes with `uLipSyncBlendShape`. The description of each parameter is as follows.
+
+| Method | Timing |
+| ------ | ------ |
+| LateUpdate |	LateUpdate (default) |
+| Update | Update |
+| FixedUpdate |	FixedUpdate |
+| LipSyncUpdateEvent | Immediately after receiving `LipSyncUpdateEvent` |
+| External | Update from an external script (`ApplyBlendShapes()`) |
 
 ### Mac Build
 
