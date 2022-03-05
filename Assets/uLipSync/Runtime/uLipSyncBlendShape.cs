@@ -18,6 +18,7 @@ public class uLipSyncBlendShape : MonoBehaviour
         public float weightVelocity { get; set; } = 0f;
     }
 
+    public UpdateMethod updateMethod = UpdateMethod.LateUpdate;
     public SkinnedMeshRenderer skinnedMeshRenderer;
     public List<BlendShapeInfo> blendShapes = new List<BlendShapeInfo>();
     public float minVolume = -2.5f;
@@ -39,6 +40,13 @@ public class uLipSyncBlendShape : MonoBehaviour
     {
         _info = info;
         _lipSyncUpdated = true;
+        if (updateMethod == UpdateMethod.LipSyncUpdateEvent)
+        {
+            UpdateVolume();
+            UpdateVowels();
+            _lipSyncUpdated = false;
+            OnApplyBlendShapes();
+        }
     }
 
     void Update()
@@ -46,9 +54,17 @@ public class uLipSyncBlendShape : MonoBehaviour
 #if UNITY_EDITOR
         if (_isAnimationBaking) return;
 #endif
-        UpdateVolume();
-        UpdateVowels();
-        _lipSyncUpdated = false;
+        if (updateMethod != UpdateMethod.LipSyncUpdateEvent)
+        {
+            UpdateVolume();
+            UpdateVowels();
+            _lipSyncUpdated = false;
+        }
+
+        if (updateMethod == UpdateMethod.Update)
+        {
+            OnApplyBlendShapes();
+        }
     }
 
     void LateUpdate()
@@ -56,7 +72,21 @@ public class uLipSyncBlendShape : MonoBehaviour
 #if UNITY_EDITOR
         if (_isAnimationBaking) return;
 #endif
-        LateUpdateBlendShapes();
+        if (updateMethod == UpdateMethod.LateUpdate)
+        {
+            OnApplyBlendShapes();
+        }
+    }
+
+    void FixedUpdate()
+    {
+#if UNITY_EDITOR
+        if (_isAnimationBaking) return;
+#endif
+        if (updateMethod == UpdateMethod.FixedUpdate)
+        {
+            OnApplyBlendShapes();
+        }
     }
 
     float SmoothDamp(float value, float target, ref float velocity)
@@ -108,7 +138,15 @@ public class uLipSyncBlendShape : MonoBehaviour
         }
     }
 
-    protected virtual void LateUpdateBlendShapes()
+    public void ApplyBlendShapes()
+    {
+        if (updateMethod == UpdateMethod.External)
+        {
+            OnApplyBlendShapes();
+        }
+    }
+    
+    protected virtual void OnApplyBlendShapes()
     {
         if (!skinnedMeshRenderer) return;
 

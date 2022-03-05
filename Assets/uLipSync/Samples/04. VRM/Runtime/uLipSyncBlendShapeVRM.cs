@@ -8,7 +8,7 @@ namespace uLipSync
 [RequireComponent(typeof(VRMBlendShapeProxy))]
 public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
 {
-    protected override void LateUpdateBlendShapes()
+    protected override void OnApplyBlendShapes()
     {
         var proxy = GetComponent<VRMBlendShapeProxy>();
         if (!proxy) return;
