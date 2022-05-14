@@ -12,11 +12,6 @@ public class uLipSyncMixer : PlayableBehaviour
     uLipSyncTimelineEvent _target = null;
     Dictionary<string, float> _phonemeRatio = new Dictionary<string, float>();
 
-    public override void OnBehaviourPause(Playable playable, FrameData info)
-    {
-        if (_target) _target.OnStop();
-    }
-
     public override void ProcessFrame(Playable playable, FrameData info, object playerData)
     {
         _target = playerData as uLipSyncTimelineEvent;
@@ -24,6 +19,16 @@ public class uLipSyncMixer : PlayableBehaviour
 
         float volume = 0f;
         _phonemeRatio.Clear();
+
+        var isOnTrack = false;
+        var inputCount = playable.GetInputCount ();
+        for (var i = 0; i < inputCount; i++)
+        {
+            if (playable.GetInputWeight(i) > 0)
+            {
+                isOnTrack = true;
+            }
+        }
 
         for (int i = 0; i < clips.Length; i++)
         {
@@ -53,7 +58,10 @@ public class uLipSyncMixer : PlayableBehaviour
             });
         }
 
-        _target.OnFrame(frame);
+        if (isOnTrack)
+        {
+            _target.OnFrame(frame);
+        }
     }
 }
 
