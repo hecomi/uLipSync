@@ -8,12 +8,10 @@ namespace uLipSync.Timeline
 public class uLipSyncTimelineEvent : MonoBehaviour
 {
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
-    BakedFrame _frame = BakedFrame.zero;
 
     public void OnFrame(BakedFrame frame)
     {
-        _frame = frame;
-        var info = BakedData.GetLipSyncInfo(_frame);
+        var info = BakedData.GetLipSyncInfo(frame);
         onLipSyncUpdate.Invoke(info);
     }
 }
