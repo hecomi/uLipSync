@@ -22,7 +22,10 @@ public class AnimationWizard : ScriptableWizard
     [SerializeField]
     uLipSyncBlendShape blendShape;
 
-    [SerializeField][NonReorderable] 
+    [SerializeField]
+#if UNITY_2020_2_OR_NEWER
+    [NonReorderable] 
+#endif
     BakedData[] bakedDataList = new BakedData[0];
 
     [SerializeField][Tooltip("Sampling interval at which keyframes are inserted")]
