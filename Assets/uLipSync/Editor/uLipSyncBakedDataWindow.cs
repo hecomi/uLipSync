@@ -23,7 +23,10 @@ public class BakedDataWizard : ScriptableWizard
     [SerializeField]
     InputType inputType = InputType.List;
 
-    [SerializeField][NonReorderable] 
+    [SerializeField]
+#if UNITY_2020_2_OR_NEWER
+    [NonReorderable] 
+#endif
     List<AudioClip> audioClips = new List<AudioClip>();
 
     [SerializeField]
