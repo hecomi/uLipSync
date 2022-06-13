@@ -2,6 +2,7 @@
 using UnityEngine.Timeline;
 using UnityEditor;
 using UnityEditor.Timeline;
+using System.Collections.Generic;
 
 namespace uLipSync.Timeline
 {
@@ -63,7 +64,17 @@ public class uLipSyncClipEditor : Editor
 [CustomTimelineEditor(typeof(uLipSyncClip))]
 public class uLipSyncClipTimelineEditor : ClipEditor
 {
-    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    Dictionary<uLipSyncClip, Texture2D> _textures = new Dictionary<uLipSyncClip, Texture2D>();
+
+    void DrawBackground(ClipBackgroundRegion region)
+    {
+        EditorUtil.DrawBackgroundRect(
+            region.position, 
+            new Color(0f, 0f, 0f, 0.3f), 
+            Color.clear);
+    }
+
+    void DrawWave(TimelineClip clip, ClipBackgroundRegion region)
     {
         var ls = clip.asset as uLipSyncClip;
         var data = ls.bakedData;
@@ -71,8 +82,6 @@ public class uLipSyncClipTimelineEditor : ClipEditor
 
         var audioClip = data.audioClip;
         if (!audioClip) return;
-
-        EditorUtil.DrawBackgroundRect(region.position, new Color(0f, 0f, 0f, 0.3f), Color.clear);
 
         var rect = region.position;
         var duration = region.endTime - region.startTime;
@@ -82,25 +91,29 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         rect.x -= offset;
         rect.width = width;
 
-        var phonemeColors = BakedDataEditor.phonemeColors;
-        var currentColor = new Color();
-        var smooth = 0.15f;
-        EditorUtil.DrawWave(rect, data.audioClip, new EditorUtil.DrawWaveOption()
+        Texture2D tex;
+        _textures.TryGetValue(ls, out tex);
+
+        var texWidth = Mathf.Clamp((int)rect.width, 128, 4096);
+        var texHeight = (int)rect.height;
+        var dw = tex ? Mathf.Abs(tex.width - texWidth) : 0;
+        var dh = tex ? Mathf.Abs(tex.height - texHeight) : 0;
+
+        if (!tex || dw > 10 || dh > 10)
         {
-            colorFunc = x => {
-                var t = x * data.duration;
-                var frame = data.GetFrame(t);
-                var color = new Color();
-                for (int i = 0; i < frame.phonemes.Count; ++i)
-                {
-                    var colorIndex = i % phonemeColors.Length;
-                    color += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
-                }
-                currentColor += (color - currentColor) * smooth;
-                return currentColor;
-            },
-            waveScale = 1f,
-        });
+            tex = data.CreateTexture(texWidth, texHeight);
+            _textures[ls] = tex;
+        }
+
+        if (!tex) return;
+
+        GUI.DrawTexture(rect, tex);
+    }
+
+    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    {
+        DrawBackground(region);
+        DrawWave(clip, region);
     }
 }
 

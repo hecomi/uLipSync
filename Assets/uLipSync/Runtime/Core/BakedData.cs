@@ -39,6 +39,11 @@ public class BakedData : ScriptableObject
     public float duration = 0f;
     public List<BakedFrame> frames = new List<BakedFrame>();
 
+    public bool isValid
+    {
+        get => duration > 0f && frames.Count > 0;
+    }
+
     public bool isDataChanged
     {
         get => (profile != bakedProfile) || (audioClip != bakedAudioClip);
@@ -46,7 +51,7 @@ public class BakedData : ScriptableObject
 
     public BakedFrame GetFrame(float t)
     {
-        if (frames.Count == 0) return BakedFrame.zero;
+        if (frames == null || frames.Count == 0) return BakedFrame.zero;
 
         var phonemeCount = frames[0].phonemes.Count;
         var frame = new BakedFrame();
@@ -113,6 +118,58 @@ public class BakedData : ScriptableObject
         info.rawVolume = frame.volume;
 
         return info;
+    }
+
+    public static Color[] phonemeColors = new Color[]
+    {
+        Color.red,
+        Color.cyan,
+        Color.yellow,
+        Color.magenta,
+        Color.green,
+        Color.blue,
+        Color.gray,
+    };
+
+    public Texture2D CreateTexture(int width, int height)
+    {
+        if (!isValid) return Texture2D.whiteTexture;
+
+        var colors = new Color[width * height];
+        var currentColor = new Color();
+        var smooth = 0.15f;
+
+        for (int x = 0; x < width; ++x)
+        {
+            var t = (float)x / width * duration;
+            var frame = GetFrame(t);
+            var targetColor = new Color();
+
+            for (int i = 0; i < frame.phonemes.Count; ++i)
+            {
+                var colorIndex = i % phonemeColors.Length;
+                targetColor += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
+            }
+
+            currentColor += (targetColor - currentColor) * smooth;
+
+            for (int y = 0; y < height; ++y)
+            {
+                var index = width * y + x;
+                var color = currentColor;
+                var dy = ((float)y - height / 2f) / (height / 2f);
+                dy = Mathf.Abs(dy);
+                dy = Mathf.Pow(dy, 2f);
+                color.a = dy > frame.volume ? 0f : 1f;
+                colors[index] = color;
+            }
+        }
+
+        var tex = new Texture2D(width, height);
+        tex.SetPixels(colors);
+        tex.Apply();
+
+        return tex;
     }
 }
 
