@@ -23,7 +23,7 @@ public class uLipSyncBlendShape : MonoBehaviour
     public List<BlendShapeInfo> blendShapes = new List<BlendShapeInfo>();
     public float minVolume = -2.5f;
     public float maxVolume = -1.5f;
-    [Range(0f, 0.3f)] public float smoothness = 0.05f;
+    [Range(0f, 1f)] public float smoothness = 0.05f;
 
     LipSyncInfo _info = new LipSyncInfo();
     bool _lipSyncUpdated = false;
