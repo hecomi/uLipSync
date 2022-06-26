@@ -159,7 +159,7 @@ public class BakedDataEditor : Editor
         if (n == 0) return;
 
         int maxN = 512;
-        int skip = n / maxN;
+        int skip = (int)Mathf.Ceil((float)n / maxN);
 
         var phonemeCount = data.frames[0].phonemes.Count;
         var ratioPointsList = new List<Vector3[]>();
@@ -178,9 +178,9 @@ public class BakedDataEditor : Editor
 
         for (int j = 0; j < phonemeCount; ++j)
         {
-            var points = new Vector3[maxN];
+            var points = new Vector3[n];
 
-            for (int i = 0; i < maxN; ++i)
+            for (int i = 0; i < n; ++i)
             {
                 var index = i * skip;
                 var frame = data.frames[index];

@@ -64,7 +64,66 @@ public class uLipSyncClipEditor : Editor
 [CustomTimelineEditor(typeof(uLipSyncClip))]
 public class uLipSyncClipTimelineEditor : ClipEditor
 {
-    Dictionary<uLipSyncClip, Texture2D> _textures = new Dictionary<uLipSyncClip, Texture2D>();
+    internal class TextureCache
+    {
+        public Texture2D texture;
+        public bool forceUpdate = false;
+    }
+
+    Dictionary<uLipSyncClip, TextureCache> _textures = new Dictionary<uLipSyncClip, TextureCache>();
+
+    void RemoveCachedTexture(uLipSyncClip clip)
+    {
+        if (!_textures.ContainsKey(clip)) return;
+
+        var cache = _textures[clip];
+        Object.DestroyImmediate(cache.texture);
+        _textures.Remove(clip);
+    }
+
+    Texture2D CreateCachedTexture(uLipSyncClip clip, int width, int height)
+    {
+        RemoveCachedTexture(clip);
+
+        var data = clip.bakedData;
+        if (!data) return null;
+
+        width = Mathf.Clamp(width, 128, 4096);
+        var tex = data.CreateTexture(width, height);
+        var cache = new TextureCache { texture = tex };
+        _textures.Add(clip, cache);
+
+        return tex;
+    }
+
+    Texture2D GetOrCreateCachedTexture(uLipSyncClip clip, int width, int height)
+    {
+        if (!_textures.ContainsKey(clip))
+        {
+            return CreateCachedTexture(clip, width, height);
+        }
+
+        var cache = _textures[clip];
+        if (cache.forceUpdate)
+        {
+            return CreateCachedTexture(clip, width, height);
+        }
+
+        var dw = Mathf.Abs(cache.texture.width - width);
+        var dh = Mathf.Abs(cache.texture.height - height);
+        if (dw > 10 || dh > 10)
+        {
+            return CreateCachedTexture(clip, width, height);
+        }
+
+        return cache.texture;
+    }
+
+    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    {
+        DrawBackground(region);
+        DrawWave(clip, region);
+    }
 
     void DrawBackground(ClipBackgroundRegion region)
     {
@@ -74,10 +133,10 @@ public class uLipSyncClipTimelineEditor : ClipEditor
             Color.clear);
     }
 
-    void DrawWave(TimelineClip clip, ClipBackgroundRegion region)
+    void DrawWave(TimelineClip timelineClip, ClipBackgroundRegion region)
     {
-        var ls = clip.asset as uLipSyncClip;
-        var data = ls.bakedData;
+        var clip = timelineClip.asset as uLipSyncClip;
+        var data = clip.bakedData;
         if (!data) return;
 
         var audioClip = data.audioClip;
@@ -86,34 +145,24 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         var rect = region.position;
         var duration = region.endTime - region.startTime;
         var width = (float)(rect.width * audioClip.length / duration);
-        var left = Mathf.Max((float)clip.clipIn, (float)region.startTime);
+        var left = Mathf.Max((float)timelineClip.clipIn, (float)region.startTime);
         var offset = (float)(width * left / audioClip.length);
         rect.x -= offset;
         rect.width = width;
 
-        Texture2D tex;
-        _textures.TryGetValue(ls, out tex);
-
-        var texWidth = Mathf.Clamp((int)rect.width, 128, 4096);
-        var texHeight = (int)rect.height;
-        var dw = tex ? Mathf.Abs(tex.width - texWidth) : 0;
-        var dh = tex ? Mathf.Abs(tex.height - texHeight) : 0;
-
-        if (!tex || dw > 10 || dh > 10)
-        {
-            tex = data.CreateTexture(texWidth, texHeight);
-            _textures[ls] = tex;
-        }
-
+        var tex = GetOrCreateCachedTexture(clip, (int)rect.width, (int)rect.height);
         if (!tex) return;
 
         GUI.DrawTexture(rect, tex);
     }
 
-    public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
+    public override void OnClipChanged(TimelineClip timelineClip)
     {
-        DrawBackground(region);
-        DrawWave(clip, region);
+        var clip = timelineClip.asset as uLipSyncClip;
+
+        if (!_textures.ContainsKey(clip)) return;
+
+        _textures[clip].forceUpdate = true;
     }
 }
 
