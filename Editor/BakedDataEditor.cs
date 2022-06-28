@@ -182,7 +182,7 @@ public class BakedDataEditor : Editor
 
             for (int i = 0; i < n; ++i)
             {
-                var index = i * skip;
+                var index = Mathf.Min(i * skip, data.frames.Count - 1);
                 var frame = data.frames[index];
                 var x = (float)index / Mathf.Max(n - 1, 1);
                 var y = frame.phonemes[j].ratio * frame.volume / maxRatio;
