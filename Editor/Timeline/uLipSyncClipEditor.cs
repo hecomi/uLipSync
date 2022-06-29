@@ -104,7 +104,7 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         }
 
         var cache = _textures[clip];
-        if (cache.forceUpdate)
+        if (cache.forceUpdate || !cache.texture)
         {
             return CreateCachedTexture(clip, width, height);
         }
