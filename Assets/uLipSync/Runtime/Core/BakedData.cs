@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Burst;
 using System.Collections.Generic;
 
 namespace uLipSync
@@ -135,7 +136,12 @@ public class BakedData : ScriptableObject
     {
         if (!isValid) return Texture2D.whiteTexture;
 
-        var colors = new Color[width * height];
+        var tex = new Texture2D(width, height);
+    #if UNITY_2020_1_OR_NEWER
+        var colors = tex.GetPixelData<Color32>(0);
+    #else
+        var colors = new Color32[width * height];
+    #endif
         var currentColor = new Color();
         var smooth = 0.15f;
 
@@ -165,8 +171,9 @@ public class BakedData : ScriptableObject
             }
         }
 
-        var tex = new Texture2D(width, height);
+    #if !UNITY_2020_1_OR_NEWER
         tex.SetPixels(colors);
+    #endif
         tex.Apply();
 
         return tex;
