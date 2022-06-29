@@ -136,6 +136,8 @@ public class BakedData : ScriptableObject
         Color.gray,
     };
 
+#if UNITY_2020_1_OR_NEWER
+
     [BurstCompile]
     struct CreateTextureJob : IJob
     {
@@ -216,6 +218,52 @@ public class BakedData : ScriptableObject
         tex.Apply();
         return tex;
     }
+
+#else
+
+    public Texture2D CreateTexture(int width, int height)
+    {
+        if (!isValid) return Texture2D.whiteTexture;
+
+        var colors = new Color[width * height];
+        var currentColor = new Color();
+        var smooth = 0.15f;
+
+        for (int x = 0; x < width; ++x)
+        {
+            var t = (float)x / width * duration;
+            var frame = GetFrame(t);
+            var targetColor = new Color();
+
+            for (int i = 0; i < frame.phonemes.Count; ++i)
+            {
+                var colorIndex = i % phonemeColors.Length;
+                targetColor += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
+            }
+
+            currentColor += (targetColor - currentColor) * smooth;
+
+            for (int y = 0; y < height; ++y)
+            {
+                var index = width * y + x;
+                var color = currentColor;
+                var dy = ((float)y - height / 2f) / (height / 2f);
+                dy = Mathf.Abs(dy);
+                dy = Mathf.Pow(dy, 2f);
+                color.a = dy > frame.volume ? 0f : 1f;
+                colors[index] = color;
+            }
+        }
+
+        var tex = new Texture2D(width, height);
+        tex.SetPixels(colors);
+        tex.Apply();
+
+        return tex;
+    }
+
+#endif
+
 }
 
 }
