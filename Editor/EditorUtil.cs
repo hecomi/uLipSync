@@ -241,6 +241,24 @@ public static class EditorUtil
             Directory.CreateDirectory(path);
         }
     }
+
+    public static string GetRelativeHierarchyPath(GameObject target, GameObject parent)
+    {
+        if (!target || !parent) return "";
+
+        string path = "";
+        var gameObj = target;
+        while (gameObj && gameObj != parent)
+        {
+            if (!string.IsNullOrEmpty(path)) path = "/" + path;
+            path = gameObj.name + path;
+            gameObj = gameObj.transform.parent.gameObject;
+        }
+
+        if (gameObj != parent) return "";
+
+        return path;
+    }
 }
 
 }

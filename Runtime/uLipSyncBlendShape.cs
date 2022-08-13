@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEditor;
 using System.Collections.Generic;
 
 namespace uLipSync
 {
 
 [ExecuteAlways]
-public class uLipSyncBlendShape : MonoBehaviour
+public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
 {
     [System.Serializable]
     public class BlendShapeInfo
@@ -164,13 +165,51 @@ public class uLipSyncBlendShape : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    public void OnAnimationBakeStart()
+    public override GameObject target
+    {
+        get { return skinnedMeshRenderer?.gameObject; }
+    }
+
+    public override List<string> GetPropertyNames()
+    {
+        var names = new List<string>();
+        var mesh = skinnedMeshRenderer.sharedMesh;
+
+        foreach (var bs in blendShapes)
+        {
+            if (bs.index < 0) continue;
+            var name = mesh.GetBlendShapeName(bs.index);
+            name = "blendShape." + name;
+            names.Add(name);
+        }
+
+        return names;
+    }
+
+    public override List<float> GetPropertyWeights()
+    {
+        var weights = new List<float>();
+
+        foreach (var bs in blendShapes)
+        {
+            if (bs.index < 0) continue;
+            var weight = bs.weight * bs.maxWeight * volume * 100f;
+            weights.Add(weight);
+        }
+
+        return weights;
+    }
+
+    public override float maxWeight { get { return 100f; } }
+    public override float minWeight { get { return 0f; } }
+
+    public override void OnAnimationBakeStart()
     {
         _lipSyncUpdated = true;
         _isAnimationBaking = true;
     }
 
-    public void OnAnimationBakeUpdate(LipSyncInfo info, float dt)
+    public override void OnAnimationBakeUpdate(LipSyncInfo info, float dt)
     {
         _info = info;
         _animBakeDeltaTime = dt;
@@ -178,26 +217,7 @@ public class uLipSyncBlendShape : MonoBehaviour
         UpdateVowels();
     }
 
-    public Dictionary<int, float> GetAnimationBakeBlendShapes()
-    {
-        var weights = new Dictionary<int, float>();
-
-        foreach (var bs in blendShapes)
-        {
-            if (bs.index < 0) continue;
-
-            if (!weights.ContainsKey(bs.index))
-            {
-                weights.Add(bs.index, 0f);
-            }
-            
-            weights[bs.index] += bs.weight * bs.maxWeight * volume * 100f;
-        }
-
-        return weights;
-    }
-
-    public void OnAnimationBakeEnd()
+    public override void OnAnimationBakeEnd()
     {
         _lipSyncUpdated = false;
         _isAnimationBaking = false;
