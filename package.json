@@ -60,6 +60,11 @@
             "displayName": "07. Animation Bake",
             "description": "A sample to create animation clips.",
             "path": "Samples~/07. Animation Bake"
+        },
+        {
+            "displayName": "08. Texture",
+            "description": "A sample of lip-syncing with textures.",
+            "path": "Samples~/08. Texture"
         }
     ]
 }
