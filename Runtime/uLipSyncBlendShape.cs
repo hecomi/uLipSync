@@ -37,15 +37,20 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
     float _animBakeDeltaTime = 1f / 60;
 #endif
 
+    void UpdateLipSync()
+    {
+        UpdateVolume();
+        UpdateVowels();
+        _lipSyncUpdated = false;
+    }
+
     public void OnLipSyncUpdate(LipSyncInfo info)
     {
         _info = info;
         _lipSyncUpdated = true;
         if (updateMethod == UpdateMethod.LipSyncUpdateEvent)
         {
-            UpdateVolume();
-            UpdateVowels();
-            _lipSyncUpdated = false;
+            UpdateLipSync();
             OnApplyBlendShapes();
         }
     }
@@ -57,9 +62,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
 #endif
         if (updateMethod != UpdateMethod.LipSyncUpdateEvent)
         {
-            UpdateVolume();
-            UpdateVowels();
-            _lipSyncUpdated = false;
+            UpdateLipSync();
         }
 
         if (updateMethod == UpdateMethod.Update)
@@ -205,7 +208,6 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
 
     public override void OnAnimationBakeStart()
     {
-        _lipSyncUpdated = true;
         _isAnimationBaking = true;
     }
 
@@ -213,13 +215,12 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
     {
         _info = info;
         _animBakeDeltaTime = dt;
-        UpdateVolume();
-        UpdateVowels();
+        _lipSyncUpdated = true;
+        UpdateLipSync();
     }
 
     public override void OnAnimationBakeEnd()
     {
-        _lipSyncUpdated = false;
         _isAnimationBaking = false;
     }
 #endif
