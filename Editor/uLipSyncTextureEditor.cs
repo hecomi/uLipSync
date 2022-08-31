@@ -52,12 +52,12 @@ public class uLipSyncTextureEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    protected void DrawRenderer()
+    void DrawRenderer()
     {
         EditorUtil.DrawProperty(serializedObject, nameof(texture.targetRenderer));
     }
 
-    protected void DrawTextureReorderableList()
+    void DrawTextureReorderableList()
     {
         if (_reorderableList == null)
         {
@@ -70,7 +70,19 @@ public class uLipSyncTextureEditor : Editor
             _reorderableList.draggable = true;
             _reorderableList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
-                DrawTextureListItem(rect, index);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
+                var itemRect = new Rect(rect);
+                itemRect.width -= GetTexturePreviewSize() + 6;
+                EditorGUIUtility.labelWidth = 100;
+                DrawTextureListItem(itemRect, index);
+                EditorGUIUtility.labelWidth = 0;
+                EditorGUILayout.EndVertical();
+                var texRect = new Rect(rect);
+                texRect.xMin = texRect.xMax - GetTexturePreviewSize();
+                texRect.height = GetTexturePreviewSize();
+                DrawTexture(texRect, index);
+                EditorGUILayout.EndHorizontal();
             };
             _reorderableList.elementHeightCallback = index =>
             {
@@ -88,7 +100,7 @@ public class uLipSyncTextureEditor : Editor
         EditorGUILayout.EndHorizontal();
     }
 
-    protected void DrawTextureListItem(Rect rect, int index)
+    void DrawTextureListItem(Rect rect, int index)
     {
         rect.y += 2f;
         rect.height = EditorGUIUtility.singleLineHeight;
@@ -127,16 +139,30 @@ public class uLipSyncTextureEditor : Editor
             Undo.RecordObject(target, "Change UV Offset");
             tex.uvOffset = uvOffset;
         }
-
-        rect.y += singleLineHeight;
     }
 
-    protected virtual float GetTextureListItemHeight(int index)
+    void DrawTexture(Rect rect, int index)
+    {
+        var info = texture.textures[index];
+        var scale = info.uvScale;
+        var offset = info.uvOffset;
+        var uv = new Rect(offset.x, offset.y, scale.x, scale.y);
+        var tex = info.texture ? info.texture : texture.initialTexture;
+        EditorUtil.DrawBackgroundRect(rect);
+        if (tex) GUI.DrawTextureWithTexCoords(rect, tex, uv);
+    }
+
+    float GetTextureListItemHeight(int index)
     {
         return 84f;
     }
 
-    protected void DrawParameters()
+    float GetTexturePreviewSize()
+    {
+        return 64f;
+    }
+
+    void DrawParameters()
     {
         EditorUtil.DrawProperty(serializedObject, nameof(texture.minVolume));
         EditorUtil.DrawProperty(serializedObject, nameof(texture.minDuration));

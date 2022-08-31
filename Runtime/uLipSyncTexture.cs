@@ -22,6 +22,23 @@ public class uLipSyncTexture : MonoBehaviour
     public float minVolume = -2.5f;
     [Range(0f, 1f)] public float minDuration = 0.1f;
 
+    public Texture initialTexture 
+    { 
+        get 
+        { 
+            if (_initialTexture) return _initialTexture;
+            if (targetRenderer && targetRenderer.sharedMaterial) 
+            {
+                return targetRenderer.sharedMaterial.mainTexture;
+            }
+            return Texture2D.whiteTexture;
+        }
+        private set 
+        { 
+            _initialTexture = value; 
+        }
+    }
+
     Material _mat;
     Texture _initialTexture;
     LipSyncInfo _info = new LipSyncInfo();
@@ -158,9 +175,10 @@ public class uLipSyncTexture : MonoBehaviour
         {
             if (_phoneme != item.phoneme) continue;
 
-            if (item.texture && item.texture != _mat.mainTexture)
+            var texture = item.texture ?? _initialTexture;
+            if (texture && texture != _mat.mainTexture)
             {
-                _mat.mainTexture = item.texture;
+                _mat.mainTexture = texture;
             }
 
             _mat.mainTextureScale = item.uvScale;
