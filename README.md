@@ -29,10 +29,6 @@ Features
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-MicInput.png" width="640" />
 
-### VRM Support
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
-
 ### Pre-Bake
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Bake.png" width="640" />
@@ -44,6 +40,14 @@ Features
 ### AnimationClip
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-AnimationClip.gif" />
+
+### Texture Change
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync.gif" width="640" />
+
+### VRM Support
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
 
 
 Install
@@ -308,7 +312,7 @@ Texture
 
 `uLipSyncTexture` allows you to change textures and UVs according to the recognized phonemes. *Samples / 08. Texture* is a sample scene.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync.gif" width="640" />
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncTexture.png" width="640" />
 
