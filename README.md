@@ -306,7 +306,9 @@ Varying *Threshold* from 0, 10, and 20, you'll get the following.
 Texture
 -------
 
-`uLipSyncTexture` allows you to change textures and UVs according to the recognized phonemes.
+`uLipSyncTexture` allows you to change textures and UVs according to the recognized phonemes. *Samples / 08. Texture* is a sample scene.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync" width="640" />
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncTexture.png" width="640" />
 
