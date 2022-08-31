@@ -308,7 +308,7 @@ Texture
 
 `uLipSyncTexture` allows you to change textures and UVs according to the recognized phonemes.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncTexture.gif" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncTexture.png" width="640" />
 
 - Renderer
   - Specify the `Renderer` of the material you want to update.
