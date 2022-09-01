@@ -87,6 +87,8 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
         {
             for (int ch = 0; ch < _channels; ++ch)
             {
+                int index = i * _channels + ch;
+
                 if (_currentPos < _crossFadeDataCount)
                 {
                     float t = (float)_currentPos / _crossFadeDataCount;
@@ -96,11 +98,11 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
                     int indexE = _sampleCount - (_crossFadeDataCount - _currentPos);
                     float dataS = _data[indexS * _channels + ch];
                     float dataE = _data[indexE * _channels + ch];
-                    data[i] = dataS * sin + dataE * cos;
+                    data[index] = dataS * sin + dataE * cos;
                 }
                 else
                 {
-                    data[i] = _data[_currentPos * _channels + ch];
+                    data[index] = _data[_currentPos * _channels + ch];
                 }
             }
 
