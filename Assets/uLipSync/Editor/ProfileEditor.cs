@@ -117,7 +117,9 @@ public class ProfileEditor : Editor
         EditorGUILayout.BeginHorizontal();
         var indent = EditorGUI.indentLevel * 12f;
         EditorGUILayout.Space(indent, false);
+        EditorGUILayout.BeginVertical();
         _reorderableList.DoLayoutList();
+        EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
     }
 

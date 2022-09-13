@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.IO;
@@ -156,11 +156,11 @@ public static class EditorUtil
 
     public class DrawWaveOption
     {
-        public System.Func<float, Color> colorFunc = null;
+        public System.Func<float, Color> colorFunc = x => new Color(1f, 0.5f, 0f, 1f);
         public float waveScale = 0.95f;
     }
 
-    public static void DrawWave(Rect rect, AudioClip clip, DrawWaveOption option = null)
+    public static void DrawWave(Rect rect, AudioClip clip, DrawWaveOption option)
     {
         if (!clip) return;
 
@@ -169,40 +169,30 @@ public static class EditorUtil
         var height = (float)rect.height / channels;
         int samples = (minMaxData == null) ? 0 : (minMaxData.Length / (2 * channels));
 
-        for (int ch = 0; ch < channels; ch++)
+        AudioCurveRendering.AudioMinMaxCurveAndColorEvaluator dlg = delegate(
+            float x, 
+            out Color col, 
+            out float minValue, 
+            out float maxValue)
         {
-            var chRect = new Rect(rect.x, rect.y + height * ch, rect.width, height);
-            var curveColor = new Color(1.0f, 140.0f / 255.0f, 0.0f, 1.0f);
-            AudioCurveRendering.AudioMinMaxCurveAndColorEvaluator dlg = delegate(
-                float x, 
-                out Color col, 
-                out float minValue, 
-                out float maxValue)
-            {
-                col = (option != null && option.colorFunc != null) ? 
-                    option.colorFunc(x) : 
-                    curveColor;
+            col = option.colorFunc(x);
 
-                if (samples <= 0)
-                {
-                    minValue = 0.0f;
-                    maxValue = 0.0f;
-                }
-                else
-                {
-                    float p = Mathf.Clamp(x * (samples - 2), 0.0f, samples - 2);
-                    int i = (int)Mathf.Floor(p);
-                    int offset1 = (i * channels + ch) * 2;
-                    int offset2 = offset1 + channels * 2;
-                    var scale = option != null ? option.waveScale : 0.95f;
-                    minValue = Mathf.Min(minMaxData[offset1 + 1], minMaxData[offset2 + 1]) * scale;
-                    maxValue = Mathf.Max(minMaxData[offset1 + 0], minMaxData[offset2 + 0]) * scale;
-                    if (minValue > maxValue) { float tmp = minValue; minValue = maxValue; maxValue = tmp; }
-                }
-            };
+            float p = Mathf.Clamp(x * (samples - 2), 0f, samples - 2);
+            int i = (int)Mathf.Floor(p);
+            int offset1 = (i * channels) * 2;
+            int offset2 = offset1 + channels * 2;
+            minValue = Mathf.Min(minMaxData[offset1 + 1], minMaxData[offset2 + 1]) * option.waveScale;
+            maxValue = Mathf.Max(minMaxData[offset1 + 0], minMaxData[offset2 + 0]) * option.waveScale;
 
-            AudioCurveRendering.DrawMinMaxFilledCurve(rect, dlg);
-        }
+            if (minValue > maxValue) 
+            { 
+                float tmp = minValue; 
+                minValue = maxValue; 
+                maxValue = tmp; 
+            }
+        };
+
+        AudioCurveRendering.DrawMinMaxFilledCurve(rect, dlg);
     }
 
     public static Color ToRGB(float hue, bool cosInterp = true)
@@ -250,6 +240,24 @@ public static class EditorUtil
         {
             Directory.CreateDirectory(path);
         }
+    }
+
+    public static string GetRelativeHierarchyPath(GameObject target, GameObject parent)
+    {
+        if (!target || !parent) return "";
+
+        string path = "";
+        var gameObj = target;
+        while (gameObj && gameObj != parent)
+        {
+            if (!string.IsNullOrEmpty(path)) path = "/" + path;
+            path = gameObj.name + path;
+            gameObj = gameObj.transform.parent.gameObject;
+        }
+
+        if (gameObj != parent) return "";
+
+        return path;
     }
 }
 

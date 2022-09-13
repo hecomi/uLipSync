@@ -94,7 +94,7 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
 
         if (!player.clip) return;
 
-        EditorUtil.DrawWave(rect, player.clip);
+        EditorUtil.DrawWave(rect, player.clip, new EditorUtil.DrawWaveOption());
         var preWaveStart = player.start;
         var preWaveEnd = player.end;
 

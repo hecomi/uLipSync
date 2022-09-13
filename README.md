@@ -29,10 +29,6 @@ Features
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-MicInput.png" width="640" />
 
-### VRM Support
-
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
-
 ### Pre-Bake
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Bake.png" width="640" />
@@ -44,6 +40,14 @@ Features
 ### AnimationClip
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-AnimationClip.gif" />
+
+### Texture Change
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync.gif" width="640" />
+
+### VRM Support
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
 
 
 Install
@@ -303,6 +307,36 @@ Varying *Threshold* from 0, 10, and 20, you'll get the following.
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/AnimClip-Threshold-Change.gif" width="640" />
 
 
+Texture
+-------
+
+`uLipSyncTexture` allows you to change textures and UVs according to the recognized phonemes. *Samples / 08. Texture* is a sample scene.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/hecomi-lipsync.gif" width="640" />
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncTexture.png" width="640" />
+
+- Renderer
+  - Specify the `Renderer` of the material you want to update.
+- Parameters
+  - Min Volume
+    - The minimum volume value (log10) to update.
+  - Min Duration
+    - This is the minimum time to keep the mouth in the same texture / uv.
+- Textures
+  - Here you can select the textures you want to assign
+  - Phoneme
+    - Enter the phoneme registered in the `Profile` (e.g. "A", "I").
+    - An empty string ("") will be treated as if there is no audio input.
+  - Texture
+    - Specify the texture to be changed.
+    - If not specified, the initial texture set in the material will be used.
+  - UV Scale
+    - UV Scale. For tiled textures, specify this value.
+  - UV Offset
+    - UV offset. For tiled textures, specify this value.
+
+
 VRM Support
 -----------
 
@@ -310,7 +344,7 @@ VRM Support
 
 - https://virtualcast.jp/wiki/vrm/setting/blendshap
 
-With `uLipSyncBlendShape`, the blendshapes in the `SkinnedMeshRenderer` was controlled directly, but there is a modified component named `uLipSyncBlendShapeVRM` that controls `VRMBlendShapeProxy` instead. 
+With `uLipSyncBlendShape`, the blendshapes in the `SkinnedMeshRenderer` was controlled directly, but there is a modified component named `uLipSyncBlendShapeVRM` that controls `VRMBlendShapeProxy` instead.
 
 For more details, please refer to *Samples / VRM*. The scene can be played if you have set up VRM and imported [Alicia](https://3d.nicovideo.jp/works/td32797).
 
@@ -323,11 +357,11 @@ Tips
 
 ### Custom Event
 
-uLipSyncBlendShape is for 3D models, but if you want to animate a texture for a 2D model instead, you can write your own component to support it. Prepare a component that provides a function to receive `uLipSync.LipSyncInfo` and register it to *OnLipSyncUpdate(LipSyncInfo)* of `uLipSync` or `uLipSyncBakedDataPlayer`. 
+`uLipSyncBlendShape` is for 3D models, and `uLipSyncTexture` is for 2D textures. But if you want to do something different, you can write your own component to support them. Prepare a component that provides a function to receive `uLipSync.LipSyncInfo` and register it to *OnLipSyncUpdate(LipSyncInfo)* of `uLipSync` or `uLipSyncBakedDataPlayer`.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSync-OnLipSyncUpdate.png" width="640" />
 
-For example, the following is an example of a simple script that outputs the result of recognition to `Debug.Log()`. 
+For example, the following is an example of a simple script that outputs the result of recognition to `Debug.Log()`.
 
 ```cs
 using UnityEngine;

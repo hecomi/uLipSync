@@ -155,8 +155,11 @@ public class BakedDataEditor : Editor
     {
         if (!data.audioClip) return;
 
-        var n = data.frames.Count;
+        int n = data.frames.Count;
         if (n == 0) return;
+
+        int maxN = 512;
+        int skip = (int)Mathf.Ceil((float)n / maxN);
 
         var phonemeCount = data.frames[0].phonemes.Count;
         var ratioPointsList = new List<Vector3[]>();
@@ -179,8 +182,9 @@ public class BakedDataEditor : Editor
 
             for (int i = 0; i < n; ++i)
             {
-                var frame = data.frames[i];
-                var x = (float)i / Mathf.Max(n - 1, 1);
+                var index = Mathf.Min(i * skip, data.frames.Count - 1);
+                var frame = data.frames[index];
+                var x = (float)index / Mathf.Max(n - 1, 1);
                 var y = frame.phonemes[j].ratio * frame.volume / maxRatio;
                 x = rect.x + x * rect.width;
                 y = rect.y + (1f - y) * rect.height;

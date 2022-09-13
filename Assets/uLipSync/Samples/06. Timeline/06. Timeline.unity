@@ -2680,23 +2680,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[6]
-      value: 0.060323644
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[7]
-      value: 0.00037792503
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[8]
-      value: 0.0071793604
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[9]
-      value: 0.0005972953
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_BlendShapeWeights.Array.data[10]
-      value: 0.044168193
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
@@ -2813,6 +2813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2163de355e8fd8e4b83b631e07455323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateMethod: 0
   skinnedMeshRenderer: {fileID: 187725991}
   blendShapes:
   - phoneme: A

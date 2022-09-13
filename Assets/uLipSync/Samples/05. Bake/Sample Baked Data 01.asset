@@ -2546,19 +2546,3 @@ MonoBehaviour:
       ratio: 5.877787e-12
     - phoneme: Noise
       ratio: 0.9999985
-  - volume: 0.00010377975
-    phonemes:
-    - phoneme: A
-      ratio: 6.432582e-12
-    - phoneme: I
-      ratio: 0.000000011825695
-    - phoneme: U
-      ratio: 1.07635637e-10
-    - phoneme: E
-      ratio: 6.477134e-14
-    - phoneme: O
-      ratio: 6.085074e-10
-    - phoneme: N
-      ratio: 6.610155e-14
-    - phoneme: Noise
-      ratio: 1
