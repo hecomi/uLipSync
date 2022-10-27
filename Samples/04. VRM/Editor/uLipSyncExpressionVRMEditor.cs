@@ -51,7 +51,7 @@ public class uLipSyncExpressionVRMEditor : uLipSyncBlendShapeEditor
 
     protected override string[] GetBlendShapeArray()
     {
-        if (!vrm10Instance) return new string[] { "" };
+        if (!vrm10Instance || !vrm10Instance.Vrm) return new string[] { "" };
 
         return vrm10Instance.Vrm.Expression.Clips.Select(x => x.Clip.name).ToArray();
     }

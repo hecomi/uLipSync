@@ -12,7 +12,7 @@ public class uLipSyncExpressionVRM : uLipSyncBlendShape
     protected override void OnApplyBlendShapes()
     {
         var vrm10Instance = GetComponent<Vrm10Instance>();
-        if (!vrm10Instance) return;
+        if (!vrm10Instance || !vrm10Instance.Vrm) return;
 
         var clips = vrm10Instance.Vrm.Expression.Clips.ToArray();
         foreach (var bs in blendShapes)
