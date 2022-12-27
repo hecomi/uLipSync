@@ -133,10 +133,18 @@ public class uLipSyncAnimatorEditor : Editor
 
     protected void DrawParameterListItem(Rect rect, int index)
     {
+        var animator = anim.animator;
+        if (!animator) return;
+
+        if (!animator.isInitialized)
+        {
+            animator.Rebind();
+        }
+
         rect.y += 2f;
         rect.height = EditorGUIUtility.singleLineHeight;
 
-        var animatorParams = anim.animator.parameters;
+        var animatorParams = animator.parameters;
         var param = anim.parameters[index];
         float singleLineHeight =
             EditorGUIUtility.singleLineHeight +
@@ -146,14 +154,15 @@ public class uLipSyncAnimatorEditor : Editor
 
         rect.y += singleLineHeight;
 
-        var newIndex = EditorGUI.Popup(rect, "Parameter", param.index + 1, GetParameterArray());
-        if (newIndex != param.index + 1 || param.name != animatorParams[param.index + 1].name)
+        var curIndex = param.index + 1;
+        var newIndex = EditorGUI.Popup(rect, "Parameter", curIndex, GetParameterArray());
+        if (newIndex != curIndex || 
+            param.name != animatorParams[curIndex].name)
         {
             Undo.RecordObject(target, "Change Parameter");
             param.index = newIndex - 1;
             param.name = animatorParams[param.index + 1].name;
             param.nameHash = Animator.StringToHash(param.name);
-            // Debug.Log($"parameter: {param.name} - {param.nameHash}");
         }
 
         rect.y += singleLineHeight;
@@ -179,13 +188,15 @@ public class uLipSyncAnimatorEditor : Editor
         {
             return new string[0];
         }
-        var parAnimator = anim.animator.parameters;
+
+        var parameters = anim.animator.parameters;
         var names = new List<string>();
-        for (int i = 0; i < parAnimator.Length; ++i)
+        for (int i = 0; i < parameters.Length; ++i)
         {
-            var name = parAnimator[i].name;
+            var name = parameters[i].name;
             names.Add(name);
         }
+
         return names.ToArray();
     }
 

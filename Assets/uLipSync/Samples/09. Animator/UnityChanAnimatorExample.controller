@@ -79,9 +79,9 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Face
+    m_Name: Mouth
     m_StateMachine: {fileID: 110720301}
-    m_Mask: {fileID: 101100000, guid: c6893d99d338240cd834967aa6448379, type: 2}
+    m_Mask: {fileID: 101100000, guid: 05d4fe4dbc72446a1a1124dbf00627ce, type: 2}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 0
@@ -257,7 +257,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Face
+  m_Name: Mouth
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -1105067801183814876}
