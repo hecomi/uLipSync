@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-[ExecuteAlways]
 public class uLipSyncAnimator : MonoBehaviour
 {
     [System.Serializable]
