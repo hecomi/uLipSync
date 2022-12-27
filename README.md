@@ -337,6 +337,20 @@ Texture
     - UV offset. For tiled textures, specify this value.
 
 
+Animator
+--------
+
+`uLipSyncAnimator` can be used to lip-sync using `AnimatorController`. Create a Layer with an Avatar Mask applied only to the mouth as shown below, and setup a Blend Tree to make each mouth shape move by parameters.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/AnimatorController.png" width="640" />
+
+Then set the phonemes and the corresponding AnimatorContorller parameters to `uLipSyncAnimator` as follows.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncAnimator.png" width="640" />
+
+The sample scene is *Samples / 09. Animator*.
+
+
 VRM Support
 -----------
 
