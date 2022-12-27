@@ -65,6 +65,11 @@
             "displayName": "08. Texture",
             "description": "A sample of lip-syncing with textures.",
             "path": "Samples~/08. Texture"
+        },
+        {
+            "displayName": "09. Animator",
+            "description": "A sample of lip-syncing with AnimatorController.",
+            "path": "Samples~/09. Animator"
         }
     ]
 }
