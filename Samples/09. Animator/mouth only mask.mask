@@ -323,7 +323,7 @@ AvatarMask:
     m_Weight: 0
   - m_Path: mesh_root/hairband
     m_Weight: 0
-  - m_Path: mesh_root/kutu
+  - m_Path: mesh_root/Leg
     m_Weight: 0
   - m_Path: mesh_root/Shirts
     m_Weight: 0
@@ -340,6 +340,4 @@ AvatarMask:
   - m_Path: mesh_root/uwagi
     m_Weight: 0
   - m_Path: mesh_root/uwagi_BK
-    m_Weight: 0
-  - m_Path: mesh_root/uwagi_perker
     m_Weight: 0
