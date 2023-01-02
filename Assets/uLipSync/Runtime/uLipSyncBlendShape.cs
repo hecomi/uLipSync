@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 
 namespace uLipSync
@@ -165,6 +164,28 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
             weight += bs.weight * bs.maxWeight * volume * 100;
             skinnedMeshRenderer.SetBlendShapeWeight(bs.index, weight);
         }
+    }
+
+    public BlendShapeInfo GetBlendShapeInfo(string phoneme)
+    {
+        foreach (var info in blendShapes)
+        {
+            if (info.phoneme == phoneme) return info;
+        }
+        return null;
+    }
+
+    public BlendShapeInfo AddBlendShape(string phoneme, string blendShape)
+    {
+        var bs = GetBlendShapeInfo(phoneme);
+        if (bs == null) bs = new BlendShapeInfo() { phoneme = phoneme };
+
+        blendShapes.Add(bs);
+
+        if (!skinnedMeshRenderer) return bs;
+        bs.index = Util.GetBlendShapeIndex(skinnedMeshRenderer, blendShape);
+
+        return bs;
     }
 
 #if UNITY_EDITOR

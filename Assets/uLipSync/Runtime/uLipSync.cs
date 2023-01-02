@@ -63,6 +63,7 @@ public class uLipSync : MonoBehaviour
 
     void Update()
     {
+        if (!profile) return;
         if (!_jobHandle.IsCompleted) return;
 
         UpdateResult();
