@@ -47,7 +47,6 @@ public class uLipSyncBlendShapeRuntimeSetupExample : MonoBehaviour
 
         foreach (var info in phonemeBlendShapeTable)
         {
-            int index = uLipSync.Util.GetBlendShapeIndex(smr, info.blendShape);
             _blendShape.AddBlendShape(info.phoneme, info.blendShape);
         }
     }

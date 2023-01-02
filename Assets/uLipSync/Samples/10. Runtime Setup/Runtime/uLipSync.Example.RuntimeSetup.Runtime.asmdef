@@ -2,7 +2,8 @@
     "name": "uLipSync.Samples.RuntimeSetup.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:d444a9c79d21fec4181e6e12dc2e9706"
+        "GUID:d444a9c79d21fec4181e6e12dc2e9706",
+        "GUID:03af9d6569b4fc142b087f87b9123450"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
