@@ -63,6 +63,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.playablegraph-visualizer": {
+      "version": "https://github.com/Unity-Technologies/graph-visualizer.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cfb3a9f75dd2ef7cc4253b0439806646cdd79814"
+    },
     "com.unity.services.core": {
       "version": "1.0.1",
       "depth": 1,
