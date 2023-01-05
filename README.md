@@ -266,7 +266,15 @@ Then click on the game object with the `PlayableDirector` and drag and drop the 
 
 Now the lipsync information will be sent to `uLipSyncTimelineEvent`, and the connection to `uLipSyncBlendShape` is established. Playback can also be done during editing, so you can adjust it with the animation and sound.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" width="640" />
+
+### Timeline Setup Helper
+
+*Window > uLipSync > Timeline Setup Helper*
+
+This tool automatically creates `BakedData` corresponding to clips registered in **AudioTrack** and registers them in **uLipSync Track**.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Timeline-Setup-Helper.gif" width="640" />
 
 
 Animation Bake
