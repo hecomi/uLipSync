@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace uLipSync
 {
@@ -191,6 +192,11 @@ public class Profile : ScriptableObject
             return;
         }
         JsonUtility.FromJsonOverwrite(json, this);
+    }
+
+    public string[] GetPhonemeNames()
+    {
+        return mfccs.Select(x => x.name).Distinct().ToArray();
     }
 
     public static Profile Create(string path)
