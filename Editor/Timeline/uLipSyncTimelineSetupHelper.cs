@@ -124,6 +124,8 @@ public class TimelineSetupHeplerWindow : ScriptableWizard
             lipsyncClip.displayName = audioClip.displayName;
             lipsyncClip.start = audioClip.start;
             lipsyncClip.duration = audioClip.duration;
+            lipsyncClip.clipIn = audioClip.clipIn;
+            lipsyncClip.timeScale = audioClip.timeScale;
 
             var lipsyncClipAsset = lipsyncClip.asset as Timeline.uLipSyncClip;
 
