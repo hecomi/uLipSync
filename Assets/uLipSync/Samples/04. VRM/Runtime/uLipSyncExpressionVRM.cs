@@ -21,11 +21,12 @@ public class uLipSyncExpressionVRM : uLipSyncBlendShape
             if (index < 0 || index >= clips.Length) continue;
             var clip = clips[index];
             var weight = bs.weight * bs.maxWeight * volume;
-            vrm10Instance.Runtime.Expression.SetWeight(new ExpressionKey(clip.Preset, clip.Clip.name), weight);
+            var key = new ExpressionKey(clip.Preset, clip.Clip.name);
+            vrm10Instance.Runtime.Expression.SetWeight(key, weight);
         }
     }
 
-    public new BlendShapeInfo AddBlendShape(string phoneme, string blendShape)
+    public new BlendShapeInfo AddBlendShape(string phoneme, string expression)
     {
         var bs = GetBlendShapeInfo(phoneme);
         if (bs == null) bs = new BlendShapeInfo() { phoneme = phoneme };
@@ -36,7 +37,7 @@ public class uLipSyncExpressionVRM : uLipSyncBlendShape
         if (!vrm10Instance || !vrm10Instance.Vrm) return bs;
 
         var clips = vrm10Instance.Vrm.Expression.Clips;
-        int index = clips.ToList().FindIndex(x => x.Clip.name == blendShape);
+        int index = clips.ToList().FindIndex(x => x.Clip.name == expression);
         bs.index = index - 1;
 
         return bs;
