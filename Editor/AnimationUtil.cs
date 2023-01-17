@@ -128,7 +128,7 @@ public static class AnimationUtil
             var binding = data.binding;
             var curve = data.curve;
 
-            for (int j = 0; j < curve.length; ++j)
+            for (int j = 0; j < curve.length - 1; ++j)
             {
                 var key = curve[j];
                 key.weightedMode = WeightedMode.Both;
