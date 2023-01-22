@@ -339,6 +339,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6390428570525047729, guid: 579308cc0ad00415aafe433f786be62d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6477090905245481375, guid: 579308cc0ad00415aafe433f786be62d, type: 3}
       propertyPath: m_DirtyAABB
       value: 0
@@ -366,6 +370,10 @@ PrefabInstance:
     - target: {fileID: 6477090905245481375, guid: 579308cc0ad00415aafe433f786be62d, type: 3}
       propertyPath: m_AABB.m_Extent.z
       value: 0.07064462
+      objectReference: {fileID: 0}
+    - target: {fileID: 6477090905245481375, guid: 579308cc0ad00415aafe433f786be62d, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.size
+      value: 57
       objectReference: {fileID: 0}
     - target: {fileID: 6698729103592009512, guid: 579308cc0ad00415aafe433f786be62d, type: 3}
       propertyPath: m_DirtyAABB
@@ -652,7 +660,7 @@ MonoBehaviour:
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1314781840}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync.Runtime
         m_MethodName: OnLipSyncUpdate
         m_Mode: 0

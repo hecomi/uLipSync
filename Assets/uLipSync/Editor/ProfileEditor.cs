@@ -37,7 +37,7 @@ public class ProfileEditor : Editor
             EditorGUI.BeginChangeCheck();
             
             ++EditorGUI.indentLevel;
-            CalcMinMax();
+            profile.CalcMinMax(out min, out max);
             DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
             
@@ -121,25 +121,6 @@ public class ProfileEditor : Editor
         _reorderableList.DoLayoutList();
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
-    }
-
-    void CalcMinMax()
-    {
-        max = float.MinValue;
-        min = float.MaxValue;
-        foreach (var data in profile.mfccs)
-        {
-            for (int j = 0; j < data.mfccCalibrationDataList.Count; ++j)
-            {
-                var array = data.mfccCalibrationDataList[j].array;
-                for (int i = 0; i < array.Length; ++i)
-                {
-                    var x = array[i];
-                    max = Mathf.Max(max, x);
-                    min = Mathf.Min(min, x);
-                }
-            }
-        }
     }
 
     void DrawMFCC(Rect position, int index, bool showCalibration)

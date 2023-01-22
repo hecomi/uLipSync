@@ -166,9 +166,10 @@ public class Profile : ScriptableObject
         return mfccs[index].mfccNativeArray;
     }
 
-    public void Export(string path)
+    public bool Export(string path)
     {
         var json = JsonUtility.ToJson(this);
+
         try
         {
             File.WriteAllText(path, json);
@@ -176,12 +177,16 @@ public class Profile : ScriptableObject
         catch (System.Exception e)
         {
             Debug.LogError(e.Message);
+            return false;
         }
+
+        return true;
     }
 
-    public void Import(string path)
+    public bool Import(string path)
     {
         string json = "";
+
         try
         {
             json = File.ReadAllText(path);
@@ -189,9 +194,13 @@ public class Profile : ScriptableObject
         catch (System.Exception e)
         {
             Debug.LogError(e.Message);
-            return;
+            return false;
         }
+
         JsonUtility.FromJsonOverwrite(json, this);
+        OnEnable();
+
+        return true;
     }
 
     public string[] GetPhonemeNames()
@@ -199,10 +208,28 @@ public class Profile : ScriptableObject
         return mfccs.Select(x => x.name).Distinct().ToArray();
     }
 
-    public static Profile Create(string path)
+    public void CalcMinMax(out float min, out float max)
     {
-        var profile = new Profile();
-        return profile;
+        max = float.MinValue;
+        min = float.MaxValue;
+        foreach (var data in mfccs)
+        {
+            for (int j = 0; j < data.mfccCalibrationDataList.Count; ++j)
+            {
+                var array = data.mfccCalibrationDataList[j].array;
+                for (int i = 0; i < array.Length; ++i)
+                {
+                    var x = array[i];
+                    max = Mathf.Max(max, x);
+                    min = Mathf.Min(min, x);
+                }
+            }
+        }
+    }
+
+    public static Profile Create()
+    {
+        return ScriptableObject.CreateInstance<Profile>();
     }
 }
 
