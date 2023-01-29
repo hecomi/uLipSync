@@ -47,22 +47,21 @@ public static class uLipSyncMfccTextureCreater
 
     public static Texture2D CreateTexture(uLipSync.Profile profile, int index)
     {
-        if (!profile || profile.mfccs.Count == 0) 
-        {
-            return Texture2D.whiteTexture;
-        }
+        var tex = Texture2D.whiteTexture;
+
+        if (!profile || profile.mfccs.Count == 0) return tex;
 
         float min, max;
         profile.CalcMinMax(out min, out max);
 
         var mfcc = profile.mfccs[index];
         var list = mfcc.mfccCalibrationDataList;
-        if (list.Count == 0) return Texture2D.whiteTexture;
+        if (list.Count == 0) return tex;
 
         var width = list[0].array.Length;
         var height = list.Count;
 
-        var tex = new Texture2D(width, height);
+        tex = new Texture2D(width, height);
         tex.filterMode = FilterMode.Point;
         var texColors = tex.GetPixelData<Color32>(0);
         var array = new NativeArray<float>(width * height, Allocator.TempJob);
