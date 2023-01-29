@@ -41,6 +41,7 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     public void UpdateMfccTexture()
     {
         if (!mfccImage) return;
+
         var tex = uLipSyncMfccTextureCreater.CreateTexture(profile, index);
         mfccImage.texture = tex;
     }
@@ -80,6 +81,7 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     public void OnCalibButtonUp()
     {
         _isCalibrating = false;
+        profileUi?.OnProfileChanged();
     }
 
     void UpdateCalibration()
