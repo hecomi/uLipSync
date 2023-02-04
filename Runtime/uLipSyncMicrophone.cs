@@ -11,7 +11,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     public int index = 0;
     private int preIndex_ = 0;
     public bool isAutoStart = true;
-    public float latencyTolerance = .05f;
+    public float latencyTolerance = 0.05f;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
@@ -99,27 +99,32 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void CheckLatency()
     {
-        if(!isRecording) return; 
+        if (!isRecording) return; 
 
-        // calculate latency
         float micTime = Microphone.GetPosition(device.name) / freq;
         float clipTime = source.time;
         latency = micTime - clipTime;
         
-        // handle rollover
-        if(latency < -clip.length / 2) latency += clip.length; 
+        if (latency < -clip.length / 2) 
+        {
+            latency += clip.length; 
+        }
 
-        if(Mathf.Abs(latency) > latencyTolerance)
+        if (Mathf.Abs(latency) > latencyTolerance)
         {
             Debug.LogWarning($"Microphone and AudioSource went out of sync! ({latency:0.00} s)");
             
-            // check if the microphone stopped recording. sometimes this is caused by a faulty connection
-            if(Microphone.IsRecording(device.name))
+            // check if the microphone stopped recording. 
+            // sometimes this is caused by a faulty connection
+            if (Microphone.IsRecording(device.name))
+            {
                 source.time = micTime;
+            }
             else
+            {
                 StartRecord(); 
+            }
         }
-        // Debug.Log(latency);
     }
 
     public void StartRecord()
