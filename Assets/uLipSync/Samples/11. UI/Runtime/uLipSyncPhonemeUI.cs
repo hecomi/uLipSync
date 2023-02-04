@@ -42,7 +42,7 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     {
         if (!mfccImage) return;
 
-        var tex = uLipSyncMfccTextureCreater.CreateTexture(profile, index);
+        var tex = uLipSync.TextureCreator.CreateMfccTexture(profile, index);
         mfccImage.texture = tex;
     }
 
