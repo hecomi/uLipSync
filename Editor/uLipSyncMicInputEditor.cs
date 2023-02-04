@@ -29,6 +29,8 @@ public class uLipSyncMicrophoneEditor : Editor
     void DrawProps()
     {
         mic.isAutoStart = EditorGUILayout.Toggle("Is Auto Start", mic.isAutoStart);
+        mic.latencyTolerance = EditorGUILayout.DelayedFloatField("Latency Tolerance (s)", mic.latencyTolerance);
+        EditorGUILayout.LabelField("Mic to AudioSource Latency", $"{mic.latency:0.00} s");
         EditorGUILayout.LabelField("Frequency", $"Min: {mic.device.minFreq} Hz / Max: {mic.device.maxFreq} Hz");
         if (Application.isPlaying)
         {
