@@ -1297,6 +1297,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: 0
   isAutoStart: 1
+  latencyTolerance: 0.05
+  bufferTime: 0.03
 --- !u!82 &679125717
 AudioSource:
   m_ObjectHideFlags: 0
