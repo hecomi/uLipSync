@@ -95,11 +95,11 @@ public class Profile : ScriptableObject
     [Tooltip("The number of MFCC data to calculate the average MFCC values")]
     public int mfccDataCount = 16;
     [Tooltip("The number of Mel Filter Bank channels")]
-    public int melFilterBankChannels = 24;
+    public int melFilterBankChannels = 80;
     [Tooltip("Target sampling rate to apply downsampling")]
     public int targetSampleRate = 16000;
     [Tooltip("Number of audio samples after downsampling is applied")]
-    public int sampleCount = 512;
+    public int sampleCount = 1024;
 
     public List<MfccData> mfccs = new List<MfccData>();
 
