@@ -109,38 +109,6 @@ public static class EditorUtil
         index = EditorGUILayout.Popup("Device", index, micNames);
     }
 
-    public static void DrawMfcc(float[] array, float max, float min, float height)
-    {
-        var area = GUILayoutUtility.GetRect(Screen.width, height);
-        area = EditorGUI.IndentedRect(area);
-
-        var width = area.width / 12;
-        var maxMinusMin = max - min;
-        for (int i = 0; i < 12; ++i)
-        {
-            var x = width * i;
-            var rect = new Rect(area.x + x, area.y, width, height);
-            var value = (array[i] - min) / maxMinusMin;
-            var color = ToRGB(value);
-            Handles.DrawSolidRectangleWithOutline(rect, color, color);
-        }
-    }
-
-    public static void DrawMfcc(Rect area, float[] array, float max, float min, float height)
-    {
-        area = EditorGUI.IndentedRect(area);
-        var width = area.width / 12;
-        var maxMinusMin = max - min;
-        for (int i = 0; i < 12; ++i)
-        {
-            var x = width * i;
-            var rect = new Rect(area.x + x, area.y, width, height);
-            var value = (array[i] - min) / maxMinusMin;
-            var color = ToRGB(value);
-            Handles.DrawSolidRectangleWithOutline(rect, color, color);
-        }
-    }
-
     public static void DrawBackgroundRect(Rect rect, Color bg, Color line)
     {
         Handles.DrawSolidRectangleWithOutline(rect, bg, line);

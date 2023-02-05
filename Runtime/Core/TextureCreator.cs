@@ -152,21 +152,24 @@ public static class TextureCreator
 
     public static Texture2D CreateMfccTexture(Profile profile, int index)
     {
-        var tex = Texture2D.whiteTexture;
-
-        if (!profile || profile.mfccs.Count == 0) return tex;
+        if (!profile) return Texture2D.whiteTexture;
 
         float min, max;
         profile.CalcMinMax(out min, out max);
-
         var mfcc = profile.mfccs[index];
+
+        return CreateMfccTexture(mfcc, min, max);
+    }
+
+    public static Texture2D CreateMfccTexture(MfccData mfcc, float min, float max)
+    {
         var list = mfcc.mfccCalibrationDataList;
-        if (list.Count == 0) return tex;
+        if (list.Count == 0) return Texture2D.whiteTexture;
 
         var width = list[0].array.Length;
         var height = list.Count;
 
-        tex = new Texture2D(width, height);
+        var tex = new Texture2D(width, height);
         tex.filterMode = FilterMode.Point;
         var texColors = GetOrCreatePixelData(tex);
         var array = new NativeArray<float>(width * height, Allocator.TempJob);

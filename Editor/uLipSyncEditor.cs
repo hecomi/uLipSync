@@ -13,7 +13,7 @@ public class uLipSyncEditor : Editor
     Profile profile { get { return lipSync.profile; } }
 
     Editor _profileEditor;
-    List<float[]> _mfccHistory = new List<float[]>();
+    MfccData _mfccData = new MfccData("Temp");
 
     float minVolume = 0f;
     float maxVolume = -100f;
@@ -157,15 +157,14 @@ public class uLipSyncEditor : Editor
         {
             var array = new float[lipSync.mfcc.Length];
             lipSync.mfcc.CopyTo(array);
-            _mfccHistory.Add(array);
-            while (_mfccHistory.Count > 64) _mfccHistory.RemoveAt(0);
-            while (_mfccHistory.Count < 64) _mfccHistory.Add(array);
+            _mfccData.AddCalibrationData(array);
+            _mfccData.RemoveOldCalibrationData(64);
         }
-
-        foreach (var mfcc in _mfccHistory)
-        {
-            EditorUtil.DrawMfcc(mfcc, editor.max, editor.min, 1f);
-        }
+        
+        var tex = TextureCreator.CreateMfccTexture(_mfccData, editor.min, editor.max);
+        var area = GUILayoutUtility.GetRect(Screen.width, 64f);
+        area = EditorGUI.IndentedRect(area);
+        GUI.DrawTexture(area, tex);
     }
 
     void DrawRecognition()
