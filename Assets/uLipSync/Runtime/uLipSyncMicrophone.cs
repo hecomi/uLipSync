@@ -9,9 +9,18 @@ public class uLipSyncMicrophone : MonoBehaviour
     const int maxRetryMilliSec = 1000;
 
     public int index = 0;
-    private int preIndex_ = 0;
+    private int _preIndex = 0;
+
+    [Tooltip("When ON, AudioClip of the Microphone input is automatically registered to AudioSource")]
     public bool isAutoStart = true;
+
+    [Range(0.01f, 0.2f)]
+    [Tooltip("Threshold time to resynchronize Microphone and AudioSource")]
     public float latencyTolerance = 0.05f;
+
+    [Range(0.01f, 0.2f)]
+    [Tooltip("Buffer time for reflecting Microphone input as AudioSource (too low can cause noise)")]
+    public float bufferTime = 0.03f;
 
     public AudioSource source { get; private set; }
     public bool isReady { get; private set; } = false;
@@ -43,7 +52,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     {
         source = GetComponent<AudioSource>();
 
-        preIndex_ = index;
+        _preIndex = index;
 
         UpdateMicInfo();
 
@@ -61,7 +70,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     void Update()
     {
         UpdateDevice();
-        CheckLatency();
+        UpdateLatencyCheck();
 
         if (isStartRequested)
         {
@@ -90,14 +99,21 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void UpdateDevice()
     {
-        if (preIndex_ == index) return;
+        var isRecordingNow = isRecording;
 
-        preIndex_ = index;
+        if (_preIndex == index) return;
+
+        _preIndex = index;
         StopRecordInternal();
         UpdateMicInfo();
+
+        if (isRecordingNow)
+        {
+            StartRecord();
+        }
     }
 
-    void CheckLatency()
+    void UpdateLatencyCheck()
     {
         if (!isRecording) return; 
 
@@ -110,7 +126,7 @@ public class uLipSyncMicrophone : MonoBehaviour
             latency += clip.length; 
         }
 
-        if (Mathf.Abs(latency) > latencyTolerance)
+        if (Mathf.Abs(latency) > latencyTolerance + bufferTime)
         {
             Debug.LogWarning($"Microphone and AudioSource went out of sync! ({latency:0.00} s)");
             
@@ -118,7 +134,7 @@ public class uLipSyncMicrophone : MonoBehaviour
             // sometimes this is caused by a faulty connection
             if (Microphone.IsRecording(device.name))
             {
-                source.time = micTime;
+                source.time = micTime - bufferTime;
             }
             else
             {
@@ -178,6 +194,8 @@ public class uLipSyncMicrophone : MonoBehaviour
         {
             source.Stop();
         }
+
+        Microphone.End(device.name);
 
         isRecording = false;
     }
