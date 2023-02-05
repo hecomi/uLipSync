@@ -55,7 +55,7 @@ public class ProfileEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
-            profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
+            profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 256);
             profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
             profile.sampleCount = Mathf.ClosestPowerOfTwo(profile.sampleCount);
             --EditorGUI.indentLevel;
@@ -150,11 +150,10 @@ public class ProfileEditor : Editor
             mfccPos.xMax -= 60;
         }
 
-        foreach (var mfcc in data.mfccCalibrationDataList)
-        {
-            EditorUtil.DrawMfcc(mfccPos, mfcc.array, max, min, 2f);
-            mfccPos.y += 2f;
-        }
+        var tex = TextureCreator.CreateMfccTexture(data, min, max);
+        var area = EditorGUI.IndentedRect(mfccPos);
+        area.height = data.mfccCalibrationDataList.Count * 3f;
+        GUI.DrawTexture(area, tex, ScaleMode.StretchToFill);
 
         var calibButtonPos = new Rect(position);
         calibButtonPos.xMin = mfccPos.xMax + 8;
@@ -205,7 +204,7 @@ public class ProfileEditor : Editor
             if (EditorUtil.IsFoldOutOpened(name, true, "MfccData"))
             {
                 height += 32f;
-                height += data.mfccCalibrationDataList.Count * 2f;
+                height += data.mfccCalibrationDataList.Count * 3f;
             }
         }
 
