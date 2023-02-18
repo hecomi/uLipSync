@@ -44,8 +44,13 @@ public struct LipSyncJob : IJob
 
         Algorithm.HammingWindow(ref data);
 
+        Algorithm.Normalize(ref data, 100f);
+
+        NativeArray<float> dataWithZeroPadding;
+        Algorithm.ZeroPadding(ref data, out dataWithZeroPadding); 
+
         NativeArray<float> spectrum;
-        Algorithm.FFT(data, out spectrum);
+        Algorithm.FFT(dataWithZeroPadding, out spectrum);
 
         NativeArray<float> melSpectrum;
         Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, melFilterBankChannels);
@@ -78,6 +83,7 @@ public struct LipSyncJob : IJob
         melSpectrum.Dispose();
         spectrum.Dispose();
         data.Dispose();
+        dataWithZeroPadding.Dispose();
         buffer.Dispose();
     }
 

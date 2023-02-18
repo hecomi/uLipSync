@@ -60,19 +60,20 @@ public unsafe static class Algorithm
         }
     }
 
-    public static void Normalize(ref NativeArray<float> array)
+    public static void Normalize(ref NativeArray<float> array, float value = 1f)
     {
-        Normalize((float*)array.GetUnsafePtr(), array.Length);
+        Normalize((float*)array.GetUnsafePtr(), array.Length, value);
     }
 
     [BurstCompile]
-    static void Normalize(float* array, int len)
+    static void Normalize(float* array, int len, float value = 1f)
     {
         float max = GetMaxValue(array, len);
         if (max < math.EPSILON) return;
+        float r = value / max;
         for (int i = 0; i < len; ++i)
         {
-            array[i] /= max;
+            array[i] *= r;
         }
     }
 
@@ -210,6 +211,21 @@ public unsafe static class Algorithm
         }
     }
 
+    public static void ZeroPadding(ref NativeArray<float> data, out NativeArray<float> dataWithPadding)
+    {
+        int N = data.Length;
+        dataWithPadding = new NativeArray<float>(N * 2, Allocator.Temp);
+
+        var slice1 = new NativeSlice<float>(dataWithPadding, 0, N / 2);
+        UnsafeUtility.MemSet((float*)slice1.GetUnsafePtr<float>(), 0, sizeof(float) * slice1.Length);
+
+        var slice2 = new NativeSlice<float>(dataWithPadding, N / 2, N);
+        slice2.CopyFrom(data);
+
+        var slice3 = new NativeSlice<float>(dataWithPadding, N * 3 / 2, N / 2);
+        UnsafeUtility.MemSet((float*)slice3.GetUnsafePtr<float>(), 0, sizeof(float) * slice1.Length);
+    }
+
     public static void FFT(in NativeArray<float> data, out NativeArray<float> spectrum)
     {
         int N = data.Length;
@@ -328,7 +344,9 @@ public unsafe static class Algorithm
             float sum = 0f;
             for (int i = iBegin + 1; i < iEnd; ++i)
             {
-                float a = (i < iCenter) ? ((float)i / iCenter) : ((float)(i - iCenter) / iCenter);
+                float a = (i < iCenter) ? 
+                    ((float)i / iCenter) : 
+                    ((float)(i - iCenter) / iCenter);
                 sum += a * spectrum[i];
             }
             melSpectrum[n] = sum;
