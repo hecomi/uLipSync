@@ -92,6 +92,8 @@ public class Profile : ScriptableObject
 {
     [HideInInspector] public string jsonPath = "";
 
+    [Tooltip("The number of MFCC")]
+    public int mfccNum = 12;
     [Tooltip("The number of MFCC data to calculate the average MFCC values")]
     public int mfccDataCount = 16;
     [Tooltip("The number of Mel Filter Bank channels")]

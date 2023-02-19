@@ -63,7 +63,7 @@ public struct LipSyncJob : IJob
         NativeArray<float> melCepstrum;
         Algorithm.DCT(melSpectrum, out melCepstrum);
 
-        for (int i = 1; i <= 12; ++i)
+        for (int i = 1; i <= mfcc.Length; ++i)
         {
             mfcc[i - 1] = melCepstrum[i];
         }
@@ -91,7 +91,7 @@ public struct LipSyncJob : IJob
     {
         int index = -1;
         float minDistance = float.MaxValue;
-        int n = phonemes.Length / 12;
+        int n = phonemes.Length / mfcc.Length;
         for (int i = 0; i < n; ++i)
         {
             var distance = CalcTotalDistance(i);
@@ -107,7 +107,7 @@ public struct LipSyncJob : IJob
     float CalcTotalDistance(int index)
     {
         var distance = 0f;
-        int offset = index * 12;
+        int offset = index * mfcc.Length;
         for (int i = 0; i < mfcc.Length; ++i)
         {
             distance += math.abs(mfcc[i] - phonemes[i + offset]);
