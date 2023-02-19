@@ -9,6 +9,8 @@ namespace uLipSync
 
 public class uLipSync : MonoBehaviour
 {
+    const int mfccNum = 12;
+
     public Profile profile;
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
     [Range(0f, 1f)] public float outputSoundGain = 1f;
@@ -92,10 +94,10 @@ public class uLipSync : MonoBehaviour
             int phonemeCount = profile ? profile.mfccs.Count : 1;
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
             _inputData = new NativeArray<float>(n, Allocator.Persistent); 
-            _mfcc = new NativeArray<float>(12, Allocator.Persistent); 
+            _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent); 
             _distances = new NativeArray<float>(phonemeCount, Allocator.Persistent);
-            _mfccForOther = new NativeArray<float>(12, Allocator.Persistent); 
-            _phonemes = new NativeArray<float>(12 * phonemeCount, Allocator.Persistent);
+            _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent); 
+            _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
         }
     }
@@ -122,7 +124,7 @@ public class uLipSync : MonoBehaviour
     void UpdateBuffers()
     {
         if (inputSampleCount != _rawInputData.Length ||
-            profile.mfccs.Count * 12 != _phonemes.Length)
+            profile.mfccs.Count * mfccNum != _phonemes.Length)
         {
             lock (_lockObject)
             {
