@@ -82,7 +82,10 @@ public class uLipSyncMicrophoneEditor : Editor
             mic.StopRecordAndCreateAudioClip();
         }
 
-        if (!mic.isRecording && mic.isPlaying && GUILayout.Button("Stop", GUILayout.Width(120)))
+        if (!mic.isRecording && 
+            mic.isMicClipSet && 
+            mic.isPlaying && 
+            GUILayout.Button("Stop", GUILayout.Width(120)))
         {
             mic.source.Stop();
         }
