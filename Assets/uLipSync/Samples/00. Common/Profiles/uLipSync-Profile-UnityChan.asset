@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: uLipSync-Profile-UnityChan
   m_EditorClassIdentifier: 
   jsonPath: 
+  mfccNum: 12
   mfccDataCount: 10
   melFilterBankChannels: 24
   targetSampleRate: 16000
   sampleCount: 512
-  minVolume: -3.25
-  maxVolume: -1.75
   mfccs:
   - name: A
     mfccCalibrationDataList:
