@@ -76,6 +76,7 @@ crashlytics-build.properties
 .DS_Store
 /Assets/Extensions*
 /Assets/uLipSync/Samples/XX*
+/Assets/uLipSync/Debug*
 /*.log
 .vsconfig
 .vscode
