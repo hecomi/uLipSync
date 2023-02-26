@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace uLipSync
 {
@@ -71,6 +72,17 @@ public class ProfileEditor : Editor
 
             EditorGUILayout.Separator();
         }
+
+#if ULIPSYNC_DEBUG
+        if (EditorUtil.SimpleFoldout("Debug", false, "-uLipSync-Profile"))
+        {
+            ++EditorGUI.indentLevel;
+            DrawDebug();
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+#endif
 
         if (EditorUtil.SimpleFoldout("Baked Data", false, "-uLipSync-Profile"))
         {
@@ -293,6 +305,24 @@ public class ProfileEditor : Editor
         }
 
         EditorUtility.ClearProgressBar();
+    }
+
+    void DrawDebug()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("  Dump  "))
+        {
+            var profileName = string.IsNullOrEmpty(profile.name) ? "profile" : profile.name;
+            var filename = $"{profileName}.csv";
+            var sw = new StreamWriter(filename);
+            var sb = new StringBuilder();
+            Debugging.DebugUtil.DumpProfile(sb, profile);
+            sw.Write(sb);
+            sw.Close();
+            Debug.Log($"{filename} was created.");
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }
 

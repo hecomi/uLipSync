@@ -34,8 +34,23 @@ public class uLipSync : MonoBehaviour
     List<int> _requestedCalibrationVowels = new List<int>();
     Dictionary<string, float> _ratios = new Dictionary<string, float>();
 
-    public NativeArray<float> mfcc { get { return _mfccForOther; } }
+    public NativeArray<float> mfcc => _mfccForOther;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
+    
+#if ULIPSYNC_DEBUG
+    NativeArray<float> _debugData;
+    NativeArray<float> _debugSpectrum;
+    NativeArray<float> _debugMelSpectrum;
+    NativeArray<float> _debugMelCepstrum;
+    NativeArray<float> _debugDataForOther;
+    NativeArray<float> _debugSpectrumForOther;
+    NativeArray<float> _debugMelSpectrumForOther;
+    NativeArray<float> _debugMelCepstrumForOther;
+    public NativeArray<float> data => _debugDataForOther;
+    public NativeArray<float> spectrum => _debugSpectrumForOther;
+    public NativeArray<float> melSpectrum => _debugMelSpectrumForOther;
+    public NativeArray<float> melCepstrum => _debugMelCepstrumForOther;
+#endif
 
     int inputSampleCount
     {
@@ -95,10 +110,20 @@ public class uLipSync : MonoBehaviour
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
             _inputData = new NativeArray<float>(n, Allocator.Persistent); 
             _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _distances = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent); 
+            _distances = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
+#if ULIPSYNC_DEBUG
+            _debugData = new NativeArray<float>(profile.sampleCount * 2, Allocator.Persistent);
+            _debugDataForOther = new NativeArray<float>(profile.sampleCount * 2, Allocator.Persistent);
+            _debugSpectrum = new NativeArray<float>(profile.sampleCount * 2, Allocator.Persistent);
+            _debugSpectrumForOther = new NativeArray<float>(profile.sampleCount * 2, Allocator.Persistent);
+            _debugMelSpectrum = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
+            _debugMelSpectrumForOther = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
+            _debugMelCepstrum = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
+            _debugMelCepstrumForOther = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
+#endif
         }
     }
 
@@ -118,6 +143,16 @@ public class uLipSync : MonoBehaviour
             _distances.Dispose();
             _phonemes.Dispose();
             _info.Dispose();
+#if ULIPSYNC_DEBUG
+            _debugData.Dispose();
+            _debugDataForOther.Dispose();
+            _debugSpectrum.Dispose();
+            _debugSpectrumForOther.Dispose();
+            _debugMelSpectrum.Dispose();
+            _debugMelSpectrumForOther.Dispose();
+            _debugMelCepstrum.Dispose();
+            _debugMelCepstrumForOther.Dispose();
+#endif
         }
     }
 
@@ -138,6 +173,12 @@ public class uLipSync : MonoBehaviour
     {
         _jobHandle.Complete();
         _mfccForOther.CopyFrom(_mfcc);
+#if ULIPSYNC_DEBUG
+        _debugDataForOther.CopyFrom(_debugData);
+        _debugSpectrumForOther.CopyFrom(_debugSpectrum);
+        _debugMelSpectrumForOther.CopyFrom(_debugMelSpectrum);
+        _debugMelCepstrumForOther.CopyFrom(_debugMelCepstrum);
+#endif
 
         float sumInvDistance = 0f;
         float minDistance = float.MaxValue;
@@ -226,6 +267,12 @@ public class uLipSync : MonoBehaviour
             phonemes = _phonemes,
             distances = _distances,
             info = _info,
+#if ULIPSYNC_DEBUG
+            debugData = _debugData,
+            debugSpectrum = _debugSpectrum,
+            debugMelSpectrum = _debugMelSpectrum,
+            debugMelCepstrum = _debugMelCepstrum,
+#endif
         };
 
         _jobHandle = lipSyncJob.Schedule();
@@ -238,7 +285,7 @@ public class uLipSync : MonoBehaviour
 
     void UpdateCalibration()
     {
-        if (profile == null) return;
+        if (!profile) return;
 
         foreach (var index in _requestedCalibrationVowels)
         {
@@ -267,7 +314,7 @@ public class uLipSync : MonoBehaviour
 
     public void OnDataReceived(float[] input, int channels)
     {
-        if (_rawInputData == null || _rawInputData.Length == 0) return;
+        if (_rawInputData.Length == 0) return;
 
         lock (_lockObject)
         {
