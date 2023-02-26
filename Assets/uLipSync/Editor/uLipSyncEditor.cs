@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace uLipSync
@@ -15,8 +15,8 @@ public class uLipSyncEditor : Editor
     Editor _profileEditor;
     MfccData _mfccData = new MfccData("Temp");
 
-    float minVolume = 0f;
-    float maxVolume = -100f;
+    float _minVolume = 0f;
+    float _maxVolume = -100f;
     float _smoothVolume = 0f;
     StringBuilder _recognizedPhonemes = new StringBuilder();
 
@@ -115,16 +115,16 @@ public class uLipSyncEditor : Editor
     void DrawRawVolume()
     {
         float volume = Mathf.Log10(lipSync.result.rawVolume);
-        if (volume != Mathf.NegativeInfinity && volume != Mathf.Infinity)
+        if (!float.IsNegativeInfinity(volume) && !float.IsPositiveInfinity(volume))
         {
             _smoothVolume += (volume - _smoothVolume) * 0.9f;
-            minVolume = Mathf.Min(minVolume, _smoothVolume);
-            maxVolume = Mathf.Max(maxVolume, _smoothVolume);
+            _minVolume = Mathf.Min(_minVolume, _smoothVolume);
+            _maxVolume = Mathf.Max(_maxVolume, _smoothVolume);
         }
 
         EditorGUILayout.LabelField("Current Volume", _smoothVolume.ToString());
-        EditorGUILayout.LabelField("Min Volume", minVolume.ToString());
-        EditorGUILayout.LabelField("Max Volume", maxVolume.ToString());
+        EditorGUILayout.LabelField("Min Volume", _minVolume.ToString());
+        EditorGUILayout.LabelField("Max Volume", _maxVolume.ToString());
     }
 
     void DrawRMSVolume()
@@ -165,6 +165,23 @@ public class uLipSyncEditor : Editor
         var area = GUILayoutUtility.GetRect(Screen.width, 64f);
         area = EditorGUI.IndentedRect(area);
         GUI.DrawTexture(area, tex);
+        
+#if ULIPSYNC_DEBUG
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Dump"))
+        {
+            var date = System.DateTime.Now;
+            var filename = $"{date:yyyyMMddHHmmss}.csv";
+            var sw = new StreamWriter(filename);
+            var sb = new StringBuilder();
+            Debugging.DebugUtil.DumpMfccData(sb, _mfccData);
+            sw.Write(sb);
+            sw.Close();
+            Debug.Log($"{filename} was created.");
+        }
+        EditorGUILayout.EndHorizontal();
+#endif
     }
 
     void DrawRecognition()

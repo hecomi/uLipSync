@@ -24,21 +24,25 @@ public struct LipSyncJob : IJob
     public NativeArray<float> phonemes;
     public NativeArray<float> distances;
     public NativeArray<Info> info;
+    
+#if ULIPSYNC_DEBUG
+    public NativeArray<float> debugData;
+    public NativeArray<float> debugSpectrum;
+    public NativeArray<float> debugMelSpectrum;
+    public NativeArray<float> debugMelCepstrum;
+#endif
 
     public void Execute()
     {
         float volume = Algorithm.GetRMSVolume(input);
 
-        NativeArray<float> buffer;
-        Algorithm.CopyRingBuffer(input, out buffer, startIndex);
+        Algorithm.CopyRingBuffer(input, out var buffer, startIndex);
 
-        int cutoff = targetSampleRate / 2;
-        int range = targetSampleRate / 4;
+        int cutoff = targetSampleRate / 2 - 200;
+        int range = 200;
         Algorithm.LowPassFilter(ref buffer, outputSampleRate, cutoff, range);
 
-        NativeArray<float> data;
-
-        Algorithm.DownSample(buffer, out data, outputSampleRate, targetSampleRate);
+        Algorithm.DownSample(buffer, out var data, outputSampleRate, targetSampleRate);
 
         Algorithm.PreEmphasis(ref data, 0.97f);
 
@@ -46,22 +50,18 @@ public struct LipSyncJob : IJob
 
         Algorithm.Normalize(ref data, 100f);
 
-        NativeArray<float> dataWithZeroPadding;
-        Algorithm.ZeroPadding(ref data, out dataWithZeroPadding); 
+        Algorithm.ZeroPadding(ref data, out var dataWithZeroPadding);
 
-        NativeArray<float> spectrum;
-        Algorithm.FFT(dataWithZeroPadding, out spectrum);
+        Algorithm.FFT(dataWithZeroPadding, out var spectrum);
 
-        NativeArray<float> melSpectrum;
-        Algorithm.MelFilterBank(spectrum, out melSpectrum, targetSampleRate, melFilterBankChannels);
+        Algorithm.MelFilterBank(spectrum, out var melSpectrum, targetSampleRate, melFilterBankChannels);
 
         for (int i = 0; i < melSpectrum.Length; ++i)
         {
             melSpectrum[i] = math.log10(melSpectrum[i]);
         }
 
-        NativeArray<float> melCepstrum;
-        Algorithm.DCT(melSpectrum, out melCepstrum);
+        Algorithm.DCT(melSpectrum, out var melCepstrum);
 
         for (int i = 1; i <= mfcc.Length; ++i)
         {
@@ -78,13 +78,20 @@ public struct LipSyncJob : IJob
             volume = volume,
             mainVowelIndex = GetVowel(),
         };
+        
+#if ULIPSYNC_DEBUG
+        dataWithZeroPadding.CopyTo(debugData);
+        spectrum.CopyTo(debugSpectrum);
+        melSpectrum.CopyTo(debugMelSpectrum);
+        melCepstrum.CopyTo(debugMelCepstrum);
+#endif
 
-        melCepstrum.Dispose();
-        melSpectrum.Dispose();
-        spectrum.Dispose();
+        buffer.Dispose();
         data.Dispose();
         dataWithZeroPadding.Dispose();
-        buffer.Dispose();
+        spectrum.Dispose();
+        melSpectrum.Dispose();
+        melCepstrum.Dispose();
     }
 
     int GetVowel()
