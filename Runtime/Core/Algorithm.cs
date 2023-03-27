@@ -79,7 +79,7 @@ public unsafe static class Algorithm
 
     public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
     {
-        cutoff /= sampleRate;
+        cutoff = (cutoff - sampleRate) / sampleRate;
         range /= sampleRate;
 
         var tmp = new NativeArray<float>(data, Allocator.Temp);
@@ -337,16 +337,18 @@ public unsafe static class Algorithm
             float fCenter = ToHz(melCenter);
             float fEnd = ToHz(melEnd);
 
-            int iBegin = (int)math.round(fBegin / df);
+            int iBegin = (int)math.ceil(fBegin / df);
             int iCenter = (int)math.round(fCenter / df);
-            int iEnd = (int)math.round(fEnd / df);
+            int iEnd = (int)math.floor(fEnd / df);
 
             float sum = 0f;
-            for (int i = iBegin + 1; i < iEnd; ++i)
+            for (int i = iBegin + 1; i <= iEnd; ++i)
             {
+                float f = df * i;
                 float a = (i < iCenter) ? 
-                    ((float)i / iCenter) : 
-                    ((float)(i - iCenter) / iCenter);
+                    (f - fBegin) / (fCenter - fBegin) : 
+                    (fEnd - f) / (fEnd - fCenter);
+                a /= (fEnd - fBegin) * 0.5f;
                 sum += a * spectrum[i];
             }
             melSpectrum[n] = sum;
@@ -354,15 +356,17 @@ public unsafe static class Algorithm
     }
 
     [BurstCompile]
-    public static float ToMel(float hz)
+    static float ToMel(float hz, bool slaney = false)
     {
-        return 1127.010480f * math.log(hz / 700f + 1f);
+        float a = slaney ? 2595f : 1127f;
+        return a * math.log(hz / 700f + 1f);
     }
 
     [BurstCompile]
-    public static float ToHz(float mel)
+    static float ToHz(float mel, bool slaney = false)
     {
-        return 700f * (math.exp(mel / 1127.010480f) - 1f);
+        float a = slaney ? 2595f : 1127f;
+        return 700f * (math.exp(mel / a) - 1f);
     }
 
     public static void DCT(
@@ -393,6 +397,28 @@ public unsafe static class Algorithm
             }
             cepstrum[i] = sum;
         }
+    }
+
+    public static float Norm(in NativeArray<float> array)
+    {
+        return Norm((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
+    }
+
+    public static float Norm(in NativeSlice<float> slice)
+    {
+        return Norm((float*)slice.GetUnsafeReadOnlyPtr(), slice.Length);
+    }
+
+    [BurstCompile]
+    static float Norm(float* array, int len)
+    {
+        float sum = 0f;
+        for (int i = 0; i < len; ++i)
+        {
+            float x = array[i];
+            sum += x * x;
+        }
+        return math.sqrt(sum);
     }
 }
 

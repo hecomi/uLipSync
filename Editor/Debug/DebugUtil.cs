@@ -8,8 +8,6 @@ public static class DebugUtil
 {
     public static void DumpMfccData(StringBuilder sb, MfccData data)
     {
-        sb.Append(data.name);
-        sb.AppendLine();
         foreach (var mcd in data.mfccCalibrationDataList)
         {
             var array = mcd.array;
@@ -26,8 +24,8 @@ public static class DebugUtil
     {
         foreach (var mfccData in profile.mfccs)
         {
+            sb.Append($"# {mfccData.name}\n");
             DumpMfccData(sb, mfccData);
-            sb.AppendLine();
         }
     }
 }

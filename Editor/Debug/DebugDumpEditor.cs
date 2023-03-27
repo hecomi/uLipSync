@@ -26,6 +26,8 @@ public class DebugDumpEditor : Editor
         
         EditorUtil.DrawProperty(serializedObject, nameof(dump.prefix));
         
+        EditorGUILayout.Space();
+        
         EditorGUILayout.BeginHorizontal();
         EditorUtil.DrawProperty(serializedObject, nameof(dump.dataFile));
         if (GUILayout.Button("Save", EditorStyles.miniButton, buttonLayout))
@@ -55,6 +57,24 @@ public class DebugDumpEditor : Editor
         if (GUILayout.Button("Save", EditorStyles.miniButton, buttonLayout))
         {
             dump.DumpMelCepstrum();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        EditorUtil.DrawProperty(serializedObject, nameof(dump.mfccFile));
+        if (GUILayout.Button("Save", EditorStyles.miniButton, buttonLayout))
+        {
+            dump.DumpMfcc();
+        }
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button(" Save All "))
+        {
+            dump.DumpAll();
         }
         EditorGUILayout.EndHorizontal();
 

@@ -24,6 +24,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
     public float minVolume = -2.5f;
     public float maxVolume = -1.5f;
     [Range(0f, 0.3f)] public float smoothness = 0.05f;
+    public bool usePhonemeBlend = false;
 
     LipSyncInfo _info = new LipSyncInfo();
     bool _lipSyncUpdated = false;
@@ -123,9 +124,16 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
         foreach (var bs in blendShapes)
         {
             float targetWeight = 0f;
-            if (ratios != null && !string.IsNullOrEmpty(bs.phoneme)) 
+            if (usePhonemeBlend)
             {
-                ratios.TryGetValue(bs.phoneme, out targetWeight);
+                if (ratios != null && !string.IsNullOrEmpty(bs.phoneme))
+                {
+                    ratios.TryGetValue(bs.phoneme, out targetWeight);
+                }
+            }
+            else
+            {
+                targetWeight = (bs.phoneme == _info.phoneme) ? 1f : 0f;
             }
             float weightVel = bs.weightVelocity;
             bs.weight = SmoothDamp(bs.weight, targetWeight, ref weightVel);
@@ -189,10 +197,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
     }
 
 #if UNITY_EDITOR
-    public override GameObject target
-    {
-        get { return skinnedMeshRenderer?.gameObject; }
-    }
+    public override GameObject target => skinnedMeshRenderer?.gameObject;
 
     public override List<string> GetPropertyNames()
     {
@@ -224,8 +229,8 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
         return weights;
     }
 
-    public override float maxWeight { get { return 100f; } }
-    public override float minWeight { get { return 0f; } }
+    public override float maxWeight => 100f;
+    public override float minWeight => 0f;
 
     public override void OnAnimationBakeStart()
     {

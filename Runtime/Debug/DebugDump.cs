@@ -15,6 +15,7 @@ public class DebugDump : MonoBehaviour
     public string spectrumFile = "spectrum.csv";  
     public string melSpectrumFile = "mel-spectrum.csv";  
     public string melCepstrumFile = "mel-cepstrum.csv";  
+    public string mfccFile = "mfcc.csv";  
     
     void Start()
     {
@@ -27,13 +28,14 @@ public class DebugDump : MonoBehaviour
         DumpSpectrum();
         DumpMelSpectrum();
         DumpMelCepstrum();
+        DumpMfcc();
     }
 
     public void DumpData()
     {
 #if ULIPSYNC_DEBUG
         if (string.IsNullOrEmpty(dataFile)) return;
-        var fileName = $"{prefix}-{dataFile}";
+        var fileName = $"{prefix}{dataFile}";
         var sw = new StreamWriter(fileName);
         var data = lipsync.data;
         var dt = 1f / (lipsync.profile.targetSampleRate * 2);
@@ -52,7 +54,7 @@ public class DebugDump : MonoBehaviour
     {
 #if ULIPSYNC_DEBUG
         if (string.IsNullOrEmpty(spectrumFile)) return;
-        var fileName = $"{prefix}-{spectrumFile}";
+        var fileName = $"{prefix}{spectrumFile}";
         var sw = new StreamWriter(fileName);
         var spectrum = lipsync.spectrum;
         var df = (float)lipsync.profile.targetSampleRate / spectrum.Length;
@@ -71,7 +73,7 @@ public class DebugDump : MonoBehaviour
     {
 #if ULIPSYNC_DEBUG
         if (string.IsNullOrEmpty(melSpectrumFile)) return;
-        var fileName = $"{prefix}-{melSpectrumFile}";
+        var fileName = $"{prefix}{melSpectrumFile}";
         var sw = new StreamWriter(fileName);
         foreach (var x in lipsync.melSpectrum)
         {
@@ -86,9 +88,24 @@ public class DebugDump : MonoBehaviour
     {
 #if ULIPSYNC_DEBUG
         if (string.IsNullOrEmpty(melCepstrumFile)) return;
-        var fileName = $"{prefix}-{melCepstrumFile}";
+        var fileName = $"{prefix}{melCepstrumFile}";
         var sw = new StreamWriter(fileName);
         foreach (var x in lipsync.melCepstrum)
+        {
+            sw.WriteLine(x);
+        }
+        sw.Close();
+        Debug.Log($"{fileName} was created.");
+#endif
+    }
+    
+    public void DumpMfcc()
+    {
+#if ULIPSYNC_DEBUG
+        if (string.IsNullOrEmpty(mfccFile)) return;
+        var fileName = $"{prefix}{mfccFile}";
+        var sw = new StreamWriter(fileName);
+        foreach (var x in lipsync.mfcc)
         {
             sw.WriteLine(x);
         }

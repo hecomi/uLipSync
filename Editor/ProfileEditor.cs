@@ -4,6 +4,7 @@ using UnityEditorInternal;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using uLipSync.Debugging;
 
 namespace uLipSync
 {
@@ -55,6 +56,16 @@ public class ProfileEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.useZeroPadding));
+            bool useStandardization = EditorGUILayout.Toggle("Use Standardization", profile.useStandardization);
+            if (useStandardization != profile.useStandardization)
+            {
+                Undo.RecordObject(target, "Change Use Standardization");
+                profile.useStandardization = useStandardization;
+                profile.UpdateMeansAndStandardization();
+                EditorUtility.SetDirty(target);
+            }
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.compareMethod));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
             profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 256);
             profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
@@ -314,13 +325,16 @@ public class ProfileEditor : Editor
         if (GUILayout.Button("  Dump  "))
         {
             var profileName = string.IsNullOrEmpty(profile.name) ? "profile" : profile.name;
-            var filename = $"{profileName}.csv";
-            var sw = new StreamWriter(filename);
-            var sb = new StringBuilder();
-            Debugging.DebugUtil.DumpProfile(sb, profile);
-            sw.Write(sb);
-            sw.Close();
-            Debug.Log($"{filename} was created.");
+            foreach (var mfcc in profile.mfccs)
+            {
+                var filename = $"{profileName}-{mfcc.name}.csv";
+                var sw = new StreamWriter(filename);
+                var sb = new StringBuilder();
+                DebugUtil.DumpMfccData(sb, mfcc);
+                sw.Write(sb);
+                sw.Close();
+                Debug.Log($"{filename} was created.");
+            }
         }
         EditorGUILayout.EndHorizontal();
     }
