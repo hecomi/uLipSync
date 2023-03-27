@@ -93,15 +93,7 @@ public class DebugAudioPlayerEditor : Editor
 
     void Play(AudioClip clip)
     {
-        var source = player.GetComponent<AudioSource>();
-        if (!source) return;
-
-        source.clip = clip;
-
-        if (!source.isPlaying)
-        {
-            source.Play();
-        }
+        player.newClip = clip;
     }
 
     void PausePreviewClip()

@@ -2,6 +2,7 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Burst;
+using UnityEngine;
 
 namespace uLipSync
 {
@@ -12,17 +13,22 @@ public struct LipSyncJob : IJob
     public struct Info
     {
         public float volume;
-        public int mainVowelIndex;
+        public int mainPhonemeIndex;
     }
 
     [ReadOnly] public NativeArray<float> input;
     [ReadOnly] public int startIndex;
     [ReadOnly] public int outputSampleRate;
     [ReadOnly] public int targetSampleRate;
+    [ReadOnly] public bool useZeroPadding;
     [ReadOnly] public int melFilterBankChannels;
+    [ReadOnly] public CompareMethod compareMethod;
+    [ReadOnly] public NativeArray<float> means;
+    [ReadOnly] public NativeArray<float> standardDeviations;
+    [ReadOnly] public NativeArray<float> phonemes;
     public NativeArray<float> mfcc;
-    public NativeArray<float> phonemes;
-    public NativeArray<float> distances;
+    public NativeArray<float> mfccWithStandardization;
+    public NativeArray<float> scores;
     public NativeArray<Info> info;
     
 #if ULIPSYNC_DEBUG
@@ -38,8 +44,8 @@ public struct LipSyncJob : IJob
 
         Algorithm.CopyRingBuffer(input, out var buffer, startIndex);
 
-        int cutoff = targetSampleRate / 2 - 200;
-        int range = 200;
+        int cutoff = targetSampleRate / 2;
+        int range = 500;
         Algorithm.LowPassFilter(ref buffer, outputSampleRate, cutoff, range);
 
         Algorithm.DownSample(buffer, out var data, outputSampleRate, targetSampleRate);
@@ -48,9 +54,18 @@ public struct LipSyncJob : IJob
 
         Algorithm.HammingWindow(ref data);
 
-        Algorithm.Normalize(ref data, 100f);
+        Algorithm.Normalize(ref data, 1f);
 
-        Algorithm.ZeroPadding(ref data, out var dataWithZeroPadding);
+        NativeArray<float> dataWithZeroPadding;
+        if (useZeroPadding)
+        {
+            Algorithm.ZeroPadding(ref data, out dataWithZeroPadding);
+        }
+        else
+        {
+            dataWithZeroPadding = new NativeArray<float>(data.Length, Allocator.Temp); 
+            data.CopyTo(dataWithZeroPadding);
+        }
 
         Algorithm.FFT(dataWithZeroPadding, out var spectrum);
 
@@ -58,7 +73,7 @@ public struct LipSyncJob : IJob
 
         for (int i = 0; i < melSpectrum.Length; ++i)
         {
-            melSpectrum[i] = math.log10(melSpectrum[i]);
+            melSpectrum[i] = 10f * math.log10(melSpectrum[i]);
         }
 
         Algorithm.DCT(melSpectrum, out var melCepstrum);
@@ -67,16 +82,21 @@ public struct LipSyncJob : IJob
         {
             mfcc[i - 1] = melCepstrum[i];
         }
-
-        for (int i = 0; i < distances.Length; ++i)
+        
+        for (int i = 0; i < mfcc.Length; ++i)
         {
-            distances[i] = CalcTotalDistance(i);
+            mfccWithStandardization[i] = (mfcc[i] - means[i]) / standardDeviations[i];
+        }
+
+        for (int i = 0; i < scores.Length; ++i)
+        {
+            scores[i] = CalcScore(i);
         }
 
         info[0] = new Info()
         {
             volume = volume,
-            mainVowelIndex = GetVowel(),
+            mainPhonemeIndex = GetVowel(),
         };
         
 #if ULIPSYNC_DEBUG
@@ -94,32 +114,64 @@ public struct LipSyncJob : IJob
         melCepstrum.Dispose();
     }
 
+    float CalcScore(int index)
+    {
+        switch (compareMethod)
+        {
+            case CompareMethod.EuclideanDistance:
+                return CalcEuclideanDistanceScore(index);
+            case CompareMethod.CosineSimilarity:
+                return CalcCosineSimilarityScore(index);
+        }
+        return 0f;
+    }
+
+    float CalcEuclideanDistanceScore(int index)
+    {
+        int n = mfccWithStandardization.Length;
+        var phoneme = new NativeSlice<float>(phonemes, index * n, n);
+        
+        var distance = 0f;
+        for (int i = 0; i < n; ++i)
+        {
+            distance += math.pow(mfccWithStandardization[i] - phoneme[i], 2f);
+        }
+        distance = math.sqrt(distance);
+
+        return 1f / distance;
+    }
+
+    float CalcCosineSimilarityScore(int index)
+    {
+        int n = mfccWithStandardization.Length;
+        var phoneme = new NativeSlice<float>(phonemes, index * n, n);
+        var mfccNorm = Algorithm.Norm(mfccWithStandardization);
+        var phonemeNorm = Algorithm.Norm(phoneme);
+        
+        float prod = 0f;
+        for (int i = 0; i < n; ++i)
+        {
+            prod += mfccWithStandardization[i] * phoneme[i];
+        }
+        float similarity = prod / (mfccNorm * phonemeNorm);
+
+        return (1f + similarity) / 2f;
+    }
+
     int GetVowel()
     {
         int index = -1;
-        float minDistance = float.MaxValue;
-        int n = phonemes.Length / mfcc.Length;
-        for (int i = 0; i < n; ++i)
+        float maxScore = -1f;
+        for (int i = 0; i < scores.Length; ++i)
         {
-            var distance = CalcTotalDistance(i);
-            if (distance < minDistance)
+            var score = scores[i];
+            if (score > maxScore)
             {
                 index = i;
-                minDistance = distance;
+                maxScore = score;
             }
         }
         return index;
-    }
-
-    float CalcTotalDistance(int index)
-    {
-        var distance = 0f;
-        int offset = index * mfcc.Length;
-        for (int i = 0; i < mfcc.Length; ++i)
-        {
-            distance += math.abs(mfcc[i] - phonemes[i + offset]);
-        }
-        return distance;
     }
 }
 

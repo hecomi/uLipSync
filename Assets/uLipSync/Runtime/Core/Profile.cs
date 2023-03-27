@@ -3,6 +3,7 @@ using Unity.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Mathematics;
 
 namespace uLipSync
 {
@@ -11,8 +12,8 @@ namespace uLipSync
 public struct MfccCalibrationData
 {
     public float[] array;
-    public float this[int i] { get { return array[i]; } }
-    public int length { get { return array.Length; } }
+    public float this[int i] => array[i];
+    public int length => array.Length;
 }
 
 [System.Serializable]
@@ -65,8 +66,8 @@ public class MfccData
     {
         while (mfccCalibrationDataList.Count > dataCount) mfccCalibrationDataList.RemoveAt(0);
     }
-
-    public void UpdateNativeArray()
+    
+    public void UpdateNativeArray(float[] means, float[] stds)
     {
         if (mfccCalibrationDataList.Count == 0) return;
 
@@ -75,7 +76,7 @@ public class MfccData
             mfccNativeArray[i] = 0f;
             foreach (var mfcc in mfccCalibrationDataList)
             {
-                mfccNativeArray[i] += mfcc[i];
+                mfccNativeArray[i] += (mfcc[i] - means[i]) / stds[i];
             }
             mfccNativeArray[i] /= mfccCalibrationDataList.Count;
         }
@@ -97,21 +98,37 @@ public class Profile : ScriptableObject
     [Tooltip("The number of MFCC data to calculate the average MFCC values")]
     public int mfccDataCount = 16;
     [Tooltip("The number of Mel Filter Bank channels")]
-    public int melFilterBankChannels = 80;
+    public int melFilterBankChannels = 30;
     [Tooltip("Target sampling rate to apply downsampling")]
     public int targetSampleRate = 16000;
     [Tooltip("Number of audio samples after downsampling is applied")]
     public int sampleCount = 1024;
+    [Tooltip("Whether to perform zero-padding on input audio data")] 
+    public bool useZeroPadding = false;
+    [Tooltip("Whether to perform standardization of each coefficient of MFCC")] 
+    public bool useStandardization = true;
+    [Tooltip("The comparison method for MFCC")]
+    public CompareMethod compareMethod = CompareMethod.CosineSimilarity;
 
     public List<MfccData> mfccs = new List<MfccData>();
-
+    
+    float[] _means = new float[12];
+    float[] _stdDevs = new float[12];
+    public float[] means => _means; 
+    public float[] standardDeviation => _stdDevs; 
+        
     void OnEnable()
     {
+        if (useStandardization)
+        {
+            UpdateMeansAndStandardization();
+        }
+
         foreach (var data in mfccs)
         {
             data.Allocate();
             data.RemoveOldCalibrationData(mfccDataCount);
-            data.UpdateNativeArray();
+            data.UpdateNativeArray(_means, _stdDevs);
         }
     }
 
@@ -144,9 +161,12 @@ public class Profile : ScriptableObject
     public void RemoveMfcc(int index)
     {
         if (index < 0 || index >= mfccs.Count) return;
+        
         var data = mfccs[index];
         data.Deallocate();
         mfccs.RemoveAt(index);
+        
+        UpdateMeansAndStandardization();
     }
 
     public void UpdateMfcc(int index, NativeArray<float> mfcc, bool calib)
@@ -159,8 +179,13 @@ public class Profile : ScriptableObject
         var data = mfccs[index];
         data.AddCalibrationData(array);
         data.RemoveOldCalibrationData(mfccDataCount);
+        
+        UpdateMeansAndStandardization();
 
-        if (calib) data.UpdateNativeArray();
+        if (calib)
+        {
+            data.UpdateNativeArray(_means, _stdDevs);
+        }
     }
 
     public NativeArray<float> GetAverages(int index)
@@ -208,6 +233,77 @@ public class Profile : ScriptableObject
     public string[] GetPhonemeNames()
     {
         return mfccs.Select(x => x.name).Distinct().ToArray();
+    }
+
+    public void UpdateMeansAndStandardization()
+    {
+        UpdateMeans();
+        UpdateStandardizations();
+    }
+    
+    void UpdateMeans()
+    {
+        for (int i = 0; i < _means.Length; ++i)
+        {
+            _means[i] = 0f;
+        }
+
+        if (!useStandardization) return;
+
+        int n = 0;
+        foreach (var mfccData in mfccs)
+        {
+            var list = mfccData.mfccCalibrationDataList;
+            foreach (var mfcc in list)
+            {
+                for (int j = 0; j < mfcc.length; ++j)
+                {
+                    _means[j] += mfcc[j];
+                }
+                ++n;
+            }
+        }
+
+        for (int i = 0; i < _means.Length; ++i)
+        {
+            _means[i] /= n;
+        }
+    }
+
+    void UpdateStandardizations()
+    {
+        if (!useStandardization)
+        {
+            for (int i = 0; i < _stdDevs.Length; ++i)
+            {
+                _stdDevs[i] = 1f;
+            }
+            return;
+        }
+
+        for (int i = 0; i < _stdDevs.Length; ++i)
+        {
+            _stdDevs[i] = 0f;
+        }
+        
+        int n = 0;
+        foreach (var mfccData in mfccs)
+        {
+            var list = mfccData.mfccCalibrationDataList;
+            foreach (var mfcc in list)
+            {
+                for (int j = 0; j < mfcc.length; ++j)
+                {
+                    _stdDevs[j] += math.pow(mfcc[j] - _means[j], 2f);
+                }
+                ++n;
+            }
+        }
+        
+        for (int i = 0; i < _stdDevs.Length; ++i)
+        {
+            _stdDevs[i] = math.sqrt(_stdDevs[i] / n);
+        }
     }
 
     public void CalcMinMax(out float min, out float max)

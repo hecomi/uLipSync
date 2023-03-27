@@ -40,4 +40,10 @@ public enum UpdateMethod
     External,
 }
 
+public enum CompareMethod
+{
+    EuclideanDistance,
+    CosineSimilarity,
+}
+
 }
