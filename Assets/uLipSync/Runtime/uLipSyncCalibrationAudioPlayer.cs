@@ -26,7 +26,7 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
         get 
         {
             var source = GetComponent<AudioSource>();
-            return source ? source.isPlaying : false;
+            return source && source.isPlaying;
         }
     }
 

@@ -7,7 +7,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncMicrophone))]
 public class uLipSyncMicrophoneEditor : Editor
 {
-    uLipSyncMicrophone mic { get { return target as uLipSyncMicrophone; } }
+    uLipSyncMicrophone mic => target as uLipSyncMicrophone;
 
     public override void OnInspectorGUI()
     {

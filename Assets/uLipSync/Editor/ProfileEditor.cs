@@ -12,7 +12,7 @@ namespace uLipSync
 [CustomEditor(typeof(Profile))]
 public class ProfileEditor : Editor
 {
-    Profile profile { get { return target as Profile; } }
+    Profile profile => target as Profile;
     public float min = 0f;
     public float max = 0f;
     public uLipSync uLipSync { get; set; }

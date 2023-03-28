@@ -315,9 +315,8 @@ public class Profile : ScriptableObject
             for (int j = 0; j < data.mfccCalibrationDataList.Count; ++j)
             {
                 var array = data.mfccCalibrationDataList[j].array;
-                for (int i = 0; i < array.Length; ++i)
+                foreach (var x in array)
                 {
-                    var x = array[i];
                     max = Mathf.Max(max, x);
                     min = Mathf.Min(min, x);
                 }

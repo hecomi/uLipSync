@@ -2,7 +2,6 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Burst;
-using UnityEngine;
 
 namespace uLipSync
 {

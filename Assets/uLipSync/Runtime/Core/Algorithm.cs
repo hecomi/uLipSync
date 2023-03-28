@@ -7,7 +7,7 @@ namespace uLipSync
 {
 
 [BurstCompile]
-public unsafe static class Algorithm
+public static unsafe class Algorithm
 {
     public static float GetMaxValue(in NativeArray<float> array)
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace uLipSync
 {
 
-abstract public class AnimationBakableMonoBehaviour : MonoBehaviour
+public abstract class AnimationBakableMonoBehaviour : MonoBehaviour
 {
 #if UNITY_EDITOR
     public abstract GameObject target { get; }
@@ -13,8 +13,8 @@ abstract public class AnimationBakableMonoBehaviour : MonoBehaviour
     public abstract void OnAnimationBakeStart();
     public abstract void OnAnimationBakeUpdate(LipSyncInfo info, float dt);
     public abstract void OnAnimationBakeEnd();
-    public virtual float maxWeight { get { return 1f; } }
-    public virtual float minWeight { get { return 0f; } }
+    public virtual float maxWeight => 1f;
+    public virtual float minWeight => 0f;
 #endif
 }
 
