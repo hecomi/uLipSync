@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.Linq;
 using UniVRM10;
-using VRM;
 
 namespace uLipSync
 {
