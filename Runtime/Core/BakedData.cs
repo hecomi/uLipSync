@@ -89,8 +89,10 @@ public class BakedData : ScriptableObject
 
     public static LipSyncInfo GetLipSyncInfo(BakedFrame frame)
     {
-        var info = new LipSyncInfo();
-        info.phonemeRatios = new Dictionary<string, float>();
+        var info = new LipSyncInfo
+        {
+            phonemeRatios = new Dictionary<string, float>()
+        };
 
         float maxRatio = 0f;
         foreach (var pr in frame.phonemes)

@@ -30,7 +30,7 @@ public static class TextureCreator
     }
 
     [BurstCompile]
-    internal struct CreateBakedDataWaveTextureJob : IJob
+    struct CreateBakedDataWaveTextureJob : IJob
     {
         [WriteOnly] public NativeArray<Color32> texColors;
         [DeallocateOnJobCompletion][ReadOnly] public NativeArray<Color> phonemeColors;
@@ -121,7 +121,7 @@ public static class TextureCreator
         [ReadOnly] public float min;
         [ReadOnly] public float max;
 
-        public Color ToRGB(float hue)
+        Color ToRGB(float hue)
         {
             hue = (1f - math.cos(math.PI * hue)) * 0.5f;
             hue = 1f - hue;
@@ -154,8 +154,7 @@ public static class TextureCreator
     {
         if (!profile) return Texture2D.whiteTexture;
 
-        float min, max;
-        profile.CalcMinMax(out min, out max);
+        profile.CalcMinMax(out var min, out var max);
         var mfcc = profile.mfccs[index];
 
         return CreateMfccTexture(mfcc, min, max);
@@ -169,8 +168,11 @@ public static class TextureCreator
         var width = list[0].array.Length;
         var height = list.Count;
 
-        var tex = new Texture2D(width, height);
-        tex.filterMode = FilterMode.Point;
+        var tex = new Texture2D(width, height)
+        {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp,
+        };
         var texColors = GetOrCreatePixelData(tex);
         var array = new NativeArray<float>(width * height, Allocator.TempJob);
 

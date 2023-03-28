@@ -9,8 +9,8 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSync))]
 public class uLipSyncEditor : Editor
 {
-    uLipSync lipSync { get { return target as uLipSync; } }
-    Profile profile { get { return lipSync.profile; } }
+    uLipSync lipSync => target as uLipSync;
+    Profile profile => lipSync.profile;
 
     Editor _profileEditor;
     MfccData _mfccData = new MfccData("Temp");

@@ -10,7 +10,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncTexture))]
 public class uLipSyncTextureEditor : Editor
 {
-    uLipSyncTexture texture { get { return target as uLipSyncTexture; } }
+    uLipSyncTexture texture => target as uLipSyncTexture;
     ReorderableList _reorderableList = null;
 
     public override void OnInspectorGUI()

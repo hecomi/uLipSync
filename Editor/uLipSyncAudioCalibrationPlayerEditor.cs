@@ -8,7 +8,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncCalibrationAudioPlayer))]
 public class uLipSyncCalibrationAudioPlayerEditor : Editor
 {
-    uLipSyncCalibrationAudioPlayer player { get { return target as uLipSyncCalibrationAudioPlayer; } }
+    uLipSyncCalibrationAudioPlayer player => target as uLipSyncCalibrationAudioPlayer;
 
     bool _requireRepaint = false;
     bool _requireApply = false;

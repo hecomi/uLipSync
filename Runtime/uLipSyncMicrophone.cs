@@ -26,7 +26,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     public AudioSource source { get; private set; }
     public AudioClip clip
     {
-        get { return source ? source.clip : null; }
+        get => source ? source.clip : null;
         set { if (source) source.clip = value; }
     }
 
@@ -39,7 +39,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     public int micFreq => device.minFreq;
     public int maxFreq => device.maxFreq;
     public bool isMicClipSet => _micClip && clip == _micClip;
-    public bool isPlaying => source ? source.isPlaying : false;
+    public bool isPlaying => source && source.isPlaying;
     public float freq => clip ? clip.frequency : 44100;
 
     protected void OnEnable()
