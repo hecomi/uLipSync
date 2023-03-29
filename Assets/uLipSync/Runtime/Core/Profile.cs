@@ -67,7 +67,7 @@ public class MfccData
         while (mfccCalibrationDataList.Count > dataCount) mfccCalibrationDataList.RemoveAt(0);
     }
     
-    public void UpdateNativeArray(float[] means, float[] stds)
+    public void UpdateNativeArray()
     {
         if (mfccCalibrationDataList.Count == 0) return;
 
@@ -76,7 +76,7 @@ public class MfccData
             mfccNativeArray[i] = 0f;
             foreach (var mfcc in mfccCalibrationDataList)
             {
-                mfccNativeArray[i] += (mfcc[i] - means[i]) / stds[i];
+                mfccNativeArray[i] += mfcc[i];
             }
             mfccNativeArray[i] /= mfccCalibrationDataList.Count;
         }
@@ -108,7 +108,7 @@ public class Profile : ScriptableObject
     [Tooltip("Whether to perform standardization of each coefficient of MFCC")] 
     public bool useStandardization = true;
     [Tooltip("The comparison method for MFCC")]
-    public CompareMethod compareMethod = CompareMethod.CosineSimilarity;
+    public CompareMethod compareMethod = CompareMethod.L2Norm;
 
     public List<MfccData> mfccs = new List<MfccData>();
     
@@ -128,7 +128,7 @@ public class Profile : ScriptableObject
         {
             data.Allocate();
             data.RemoveOldCalibrationData(mfccDataCount);
-            data.UpdateNativeArray(_means, _stdDevs);
+            data.UpdateNativeArray();
         }
     }
 
@@ -179,12 +179,11 @@ public class Profile : ScriptableObject
         var data = mfccs[index];
         data.AddCalibrationData(array);
         data.RemoveOldCalibrationData(mfccDataCount);
-        
-        UpdateMeansAndStandardization();
 
         if (calib)
         {
-            data.UpdateNativeArray(_means, _stdDevs);
+            data.UpdateNativeArray();
+            UpdateMeansAndStandardization();
         }
     }
 

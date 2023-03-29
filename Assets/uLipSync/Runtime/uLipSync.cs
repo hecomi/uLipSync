@@ -26,7 +26,6 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> _rawInputData;
     NativeArray<float> _inputData;
     NativeArray<float> _mfcc;
-    NativeArray<float> _mfccWithStandardization;
     NativeArray<float> _mfccForOther;
     NativeArray<float> _means;
     NativeArray<float> _standardDeviations;
@@ -116,7 +115,6 @@ public class uLipSync : MonoBehaviour
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
             _inputData = new NativeArray<float>(n, Allocator.Persistent); 
             _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _mfccWithStandardization = new NativeArray<float>(mfccNum, Allocator.Persistent); 
             _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent); 
             _means = new NativeArray<float>(mfccNum, Allocator.Persistent); 
             _standardDeviations = new NativeArray<float>(mfccNum, Allocator.Persistent); 
@@ -149,7 +147,6 @@ public class uLipSync : MonoBehaviour
             _rawInputData.Dispose();
             _inputData.Dispose();
             _mfcc.Dispose();
-            _mfccWithStandardization.Dispose();
             _mfccForOther.Dispose();
             _means.Dispose();
             _standardDeviations.Dispose();
@@ -276,7 +273,6 @@ public class uLipSync : MonoBehaviour
             means = _means,
             standardDeviations = _standardDeviations,
             mfcc = _mfcc,
-            mfccWithStandardization = _mfccWithStandardization,
             phonemes = _phonemes,
             compareMethod = profile.compareMethod,
             scores = _scores,

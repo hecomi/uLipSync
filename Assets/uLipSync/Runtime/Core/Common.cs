@@ -42,7 +42,8 @@ public enum UpdateMethod
 
 public enum CompareMethod
 {
-    EuclideanDistance,
+    L1Norm,
+    L2Norm,
     CosineSimilarity,
 }
 
