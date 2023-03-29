@@ -26,7 +26,6 @@ public struct LipSyncJob : IJob
     [ReadOnly] public NativeArray<float> standardDeviations;
     [ReadOnly] public NativeArray<float> phonemes;
     public NativeArray<float> mfcc;
-    public NativeArray<float> mfccWithStandardization;
     public NativeArray<float> scores;
     public NativeArray<Info> info;
     
@@ -81,11 +80,6 @@ public struct LipSyncJob : IJob
         {
             mfcc[i - 1] = melCepstrum[i];
         }
-        
-        for (int i = 0; i < mfcc.Length; ++i)
-        {
-            mfccWithStandardization[i] = (mfcc[i] - means[i]) / standardDeviations[i];
-        }
 
         for (int i = 0; i < scores.Length; ++i)
         {
@@ -117,23 +111,43 @@ public struct LipSyncJob : IJob
     {
         switch (compareMethod)
         {
-            case CompareMethod.EuclideanDistance:
-                return CalcEuclideanDistanceScore(index);
+            case CompareMethod.L1Norm:
+                return CalcL1NormScore(index);
+            case CompareMethod.L2Norm:
+                return CalcL2NormScore(index);
             case CompareMethod.CosineSimilarity:
                 return CalcCosineSimilarityScore(index);
         }
         return 0f;
     }
 
-    float CalcEuclideanDistanceScore(int index)
+    float CalcL1NormScore(int index)
     {
-        int n = mfccWithStandardization.Length;
+        int n = mfcc.Length;
         var phoneme = new NativeSlice<float>(phonemes, index * n, n);
         
         var distance = 0f;
         for (int i = 0; i < n; ++i)
         {
-            distance += math.pow(mfccWithStandardization[i] - phoneme[i], 2f);
+            float x = (mfcc[i] - means[i]) / standardDeviations[i];
+            float y = (phoneme[i] - means[i]) / standardDeviations[i];
+            distance += math.abs(x - y);
+        }
+
+        return 1f / distance;
+    }
+
+    float CalcL2NormScore(int index)
+    {
+        int n = mfcc.Length;
+        var phoneme = new NativeSlice<float>(phonemes, index * n, n);
+        
+        var distance = 0f;
+        for (int i = 0; i < n; ++i)
+        {
+            float x = (mfcc[i] - means[i]) / standardDeviations[i];
+            float y = (phoneme[i] - means[i]) / standardDeviations[i];
+            distance += math.pow(x - y, 2f);
         }
         distance = math.sqrt(distance);
 
@@ -142,15 +156,17 @@ public struct LipSyncJob : IJob
 
     float CalcCosineSimilarityScore(int index)
     {
-        int n = mfccWithStandardization.Length;
+        int n = mfcc.Length;
         var phoneme = new NativeSlice<float>(phonemes, index * n, n);
-        var mfccNorm = Algorithm.Norm(mfccWithStandardization);
+        var mfccNorm = Algorithm.Norm(mfcc);
         var phonemeNorm = Algorithm.Norm(phoneme);
         
         float prod = 0f;
         for (int i = 0; i < n; ++i)
         {
-            prod += mfccWithStandardization[i] * phoneme[i];
+            float x = (mfcc[i] - means[i]) / standardDeviations[i];
+            float y = (phoneme[i] - means[i]) / standardDeviations[i];
+            prod += x * y;
         }
         float similarity = prod / (mfccNorm * phonemeNorm);
 
