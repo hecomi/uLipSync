@@ -29,7 +29,7 @@ public struct BakedFrame
 }
 
 [BurstCompile]
-[CreateAssetMenu(menuName = Common.assetName + "/Baked Data")]
+[CreateAssetMenu(menuName = Common.AssetName + "/Baked Data")]
 public class BakedData : ScriptableObject
 {
     public Profile profile;
@@ -56,9 +56,10 @@ public class BakedData : ScriptableObject
         if (frames == null || frames.Count == 0) return BakedFrame.zero;
 
         var phonemeCount = frames[0].phonemes.Count;
-        var frame = new BakedFrame();
-        frame.phonemes = new List<BakedPhonemeRatio>();
-
+        var frame = new BakedFrame
+        {
+            phonemes = new List<BakedPhonemeRatio>()
+        };
         int index0 = (int)Mathf.Floor(t * 60f);
         int index1 = index0 + 1;
         index0 = Mathf.Clamp(index0, 0, frames.Count - 1);
@@ -113,8 +114,8 @@ public class BakedData : ScriptableObject
             }
         }
 
-        float minVol = Common.defaultMinVolume;
-        float maxVol = Common.defaultMaxVolume;
+        float minVol = Common.DefaultMinVolume;
+        float maxVol = Common.DefaultMaxVolume;
         float normVol = Mathf.Log10(frame.volume);
         normVol = (normVol - minVol) / (maxVol - minVol);
         normVol = Mathf.Clamp(normVol, 0f, 1f);

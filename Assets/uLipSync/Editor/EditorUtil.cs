@@ -14,7 +14,7 @@ public static class EditorUtil
 
     private static string GetKey(string title, string category)
     {
-        return $"{Common.assetName}-{category}-{title}";
+        return $"{Common.AssetName}-{category}-{title}";
     }
 
     private static string GetFoldOutKey(string title)

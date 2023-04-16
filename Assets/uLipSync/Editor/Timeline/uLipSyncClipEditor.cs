@@ -10,8 +10,8 @@ namespace uLipSync.Timeline
 [CustomEditor(typeof(uLipSyncClip))]
 public class uLipSyncClipEditor : Editor
 {
-    uLipSyncClip clip { get => target as uLipSyncClip; }
-    BakedData data { get => clip.bakedData; }
+    uLipSyncClip clip => target as uLipSyncClip;
+    BakedData data => clip.bakedData;
     Editor _bakedDataEditor = null;
 
     public override void OnInspectorGUI()

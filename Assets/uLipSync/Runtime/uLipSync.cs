@@ -212,8 +212,8 @@ public class uLipSync : MonoBehaviour
         }
 
         float rawVol = _info[0].volume;
-        float minVol = Common.defaultMinVolume;
-        float maxVol = Common.defaultMaxVolume;
+        float minVol = Common.DefaultMinVolume;
+        float maxVol = Common.DefaultMaxVolume;
         float normVol = Mathf.Log10(rawVol);
         normVol = (normVol - minVol) / (maxVol - minVol);
         normVol = Mathf.Clamp(normVol, 0f, 1f);

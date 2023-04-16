@@ -91,7 +91,7 @@ public class MfccData
     }
 }
 
-[CreateAssetMenu(menuName = Common.assetName + "/Profile")]
+[CreateAssetMenu(menuName = Common.AssetName + "/Profile")]
 public class Profile : ScriptableObject
 {
     [HideInInspector] public string jsonPath = "";

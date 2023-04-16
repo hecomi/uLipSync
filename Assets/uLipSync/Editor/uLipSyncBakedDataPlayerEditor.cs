@@ -7,8 +7,8 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncBakedDataPlayer))]
 public class uLipSyncBakedDataPlayerEditor : Editor
 {
-    uLipSyncBakedDataPlayer player { get => target as uLipSyncBakedDataPlayer; }
-    BakedData data { get => player.bakedData; }
+    uLipSyncBakedDataPlayer player => target as uLipSyncBakedDataPlayer;
+    BakedData data => player.bakedData;
     Editor _bakedDataEditor = null;
 
     public override void OnInspectorGUI()

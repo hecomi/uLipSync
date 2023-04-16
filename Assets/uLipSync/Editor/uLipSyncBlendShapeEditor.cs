@@ -10,7 +10,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncBlendShape))]
 public class uLipSyncBlendShapeEditor : Editor
 {
-    uLipSyncBlendShape blendShape { get { return target as uLipSyncBlendShape; } }
+    uLipSyncBlendShape blendShape => target as uLipSyncBlendShape;
     ReorderableList _reorderableList = null;
 
     public override void OnInspectorGUI()

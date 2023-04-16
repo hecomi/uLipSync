@@ -6,7 +6,7 @@ namespace uLipSync
 [RequireComponent(typeof(AudioSource))]
 public class uLipSyncMicrophone : MonoBehaviour
 {
-    const int maxRetryMilliSec = 1000;
+    const int MaxRetryMilliSec = 1000;
 
     public int index = 0;
     private int _preIndex = 0;
@@ -178,7 +178,7 @@ public class uLipSyncMicrophone : MonoBehaviour
         int retryCount = 0;
         while (Microphone.GetPosition(device.name) <= 0)
         {
-            if (++retryCount >= maxRetryMilliSec)
+            if (++retryCount >= MaxRetryMilliSec)
             {
                 Debug.LogError("Failed to get microphone.");
                 return;
