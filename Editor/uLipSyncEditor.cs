@@ -151,9 +151,6 @@ public class uLipSyncEditor : Editor
     {
         if (!lipSync.mfcc.IsCreated) return;
 
-        var editor = _profileEditor as ProfileEditor;
-        if (!editor) return;
-
         if (!EditorApplication.isPaused)
         {
             var array = new float[lipSync.mfcc.Length];
@@ -162,7 +159,7 @@ public class uLipSyncEditor : Editor
             _mfccData.RemoveOldCalibrationData(64);
         }
         
-        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, editor.min, editor.max);
+        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, Common.mfccMinValue, Common.mfccMaxValue);
         var area = GUILayoutUtility.GetRect(Screen.width, 64f);
         area = EditorGUI.IndentedRect(area);
         GUI.DrawTexture(area, _texture);

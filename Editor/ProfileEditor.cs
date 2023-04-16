@@ -13,8 +13,6 @@ namespace uLipSync
 public class ProfileEditor : Editor
 {
     Profile profile => target as Profile;
-    public float min = 0f;
-    public float max = 0f;
     public uLipSync uLipSync { get; set; }
     bool _isCalibrating = false;
     ReorderableList _reorderableList = null;
@@ -40,7 +38,6 @@ public class ProfileEditor : Editor
             EditorGUI.BeginChangeCheck();
             
             ++EditorGUI.indentLevel;
-            profile.CalcMinMax(out min, out max);
             DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
             
@@ -183,7 +180,7 @@ public class ProfileEditor : Editor
         }
 
         if (!_texturePool.TryGetValue(data, out Texture2D tex)) tex = null;
-        tex = TextureCreator.CreateMfccTexture(tex, data, min, max);
+        tex = TextureCreator.CreateMfccTexture(tex, data, Common.mfccMinValue, Common.mfccMaxValue);
         _texturePool[data] = tex;
         
         var area = EditorGUI.IndentedRect(mfccPos);
