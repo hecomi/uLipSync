@@ -3,10 +3,8 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using uLipSync.Debugging;
-using UnityEngine.UI;
 
 namespace uLipSync
 {
