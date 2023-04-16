@@ -640,22 +640,22 @@ MonoBehaviour:
   - phoneme: I
     name: I
     nameHash: -587065671
-    index: 0
+    index: 1
     maxWeight: 1
   - phoneme: U
     name: U
     nameHash: -922531082
-    index: 1
+    index: 2
     maxWeight: 1
   - phoneme: E
     name: E
     nameHash: -726377838
-    index: 2
+    index: 3
     maxWeight: 1
   - phoneme: O
     name: O
     nameHash: 878818188
-    index: 3
+    index: 4
     maxWeight: 1
   minVolume: -2.5
   maxVolume: -1.5
