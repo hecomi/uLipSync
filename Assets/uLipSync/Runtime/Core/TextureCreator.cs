@@ -158,8 +158,7 @@ public static class TextureCreator
         if (index < 0 || index >= profile.mfccs.Count) return tex;
         
         var mfcc = profile.mfccs[index];
-        profile.CalcMinMax(out var min, out var max);
-        return CreateMfccTexture(tex, mfcc, min, max);
+        return CreateMfccTexture(tex, mfcc, Common.mfccMinValue, Common.mfccMaxValue);
     }
 
     public static Texture2D CreateMfccTexture(Texture2D tex, MfccData mfcc, float min, float max)

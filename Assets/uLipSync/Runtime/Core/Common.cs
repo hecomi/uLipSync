@@ -11,6 +11,8 @@ public static class Common
     public const string defaultProfileFemale = assetName + "-Profile-Female";
     public const float defaultMinVolume = -2.5f;
     public const float defaultMaxVolume = -1.5f;
+    public const float mfccMinValue = -50f;
+    public const float mfccMaxValue = 30f;
 }
 
 public struct LipSyncInfo
