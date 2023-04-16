@@ -8,14 +8,11 @@ namespace uLipSync
 
 public static class EditorUtil
 {
-    public static float lineHeightWithMargin 
-    { 
-        get=>
-            EditorGUIUtility.singleLineHeight + 
-            EditorGUIUtility.standardVerticalSpacing;
-    }
+    public static float lineHeightWithMargin =>
+        EditorGUIUtility.singleLineHeight + 
+        EditorGUIUtility.standardVerticalSpacing;
 
-    public static string GetKey(string title, string category)
+    private static string GetKey(string title, string category)
     {
         return $"{Common.assetName}-{category}-{title}";
     }
@@ -47,12 +44,14 @@ public static class EditorUtil
 
     public static bool Foldout(string title, bool initialState, string additionalKey = "")
     {
-        var style = new GUIStyle("ShurikenModuleTitle");
-        style.font = new GUIStyle(EditorStyles.label).font;
-        style.border = new RectOffset(15, 7, 4, 4);
-        style.fixedHeight = 22;
-        style.contentOffset = new Vector2(20f, -2f);
-        style.margin = new RectOffset((EditorGUI.indentLevel + 1) * 16, 0, 0, 0);
+        var style = new GUIStyle("ShurikenModuleTitle")
+        {
+            font = new GUIStyle(EditorStyles.label).font,
+            border = new RectOffset(15, 7, 4, 4),
+            fixedHeight = 22,
+            contentOffset = new Vector2(20f, -2f),
+            margin = new RectOffset((EditorGUI.indentLevel + 1) * 16, 0, 0, 0)
+        };
 
         var key = GetFoldOutKey(title + additionalKey);
         bool display = EditorPrefs.GetBool(key, initialState);
@@ -133,9 +132,10 @@ public static class EditorUtil
         if (!clip) return;
 
         var minMaxData = AudioUtil.GetMinMaxData(clip);
+        if (minMaxData == null) return;
+        
         int channels = clip.channels;
-        var height = (float)rect.height / channels;
-        int samples = (minMaxData == null) ? 0 : (minMaxData.Length / (2 * channels));
+        int samples = minMaxData.Length / (2 * channels);
 
         AudioCurveRendering.AudioMinMaxCurveAndColorEvaluator dlg = delegate(
             float x, 
@@ -154,9 +154,7 @@ public static class EditorUtil
 
             if (minValue > maxValue) 
             { 
-                float tmp = minValue; 
-                minValue = maxValue; 
-                maxValue = tmp; 
+                (minValue, maxValue) = (maxValue, minValue);
             }
         };
 
@@ -188,7 +186,7 @@ public static class EditorUtil
     public static T FindAsset<T>(string name) where T : ScriptableObject
     {
         var path = AssetDatabase.FindAssets(name)
-            .Select(x => AssetDatabase.GUIDToAssetPath(x))
+            .Select(AssetDatabase.GUIDToAssetPath)
             .FirstOrDefault();
         return AssetDatabase.LoadAssetAtPath<T>(path);
     }
@@ -203,7 +201,10 @@ public static class EditorUtil
 
     public static void CreateOutputDirectory(string dir)
     {
-        var path = Path.Combine(Directory.GetParent(Application.dataPath).FullName, dir);
+        var fullName = Directory.GetParent(Application.dataPath)?.FullName;
+        if (fullName == null) return;
+        
+        var path = Path.Combine(fullName, dir);
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);

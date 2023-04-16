@@ -16,6 +16,7 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     }
 
     bool _isCalibrating = false;
+    Texture2D _texture = null;
 
     void OnEnable()
     {
@@ -42,8 +43,8 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     {
         if (!mfccImage) return;
 
-        var tex = uLipSync.TextureCreator.CreateMfccTexture(profile, index);
-        mfccImage.texture = tex;
+        _texture = uLipSync.TextureCreator.CreateMfccTexture(_texture, profile, index);
+        mfccImage.texture = _texture;
     }
 
     void SwapMfccs(int index0, int index1)

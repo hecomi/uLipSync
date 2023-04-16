@@ -3,8 +3,10 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using uLipSync.Debugging;
+using UnityEngine.UI;
 
 namespace uLipSync
 {
@@ -19,6 +21,7 @@ public class ProfileEditor : Editor
     bool _isCalibrating = false;
     ReorderableList _reorderableList = null;
     List<BakedData> _bakedDataList = new List<BakedData>();
+    Dictionary<MfccData, Texture2D> _texturePool = new Dictionary<MfccData, Texture2D>();
 
     void OnEnable()
     {
@@ -56,7 +59,6 @@ public class ProfileEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
-            EditorUtil.DrawProperty(serializedObject, nameof(profile.useZeroPadding));
             bool useStandardization = EditorGUILayout.Toggle("Use Standardization", profile.useStandardization);
             if (useStandardization != profile.useStandardization)
             {
@@ -79,6 +81,15 @@ public class ProfileEditor : Editor
         {
             ++EditorGUI.indentLevel;
             DrawImportExport();
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+
+        if (EditorUtil.SimpleFoldout("Save", false, "-uLipSync-Profile"))
+        {
+            ++EditorGUI.indentLevel;
+            DrawSave();
             --EditorGUI.indentLevel;
 
             EditorGUILayout.Separator();
@@ -173,7 +184,10 @@ public class ProfileEditor : Editor
             mfccPos.xMax -= 60;
         }
 
-        var tex = TextureCreator.CreateMfccTexture(data, min, max);
+        if (!_texturePool.TryGetValue(data, out Texture2D tex)) tex = null;
+        tex = TextureCreator.CreateMfccTexture(tex, data, min, max);
+        _texturePool[data] = tex;
+        
         var area = EditorGUI.IndentedRect(mfccPos);
         area.height = data.mfccCalibrationDataList.Count * 3f;
         GUI.DrawTexture(area, tex, ScaleMode.StretchToFill);
@@ -269,6 +283,17 @@ public class ProfileEditor : Editor
         if (GUILayout.Button("  Export  ", EditorStyles.miniButtonRight))
         {
             profile.Export(profile.jsonPath);
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    void DrawSave()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("  Save  "))
+        {
+            profile.Save();
         }
         EditorGUILayout.EndHorizontal();
     }

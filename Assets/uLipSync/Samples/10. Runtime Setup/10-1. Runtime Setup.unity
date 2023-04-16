@@ -470,7 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 496503018}
-  profile: {fileID: 11400000, guid: 6a8b92b3698e04722bba15d0d60ab55a, type: 2}
+  profile: {fileID: 11400000, guid: d0622910165464ec98bf667e4f571218, type: 2}
   skinnedMeshRendererName: MTH_DEF
   phonemeBlendShapeTable:
   - phoneme: A

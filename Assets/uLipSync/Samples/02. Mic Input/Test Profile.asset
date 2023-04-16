@@ -13,8 +13,12 @@ MonoBehaviour:
   m_Name: Test Profile
   m_EditorClassIdentifier: 
   jsonPath: 
-  mfccDataCount: 32
-  melFilterBankChannels: 24
+  mfccNum: 12
+  mfccDataCount: 16
+  melFilterBankChannels: 26
   targetSampleRate: 16000
-  sampleCount: 512
+  sampleCount: 2048
+  useZeroPadding: 0
+  useStandardization: 0
+  compareMethod: 1
   mfccs: []

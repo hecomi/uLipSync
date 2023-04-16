@@ -253,6 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2163de355e8fd8e4b83b631e07455323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateMethod: 0
   skinnedMeshRenderer: {fileID: 187725991}
   blendShapes:
   - phoneme: A
@@ -279,6 +280,7 @@ MonoBehaviour:
   minVolume: -3.016018
   maxVolume: -2.016018
   smoothness: 0.05
+  usePhonemeBlend: 0
 --- !u!1 &180302166
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,7 +709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
+  profile: {fileID: 11400000, guid: d0622910165464ec98bf667e4f571218, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:

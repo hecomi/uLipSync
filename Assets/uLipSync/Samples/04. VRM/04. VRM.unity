@@ -638,12 +638,10 @@ MonoBehaviour:
   - phoneme: S
     index: -1
     maxWeight: 1
-  - phoneme: '-'
-    index: -1
-    maxWeight: 1
   minVolume: -2.5
   maxVolume: -1.5
   smoothness: 0.05
+  usePhonemeBlend: 0
 --- !u!114 &1314781841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,11 +654,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 6a8b92b3698e04722bba15d0d60ab55a, type: 2}
+  profile: {fileID: 11400000, guid: d0622910165464ec98bf667e4f571218, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1314781840}
         m_TargetAssemblyTypeName: uLipSync.uLipSyncBlendShape, uLipSync.Runtime
         m_MethodName: OnLipSyncUpdate
         m_Mode: 0
@@ -684,7 +682,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c035a7f37428c489999077c2be83e594, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5ca3d77953c5c40fdbd17d625c78ff78, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

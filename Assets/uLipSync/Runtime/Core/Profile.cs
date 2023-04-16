@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Mathematics;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace uLipSync
 {
@@ -103,10 +106,8 @@ public class Profile : ScriptableObject
     public int targetSampleRate = 16000;
     [Tooltip("Number of audio samples after downsampling is applied")]
     public int sampleCount = 1024;
-    [Tooltip("Whether to perform zero-padding on input audio data")] 
-    public bool useZeroPadding = false;
     [Tooltip("Whether to perform standardization of each coefficient of MFCC")] 
-    public bool useStandardization = true;
+    public bool useStandardization = false;
     [Tooltip("The comparison method for MFCC")]
     public CompareMethod compareMethod = CompareMethod.L2Norm;
 
@@ -119,10 +120,7 @@ public class Profile : ScriptableObject
         
     void OnEnable()
     {
-        if (useStandardization)
-        {
-            UpdateMeansAndStandardization();
-        }
+        UpdateMeansAndStandardization();
 
         foreach (var data in mfccs)
         {
@@ -255,9 +253,9 @@ public class Profile : ScriptableObject
             var list = mfccData.mfccCalibrationDataList;
             foreach (var mfcc in list)
             {
-                for (int j = 0; j < mfcc.length; ++j)
+                for (int i = 0; i < mfcc.length; ++i)
                 {
-                    _means[j] += mfcc[j];
+                    _means[i] += mfcc[i];
                 }
                 ++n;
             }
@@ -291,9 +289,9 @@ public class Profile : ScriptableObject
             var list = mfccData.mfccCalibrationDataList;
             foreach (var mfcc in list)
             {
-                for (int j = 0; j < mfcc.length; ++j)
+                for (int i = 0; i < mfcc.length; ++i)
                 {
-                    _stdDevs[j] += math.pow(mfcc[j] - _means[j], 2f);
+                    _stdDevs[i] += math.pow(mfcc[i] - _means[i], 2f);
                 }
                 ++n;
             }
@@ -321,6 +319,15 @@ public class Profile : ScriptableObject
                 }
             }
         }
+    }
+
+    public void Save()
+    {
+#if UNITY_EDITOR
+        EditorUtility.SetDirty(this);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"{name} saved.");
+#endif
     }
 
     public static Profile Create()

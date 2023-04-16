@@ -44,7 +44,7 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
 
         if (Application.isPlaying && _requireApply)
         {
-            player.Apply();
+            player.RequestApply();
             _requireApply = false;
         }
 
@@ -155,7 +155,6 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
             if (isDraggingSelf)
             {
                 delta = Event.current.delta.x;
-                _requireApply = true;
             }
 
             _requireRepaint = true;
@@ -163,6 +162,7 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
         else if (Event.current.type == EventType.MouseUp)
         {
             isDraggingSelf = false;
+            _requireApply = true;
         }
 
         return delta;
