@@ -99,7 +99,7 @@ public class uLipSyncEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile));
             if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(60)))
             {
-                lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.assetName}-Profile-New");
+                lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.AssetName}-Profile-New");
             }
         }
         EditorGUILayout.EndHorizontal();
@@ -159,7 +159,7 @@ public class uLipSyncEditor : Editor
             _mfccData.RemoveOldCalibrationData(64);
         }
         
-        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, Common.mfccMinValue, Common.mfccMaxValue);
+        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, Common.MfccMinValue, Common.MfccMaxValue);
         var area = GUILayoutUtility.GetRect(Screen.width, 64f);
         area = EditorGUI.IndentedRect(area);
         GUI.DrawTexture(area, _texture);

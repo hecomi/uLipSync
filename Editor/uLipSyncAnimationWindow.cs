@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.Text;
@@ -19,7 +20,7 @@ public class AnimationWizard : ScriptableWizard
 #if UNITY_2020_2_OR_NEWER
     [NonReorderable] 
 #endif
-    BakedData[] bakedDataList = new BakedData[0];
+    BakedData[] bakedDataList = Array.Empty<BakedData>();
 
     [SerializeField][Tooltip("Sampling interval at which keyframes are inserted")]
     float sampleFrameRate = 60f;
@@ -36,7 +37,7 @@ public class AnimationWizard : ScriptableWizard
     [SerializeField]
     bool foldoutOutput = true;
 
-    StringBuilder _message = new StringBuilder();
+    readonly StringBuilder _message = new StringBuilder();
 
     [MenuItem("Window/uLipSync/Animation Clip Generator")]
     static void Open()

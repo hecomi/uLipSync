@@ -11,7 +11,7 @@ public class uLipSyncPhonemeUI : MonoBehaviour
     public int index { get; set; }
     public string phoneme
     {
-        get { return phonemeInputField?.text; }
+        get => phonemeInputField?.text;
         set { if (phonemeInputField) phonemeInputField.text = value; }
     }
 
@@ -47,11 +47,9 @@ public class uLipSyncPhonemeUI : MonoBehaviour
         mfccImage.texture = _texture;
     }
 
-    void SwapMfccs(int index0, int index1)
+    void SwapMfccs(int i0, int i1)
     {
-        var tmp = profile.mfccs[index0];
-        profile.mfccs[index0] = profile.mfccs[index1];
-        profile.mfccs[index1] = tmp;
+        (profile.mfccs[i0], profile.mfccs[i1]) = (profile.mfccs[i1], profile.mfccs[i0]);
     }
 
     public void OnUpButtonDown()

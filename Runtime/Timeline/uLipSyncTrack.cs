@@ -34,7 +34,7 @@ public class uLipSyncTrack : TrackAsset
         foreach (var clip in GetClips())
         {
             var asset = clip.asset as uLipSyncClip;
-            if (asset.bakedData && asset.bakedData.audioClip)
+            if (asset && asset.bakedData && asset.bakedData.audioClip)
             {
                 clip.displayName = asset.bakedData.audioClip.name;
             }

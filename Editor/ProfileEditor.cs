@@ -180,7 +180,7 @@ public class ProfileEditor : Editor
         }
 
         if (!_texturePool.TryGetValue(data, out Texture2D tex)) tex = null;
-        tex = TextureCreator.CreateMfccTexture(tex, data, Common.mfccMinValue, Common.mfccMaxValue);
+        tex = TextureCreator.CreateMfccTexture(tex, data, Common.MfccMinValue, Common.MfccMaxValue);
         _texturePool[data] = tex;
         
         var area = EditorGUI.IndentedRect(mfccPos);

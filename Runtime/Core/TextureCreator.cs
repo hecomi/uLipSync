@@ -3,7 +3,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEditor;
 
 namespace uLipSync
 {
@@ -158,7 +157,7 @@ public static class TextureCreator
         if (index < 0 || index >= profile.mfccs.Count) return tex;
         
         var mfcc = profile.mfccs[index];
-        return CreateMfccTexture(tex, mfcc, Common.mfccMinValue, Common.mfccMaxValue);
+        return CreateMfccTexture(tex, mfcc, Common.MfccMinValue, Common.MfccMaxValue);
     }
 
     public static Texture2D CreateMfccTexture(Texture2D tex, MfccData mfcc, float min, float max)

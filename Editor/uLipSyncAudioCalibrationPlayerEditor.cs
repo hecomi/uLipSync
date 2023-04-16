@@ -15,7 +15,7 @@ public class uLipSyncCalibrationAudioPlayerEditor : Editor
     bool _isDraggingStart = false;
     bool _isDraggingEnd = false;
     bool isDragging => _isDraggingStart || _isDraggingEnd;
-    List<string> _messages = new List<string>();
+    readonly List<string> _messages = new List<string>();
 
     public override void OnInspectorGUI()
     {

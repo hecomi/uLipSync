@@ -19,7 +19,7 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
     int _sampleCount = 0;
     int _channels = 1;
     int _crossFadeDataCount = 0;
-    object _lockObject = new object();
+    readonly object _lockObject = new object();
     bool _isApplyRequested = false;
     int playDataSampleCount => _sampleCount - _crossFadeDataCount;
 

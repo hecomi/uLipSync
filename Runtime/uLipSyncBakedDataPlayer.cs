@@ -16,7 +16,7 @@ public class uLipSyncBakedDataPlayer : MonoBehaviour
     bool _isFirstPlay = true;
     bool _isPlaying = false;
     double _startTime = 0.0;
-    public bool isPlaying { get => _isPlaying; }
+    public bool isPlaying => _isPlaying;
 
     void OnEnable()
     {
