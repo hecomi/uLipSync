@@ -14,6 +14,7 @@ public class uLipSyncEditor : Editor
 
     Editor _profileEditor;
     MfccData _mfccData = new MfccData("Temp");
+    Texture2D _texture = null;
 
     float _minVolume = 0f;
     float _maxVolume = -100f;
@@ -161,10 +162,10 @@ public class uLipSyncEditor : Editor
             _mfccData.RemoveOldCalibrationData(64);
         }
         
-        var tex = TextureCreator.CreateMfccTexture(_mfccData, editor.min, editor.max);
+        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, editor.min, editor.max);
         var area = GUILayoutUtility.GetRect(Screen.width, 64f);
         area = EditorGUI.IndentedRect(area);
-        GUI.DrawTexture(area, tex);
+        GUI.DrawTexture(area, _texture);
         
 #if ULIPSYNC_DEBUG
         EditorGUILayout.BeginHorizontal();

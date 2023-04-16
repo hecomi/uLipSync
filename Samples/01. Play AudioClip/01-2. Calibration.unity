@@ -242,6 +242,63 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 13700030, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
   m_PrefabInstance: {fileID: 460735845}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &216706992
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.38463512
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.50357807
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.2723493
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541604, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_Name
+      value: 60 FPS Setter
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
 --- !u!4 &331358591 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 88eeda7d3a9f2492da9213d1c1ab46d0, type: 3}
@@ -457,6 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2163de355e8fd8e4b83b631e07455323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateMethod: 0
   skinnedMeshRenderer: {fileID: 187725991}
   blendShapes:
   - phoneme: A
@@ -486,6 +544,7 @@ MonoBehaviour:
   minVolume: -2.5
   maxVolume: -1.5
   smoothness: 0.05
+  usePhonemeBlend: 0
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,7 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 6a8b92b3698e04722bba15d0d60ab55a, type: 2}
+  profile: {fileID: 11400000, guid: d0622910165464ec98bf667e4f571218, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -528,9 +587,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 354cff4bd7e4344c898201f2bf926e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 5f1962b28971041f3b08aa2185cca6ae, type: 3}
-  start: 0.4745396
-  end: 0.49439377
+  clip: {fileID: 8300000, guid: 5ca3d77953c5c40fdbd17d625c78ff78, type: 3}
+  start: 0.03735141
+  end: 0.93636096
   crossFadeDuration: 0.05
 --- !u!850595691 &1359427199
 LightingSettings:

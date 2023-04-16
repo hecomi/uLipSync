@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor;
 
 namespace uLipSync
 {
@@ -61,7 +62,7 @@ public static class TextureCreator
                 {
                     var index = width * y + x;
                     var color = currentColor;
-                    var dy = ((float)y - height / 2f) / (height / 2f);
+                    var dy = (y - height / 2f) / (height / 2f);
                     dy = math.abs(dy);
                     dy = math.pow(dy, 2f);
                     color.a = dy > volumes[x] ? 0f : 1f;
@@ -149,30 +150,35 @@ public static class TextureCreator
             }
         }
     }
-
-    public static Texture2D CreateMfccTexture(Profile profile, int index)
+    
+    public static Texture2D CreateMfccTexture(Texture2D tex, Profile profile, int index)
     {
-        if (!profile) return Texture2D.whiteTexture;
+        if (!profile) return tex;
 
-        profile.CalcMinMax(out var min, out var max);
+        if (index < 0 || index >= profile.mfccs.Count) return tex;
+        
         var mfcc = profile.mfccs[index];
-
-        return CreateMfccTexture(mfcc, min, max);
+        profile.CalcMinMax(out var min, out var max);
+        return CreateMfccTexture(tex, mfcc, min, max);
     }
 
-    public static Texture2D CreateMfccTexture(MfccData mfcc, float min, float max)
+    public static Texture2D CreateMfccTexture(Texture2D tex, MfccData mfcc, float min, float max)
     {
         var list = mfcc.mfccCalibrationDataList;
-        if (list.Count == 0) return Texture2D.whiteTexture;
+        if (list.Count == 0) return tex;
 
         var width = list[0].array.Length;
         var height = list.Count;
 
-        var tex = new Texture2D(width, height)
+        if (!tex || tex.width != width || tex.height != height)
         {
-            filterMode = FilterMode.Point,
-            wrapMode = TextureWrapMode.Clamp,
-        };
+            tex = new Texture2D(width, height)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+            };
+        }
+
         var texColors = GetOrCreatePixelData(tex);
         var array = new NativeArray<float>(width * height, Allocator.TempJob);
 
@@ -195,6 +201,7 @@ public static class TextureCreator
         job.Schedule().Complete();
 
         ApplyPixelData(tex, texColors);
+
         return tex;
     }
 }

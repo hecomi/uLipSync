@@ -79,7 +79,7 @@ public static unsafe class Algorithm
 
     public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
     {
-        cutoff = (cutoff - sampleRate) / sampleRate;
+        cutoff = (cutoff - range) / sampleRate;
         range /= sampleRate;
 
         var tmp = new NativeArray<float>(data, Allocator.Temp);
@@ -352,6 +352,20 @@ public static unsafe class Algorithm
                 sum += a * spectrum[i];
             }
             melSpectrum[n] = sum;
+        }
+    }
+
+    public static void PowerToDb(ref NativeArray<float> array)
+    {
+        PowerToDb((float*)array.GetUnsafePtr(), array.Length);
+    }
+
+    [BurstCompile]
+    static void PowerToDb(float* array, int len)
+    {
+        for (int i = 0; i < len; ++i)
+        {
+            array[i] = 10f * math.log10(array[i]);
         }
     }
 

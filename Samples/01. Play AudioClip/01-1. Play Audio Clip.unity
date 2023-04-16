@@ -359,7 +359,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5545b4aa0573e4c96b26e3b6d6514d5f, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 436f01e35ef0542f8b42c9b0d0907ea2, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -457,6 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2163de355e8fd8e4b83b631e07455323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateMethod: 0
   skinnedMeshRenderer: {fileID: 187725991}
   blendShapes:
   - phoneme: A
@@ -483,6 +484,7 @@ MonoBehaviour:
   minVolume: -2.999837
   maxVolume: -1.9998369
   smoothness: 0.06
+  usePhonemeBlend: 0
 --- !u!114 &496503021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87560e04aa74c7a41acb9c87051c3b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: f230cff9cfa08478c8a1e0c12b9a6686, type: 2}
+  profile: {fileID: 11400000, guid: d0622910165464ec98bf667e4f571218, type: 2}
   onLipSyncUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -763,3 +765,60 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1901837696
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.38463512
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.50357807
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.2723493
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541602, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411911896421541604, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}
+      propertyPath: m_Name
+      value: 60 FPS Setter
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d571892fd72f6469c823c6f66c6a38e9, type: 3}

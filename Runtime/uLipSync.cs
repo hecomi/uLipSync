@@ -21,7 +21,6 @@ public class uLipSync : MonoBehaviour
     bool _allocated = false;
     int _index = 0;
     bool _isDataReceived = false;
-    bool _useZeroPadding = false;
 
     NativeArray<float> _rawInputData;
     NativeArray<float> _inputData;
@@ -106,8 +105,6 @@ public class uLipSync : MonoBehaviour
 
         _jobHandle.Complete();
 
-        _useZeroPadding = profile.useZeroPadding;
-
         lock (_lockObject)
         {
             int n = inputSampleCount;
@@ -122,11 +119,10 @@ public class uLipSync : MonoBehaviour
             _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
 #if ULIPSYNC_DEBUG
-            int dataLength = _useZeroPadding ? 2 : 1;
-            _debugData = new NativeArray<float>(profile.sampleCount * dataLength, Allocator.Persistent);
-            _debugDataForOther = new NativeArray<float>(profile.sampleCount * dataLength, Allocator.Persistent);
-            _debugSpectrum = new NativeArray<float>(profile.sampleCount * dataLength, Allocator.Persistent);
-            _debugSpectrumForOther = new NativeArray<float>(profile.sampleCount * dataLength, Allocator.Persistent);
+            _debugData = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
+            _debugDataForOther = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
+            _debugSpectrum = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
+            _debugSpectrumForOther = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
             _debugMelSpectrum = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
             _debugMelSpectrumForOther = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
             _debugMelCepstrum = new NativeArray<float>(profile.melFilterBankChannels, Allocator.Persistent);
@@ -169,8 +165,11 @@ public class uLipSync : MonoBehaviour
     void UpdateBuffers()
     {
         if (inputSampleCount != _rawInputData.Length ||
-            profile.mfccs.Count * mfccNum != _phonemes.Length ||
-            _useZeroPadding != profile.useZeroPadding)
+            profile.mfccs.Count * mfccNum != _phonemes.Length
+#if ULIPSYNC_DEBUG
+            || profile.melFilterBankChannels != _debugMelSpectrum.Length
+#endif
+        )
         {
             lock (_lockObject)
             {
@@ -269,7 +268,6 @@ public class uLipSync : MonoBehaviour
             outputSampleRate = AudioSettings.outputSampleRate,
             targetSampleRate = profile.targetSampleRate,
             melFilterBankChannels = profile.melFilterBankChannels,
-            useZeroPadding = profile.useZeroPadding,
             means = _means,
             standardDeviations = _standardDeviations,
             mfcc = _mfcc,
