@@ -12,7 +12,7 @@ public class uLipSyncAnimator : MonoBehaviour
         public string phoneme;
         public string name;
         public int nameHash;
-        public int index = -1;
+        public int index = 0;
         public float maxWeight = 1f;
 
         public float weight { get; set; } = 0f;

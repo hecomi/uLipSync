@@ -10,7 +10,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncAnimator))]
 public class uLipSyncAnimatorEditor : Editor
 {
-    uLipSyncAnimator anim { get { return target as uLipSyncAnimator; } }
+    uLipSyncAnimator anim => target as uLipSyncAnimator;
     ReorderableList _reorderableList = null;
 
     public override void OnInspectorGUI()
@@ -154,14 +154,14 @@ public class uLipSyncAnimatorEditor : Editor
 
         rect.y += singleLineHeight;
 
-        var curIndex = param.index + 1;
+        var curIndex = Mathf.Max(param.index, 0);
         var newIndex = EditorGUI.Popup(rect, "Parameter", curIndex, GetParameterArray());
         if (newIndex != curIndex || 
             param.name != animatorParams[curIndex].name)
         {
             Undo.RecordObject(target, "Change Parameter");
-            param.index = newIndex - 1;
-            param.name = animatorParams[param.index + 1].name;
+            param.index = Mathf.Clamp(newIndex, 0, animatorParams.Length - 1);
+            param.name = animatorParams[param.index].name;
             param.nameHash = Animator.StringToHash(param.name);
         }
 
