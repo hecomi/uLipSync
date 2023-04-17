@@ -18,7 +18,7 @@ MonoBehaviour:
   melFilterBankChannels: 30
   targetSampleRate: 16000
   sampleCount: 1024
-  useStandardization: 0
+  useStandardization: 1
   compareMethod: 2
   mfccs:
   - name: A

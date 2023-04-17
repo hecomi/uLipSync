@@ -166,7 +166,7 @@ public struct LipSyncJob : IJob
         mfccNorm = math.sqrt(mfccNorm);
         phonemeNorm = math.sqrt(phonemeNorm);
         float similarity = prod / (mfccNorm * phonemeNorm);
-        similarity = (1f + similarity) / 2f;
+        similarity = math.max(similarity, 0f);
 
         return math.pow(similarity, 100f);
     }
