@@ -3,7 +3,7 @@ uLipSync
 
 **uLipSync** is an asset for lip-syncing in Unity. It has the following features:
 
-- Uses **Job System** and **Burst Compiler** to run faster on any OS without using native plugins.
+- Utilizes **Job System** and **Burst Compiler** to run faster on any OS without using native plugins.
 - Can be calibrated to create a per-character **profile**.
 - Both **run-time** analysis and **pre-bake** processing are available.
 - Pre-bake processing can be integrated with **Timeline**.
@@ -47,7 +47,7 @@ Features
 
 ### VRM Support
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-VRM.gif" width="640" />
 
 
 Install
@@ -70,7 +70,7 @@ How to Use
 
 ### Mechanism
 
-When a sound is played by `AudioSource`, a buffer of the sound comes into the `OnAudioFilterRead()` method of a component attached to the same GameObject. We can modify this buffer to apply sound effects like reverb, but at the same time since we know what kind of waveform is being played, we can also analyze it to calculate Mel-Frequency Cepstrum Coefficients (MFCC), which represent the characteristics of the human vocal tract. In other words, if the calculation is done well, you can get parameters that sound like "ah" if the current waveform being played is "a", and parameters that sound like "e" if the current waveform is "e" (in addition to vowels, consonants like "s" can also be analyzed). By comparing these parameters with the pre-registered parameters for each of the "aieou" phonemes, we can calculate how close each phoneme is to the current sound, and reflect this in the blendshape of the `SkinnedMeshRenderer` to enable lipsync. If you feed the input from the microphone into `AudioSource`, you can also lipsync to your current voice.
+When a sound is played by `AudioSource`, a buffer of the sound comes into the `OnAudioFilterRead()` method of a component attached to the same GameObject. We can modify this buffer to apply sound effects like reverb, but at the same time since we know what kind of waveform is being played, we can also analyze it to calculate Mel-Frequency Cepstrum Coefficients (MFCC), which represent the characteristics of the human vocal tract. In other words, if the calculation is done well, you can get parameters that sound like "ah" if the current waveform being played is "a", and parameters that sound like "e" if the current waveform is "e" (in addition to vowels, consonants like "s" can also be analyzed). By comparing these parameters with the pre-registered parameters for each of the "aieou" phonemes, we can calculate the similarity between each phoneme and the current sound, and use this information to adjust the blend shape of the `SkinnedMeshRenderer` for accurate lip-syncing. If you feed the input from the microphone into `AudioSource`, you can also lipsync to your current voice.
 
 The component that performs this analysis is `uLipSync`, the data that contains phoneme parameters is `Profile`, and the component that moves the blendshape is `uLipSyncBlendShape`. We also have a `uLipSyncMicrophone` asset that plays the audio from the microphone. Here's an illustration of what it looks like.
 
@@ -84,7 +84,7 @@ After placing Unity-chan, add the `AudioSource` component to any game object whe
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-AudioSource.png" width="640" />
 
-First, add a `uLipSync` component to the same game object. For now, select `uLipSync-Profile-UnityChan` from the list and assign it to the *Profile* slot of the component (if you assign something different, such as Male, it will not lip sync properly).
+First, add a `uLipSync` component to the same GameObject. For now, select `uLipSync-Profile-UnityChan` from the list and assign it to the *Profile* slot of the component (if you assign something different, such as Male, it will not lip sync properly).
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSync.png" width="640" />
 
@@ -96,7 +96,7 @@ Finally, to connect the two, in the `uLipSync` component, go to *Parameters > On
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSync-Event.png" width="640" />
 
-Now when you run the game, Unity-chan moves its mouth as it speaks.
+Now when you run the game, Unity-chan will move her mouth as she speaks.
 
 ### Adjust lipsync
 
@@ -113,13 +113,13 @@ As for the volume, you can see the information about the current, maximum, and m
 
 ### AudioSource potiion
 
-In some cases, you may want to attach the `AudioSource` to the mouth position and `uLipSync` to some other game object. In this case, it may be a bit troublesome, but you can add a component called `uLipSyncAudioSource` to the same game object as the `AudioSource`, and set it in *uLipSync Parameters > Audio Source Proxy*. *Samples / 03. AudioSource Proxy* is a sample scene.
+In some cases, you may want to attach the `AudioSource` to the mouth position and `uLipSync` to another GameObject. In this case, it may be a bit troublesome, but you can add a component called `uLipSyncAudioSource` to the same GameObject as the `AudioSource`, and set it in *uLipSync Parameters > Audio Source Proxy*. *Samples / 03. AudioSource Proxy* is a sample scene.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSync-Parameters.png" width="640" />
 
 ### Microphone
 
-If you want to use a microphone as an input, add `uLipSyncMicrophone` to the same game object as `uLipSync`. This component will generate an `AudioSource` with the microphone input as a clip. The sample scene is *Samples / 02-1. Mic Input*.
+If you want to use a microphone as an input, add `uLipSyncMicrophone` to the same GameObject as `uLipSync`. This component will generate an `AudioSource` with the microphone input as a clip. The sample scene is *Samples / 02-1. Mic Input*.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncMicrophone1.png" width="640" />
 
@@ -127,7 +127,7 @@ Select the device to be used for input from *Device*, and if *Is Auto Start* is 
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncMicrophone2.png" width="640" />
 
-If you want to control it from a script, please use `uLipSync.MicUtil.GetDeviceList()` to identify the microphone to be used, and pass its `MicDevice.index` to the `index` of this component, then call `StartRecord()` to start it or `StopRecord()` to stop it.
+If you want to control it from a script, use `uLipSync.MicUtil.GetDeviceList()` to identify the microphone to be used, and pass its `MicDevice.index` to the `index` of this component. Then call `StartRecord()` to start it or `StopRecord()` to stop it.
 
 Note that the microphone input will be played back in Unity a little later than your own speech. If you want to use a voice captured by another software for broadcasting, set *Parameters > Output Sound Gain* to 0 in the `uLipSync` component. If the volume of the `AudioSource` is set to 0, the data passed to `OnAudioFilterRead()` will be silent and cannot be analyzed.
 
@@ -362,17 +362,29 @@ The sample scene is *Samples / 09. Animator*.
 VRM Support
 -----------
 
-[VRM](https://vrm-consortium.org) is a platform-independent file format designed for the use with 3D characters and avatars. Blendshapes in VRM are controlled via a component called `VRMBlendShapeProxy`.
+[VRM](https://vrm-consortium.org) is a platform-independent file format designed for the use with 3D characters and avatars. In VRM 0.X, blendshapes are controlled through `VRMBlendShapeProxy`, while in version 1.0, blendshapes are abstracted into *Expression* and controlled via `VRM10ObjectExpression`.
 
 - https://virtualcast.jp/wiki/vrm/setting/blendshap
+- https://vrm.dev/en/univrm1/vrm1_tutorial/expression
+
+### VRM 0.X
 
 With `uLipSyncBlendShape`, the blendshapes in the `SkinnedMeshRenderer` was controlled directly, but there is a modified component named `uLipSyncBlendShapeVRM` that controls `VRMBlendShapeProxy` instead.
 
-For more details, please refer to *Samples / VRM*. The scene can be played if you have set up VRM and imported [Alicia](https://3d.nicovideo.jp/works/td32797).
-
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncBlendShapeVRM.png" width="640" />
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Alicia.gif" width="640" />
+### VRM 0.X
+
+By using `uLipSyncExpressionVRM`, you can control `VRM10ObjectExpression`.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncExpressionVRM.png" width="640" />
+
+### Sample
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-VRM.gif" width="640" />
+
+For more details, please refer to *Samples / VRM*. In this sample, `uLipSyncExpressionVRM` is used for the setup of VRM 1.0.
+
 
 Tips
 -----
