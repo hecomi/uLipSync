@@ -408,7 +408,7 @@ uLipSync.uLipSyncBlendShape _blendShape;
 
 void Start()
 {
-    // uLipSyncBlendShape の設定
+    // Setting up uLipSyncBlendShape
     var targetTform = uLipSync.Util.FindChildRecursively(target.transform, skinnedMeshRendererName);
     var smr = targetTform.GetComponent<SkinnedMeshRenderer>();
 
@@ -420,7 +420,7 @@ void Start()
         _blendShape.AddBlendShape(info.phoneme, info.blendShape);
     }
 
-    // uLipSync の設定と接続
+    // Setting up uLipSync and connecting it with uLipSyncBlendShape
     _lipsync = target.AddComponent<uLipSync.uLipSync>();
     _lipsync.profile = profile;
     _lipsync.onLipSyncUpdate.AddListener(_blendShape.OnLipSyncUpdate);
