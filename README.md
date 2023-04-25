@@ -372,7 +372,7 @@ With `uLipSyncBlendShape`, the blendshapes in the `SkinnedMeshRenderer` was cont
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncBlendShapeVRM.png" width="640" />
 
-### VRM 0.X
+### VRM 1.0
 
 By using `uLipSyncExpressionVRM`, you can control `VRM10ObjectExpression`.
 
