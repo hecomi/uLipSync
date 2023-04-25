@@ -1,5 +1,4 @@
-uLipSync
-========
+uLipSync========
 
 **uLipSync** is an asset for lip-syncing in Unity. It has the following features:
 
@@ -384,6 +383,59 @@ By using `uLipSyncExpressionVRM`, you can control `VRM10ObjectExpression`.
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-VRM.gif" width="640" />
 
 For more details, please refer to *Samples / VRM*. In this sample, `uLipSyncExpressionVRM` is used for the setup of VRM 1.0.
+
+
+Runtime Setup
+-------------
+
+If you generate a model dynamically, you need to set up and connect `uLipSync` and `uLipSyncBlendShape` by yourself. A sample for doing this is included as *10. Runtime Setup*. You will dynamically attach these components to the target object and set them up as follows:
+
+```cs
+[System.Serializable]
+public class PhonemeBlendShapeInfo
+{
+    public string phoneme;
+    public string blendShape;
+}
+
+public GameObject target;
+public uLipSync.Profile profile;
+public string skinnedMeshRendererName = "MTH_DEF";
+public List<PhonemeBlendShapeInfo> phonemeBlendShapeTable = new List<PhonemeBlendShapeInfo>();
+
+uLipSync.uLipSync _lipsync;
+uLipSync.uLipSyncBlendShape _blendShape;
+
+void Start()
+{
+    // uLipSyncBlendShape の設定
+    var targetTform = uLipSync.Util.FindChildRecursively(target.transform, skinnedMeshRendererName);
+    var smr = targetTform.GetComponent<SkinnedMeshRenderer>();
+
+    _blendShape = target.AddComponent<uLipSync.uLipSyncBlendShape>();
+    _blendShape.skinnedMeshRenderer = smr;
+
+    foreach (var info in phonemeBlendShapeTable)
+    {
+        _blendShape.AddBlendShape(info.phoneme, info.blendShape);
+    }
+
+    // uLipSync の設定と接続
+    _lipsync = target.AddComponent<uLipSync.uLipSync>();
+    _lipsync.profile = profile;
+    _lipsync.onLipSyncUpdate.AddListener(_blendShape.OnLipSyncUpdate);
+}
+```
+
+Then attach this component to some GameObject and prepare the necessary information in advance and create a Prefab or something. The sample includes a setup for regular `SkinnedMeshRenderer` and a setup for VRM 1.0.
+
+
+UI
+--
+
+When you want to create, load, save a `Profile` at runtime, or add phonemes and perform their calibration, you will need a UI. A simple example of this is added as *11. UI*. By modifying this, you can create your own custom UI.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/uLipSyncProfileUI.png" width="640" />
 
 
 Tips
