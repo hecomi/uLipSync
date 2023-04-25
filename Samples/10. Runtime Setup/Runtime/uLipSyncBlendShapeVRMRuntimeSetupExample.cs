@@ -17,7 +17,7 @@ public class uLipSyncBlendShapeVRMRuntimeSetupExample : MonoBehaviour
     uLipSync.uLipSync _lipsync;
     uLipSync.uLipSyncBlendShapeVRM _blendShape;
 
-#if USE_VRM1 // defined by the Version Definition in asmdef
+#if USE_VRM0X // defined by the Version Definition in asmdef
 
     void Start()
     {
@@ -50,7 +50,7 @@ public class uLipSyncBlendShapeVRMRuntimeSetupExample : MonoBehaviour
 
     void Start()
     {
-        Debug.LogWarning("Please import VRM assets to use this component.");
+        Debug.LogWarning("Please import VRM assets to use this component and set USE_VRM0X to asmdef.");
     }
 
 #endif

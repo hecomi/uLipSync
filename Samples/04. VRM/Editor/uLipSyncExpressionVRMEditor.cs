@@ -9,7 +9,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncExpressionVRM))]
 public class uLipSyncExpressionVRMEditor : uLipSyncBlendShapeEditor
 {
-    uLipSyncExpressionVRM expression { get { return target as uLipSyncExpressionVRM; } }
+    uLipSyncExpressionVRM expression => target as uLipSyncExpressionVRM;
     Vrm10Instance vrm10Instance;
 
     void OnEnable()
