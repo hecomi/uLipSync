@@ -1,4 +1,5 @@
-uLipSync========
+uLipSync
+========
 
 **uLipSync** is an asset for lip-syncing in Unity. It has the following features:
 
@@ -536,6 +537,11 @@ When building on a Mac, you may encounter the following error.
 This may be related to the microphone access code, which can be fixed by writing something in *Project Settings > Player's Other Settings > Mac Configuration > Microphone Usage Description*.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Mic-Setting.png" width="640" />
+
+
+Transition from v2 to v3
+------------------------
+From v3.0.0, the values of MFCC have been corrected to more accurate values. As a result, if you are transitioning from v2 to v3, you will need to recalibrate and create a new `Profile`.
 
 
 3rd-Party License
