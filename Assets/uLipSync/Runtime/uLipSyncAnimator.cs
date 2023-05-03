@@ -50,6 +50,14 @@ public class uLipSyncAnimator : MonoBehaviour
             OnApplyAnimator();
         }
     }
+    
+    void Awake()
+    {
+        foreach (AnimatorInfo par in parameters)
+        {
+            par.nameHash = Animator.StringToHash(par.name);
+        }
+    }
 
     void Update()
     {
