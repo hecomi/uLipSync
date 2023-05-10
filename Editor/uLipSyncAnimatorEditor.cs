@@ -246,6 +246,7 @@ public class uLipSyncAnimatorEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorUtil.DrawProperty(serializedObject, nameof(anim.smoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(anim.minimalValueThreshold));
     }
 }
 
