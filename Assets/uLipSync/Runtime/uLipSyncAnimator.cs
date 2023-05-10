@@ -26,6 +26,7 @@ public class uLipSyncAnimator : MonoBehaviour
     public float minVolume = -2.5f;
     public float maxVolume = -1.5f;
     [Range(0f, 0.3f)] public float smoothness = 0.05f;
+	[Range(0.0001f, 0.01f)] public float minimalValueThreshold = 0.001f;
 
     LipSyncInfo _info = new LipSyncInfo();
     bool _lipSyncUpdated = false;
@@ -50,14 +51,14 @@ public class uLipSyncAnimator : MonoBehaviour
             OnApplyAnimator();
         }
     }
-    
-    void Awake()
-    {
-        foreach (AnimatorInfo par in parameters)
-        {
-            par.nameHash = Animator.StringToHash(par.name);
-        }
-    }
+
+	void Awake()
+		{
+			foreach (AnimatorInfo par in parameters)
+			{
+				par.nameHash = Animator.StringToHash(par.name);
+			}
+		}
 
     void Update()
     {
@@ -88,9 +89,17 @@ public class uLipSyncAnimator : MonoBehaviour
         }
     }
 
-    float SmoothDamp(float value, float target, ref float velocity)
+    float SmoothDamp(float value, float target, float threshold, ref float velocity)
     {
-        return Mathf.SmoothDamp(value, target, ref velocity, smoothness);
+        float smoothedValue = Mathf.SmoothDamp(value, target, ref velocity, smoothness);
+
+		// Check if the absolute value of the smoothedValue is below a threshold
+		if (Mathf.Abs(smoothedValue) < threshold)
+		{
+			smoothedValue = 0f; // Set it to zero
+		}
+
+    	return smoothedValue;
     }
 
     void UpdateVolume()
@@ -102,7 +111,7 @@ public class uLipSyncAnimator : MonoBehaviour
             normVol = (normVol - minVolume) / Mathf.Max(maxVolume - minVolume, 1e-4f);
             normVol = Mathf.Clamp(normVol, 0f, 1f);
         }
-        _volume = SmoothDamp(_volume, normVol, ref _openCloseVelocity);
+        _volume = SmoothDamp(_volume, normVol, minimalValueThreshold, ref _openCloseVelocity);
     }
 
     void UpdateVowels()
@@ -118,7 +127,7 @@ public class uLipSyncAnimator : MonoBehaviour
                 ratios.TryGetValue(param.phoneme, out targetWeight);
             }
             float weightVel = param.weightVelocity;
-            param.weight = SmoothDamp(param.weight, targetWeight, ref weightVel);
+            param.weight = SmoothDamp(param.weight, targetWeight, minimalValueThreshold, ref weightVel);
             param.weightVelocity = weightVel;
             sum += param.weight;
         }
