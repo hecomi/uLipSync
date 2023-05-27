@@ -7,8 +7,8 @@ using UniVRM10;
 namespace uLipSync
 {
 
-#if USE_VRM00
-    
+#if USE_VRM10
+
 [CustomEditor(typeof(uLipSyncExpressionVRM))]
 public class uLipSyncExpressionVRMEditor : uLipSyncBlendShapeEditor
 {
@@ -23,7 +23,7 @@ public class uLipSyncExpressionVRMEditor : uLipSyncBlendShapeEditor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        
+
         if (EditorUtil.Foldout("LipSync Update Method", true))
         {
             ++EditorGUI.indentLevel;
