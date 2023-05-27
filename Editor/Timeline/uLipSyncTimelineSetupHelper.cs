@@ -101,7 +101,9 @@ public class TimelineSetupHeplerWindow : ScriptableWizard
 
         foreach (var lipsyncClip in lipsyncTrack.GetClips())
         {
+#if UNITY_2020_1_OR_NEWER
             lipsyncTrack.DeleteClip(lipsyncClip);
+#endif
         }
 
         List<BakedData> bakedDataList = new List<BakedData>();
@@ -128,6 +130,7 @@ public class TimelineSetupHeplerWindow : ScriptableWizard
             lipsyncClip.timeScale = audioClip.timeScale;
 
             var lipsyncClipAsset = lipsyncClip.asset as Timeline.uLipSyncClip;
+            if (!lipsyncClipAsset) return;
 
             if (useExistingAsset)
             {
@@ -148,7 +151,6 @@ public class TimelineSetupHeplerWindow : ScriptableWizard
 
                 var editor = (BakedDataEditor)Editor.CreateEditor(data, typeof(BakedDataEditor));
                 editor.Bake();
-                Debug.Log("hoge");
 
                 var path = Path.Combine(outputDirectory, data.name + ".asset");
                 AssetDatabase.DeleteAsset(path); 
@@ -227,6 +229,13 @@ public class TimelineSetupHeplerWindow : ScriptableWizard
         if (_message.Length == 0) return;
 
         EditorGUILayout.HelpBox(_message.ToString(), MessageType.Warning);
+        
+#if !UNITY_2020_1_OR_NEWER
+        EditorGUILayout.HelpBox(
+            "Please remove all clips manually from the uLipSyncTrack you previously set before you start creating clips." +
+            " This is because the imported Timeline package is outdated.",
+            MessageType.Warning);
+#endif
     }
 }
 
