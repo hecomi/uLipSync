@@ -1,0 +1,16 @@
+{
+    "name": "uLipSync.Samples.Animator.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d444a9c79d21fec4181e6e12dc2e9706"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

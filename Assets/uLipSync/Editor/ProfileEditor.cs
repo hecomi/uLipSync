@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
+using uLipSync.Debugging;
 
 namespace uLipSync
 {
@@ -10,13 +12,12 @@ namespace uLipSync
 [CustomEditor(typeof(Profile))]
 public class ProfileEditor : Editor
 {
-    Profile profile { get { return target as Profile; } }
-    public float min = 0f;
-    public float max = 0f;
+    Profile profile => target as Profile;
     public uLipSync uLipSync { get; set; }
     bool _isCalibrating = false;
     ReorderableList _reorderableList = null;
     List<BakedData> _bakedDataList = new List<BakedData>();
+    Dictionary<MfccData, Texture2D> _texturePool = new Dictionary<MfccData, Texture2D>();
 
     void OnEnable()
     {
@@ -37,7 +38,6 @@ public class ProfileEditor : Editor
             EditorGUI.BeginChangeCheck();
             
             ++EditorGUI.indentLevel;
-            CalcMinMax();
             DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
             
@@ -54,8 +54,17 @@ public class ProfileEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile.melFilterBankChannels));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.targetSampleRate));
             EditorUtil.DrawProperty(serializedObject, nameof(profile.sampleCount));
+            bool useStandardization = EditorGUILayout.Toggle("Use Standardization", profile.useStandardization);
+            if (useStandardization != profile.useStandardization)
+            {
+                Undo.RecordObject(target, "Change Use Standardization");
+                profile.useStandardization = useStandardization;
+                profile.UpdateMeansAndStandardization();
+                EditorUtility.SetDirty(target);
+            }
+            EditorUtil.DrawProperty(serializedObject, nameof(profile.compareMethod));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
-            profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 48);
+            profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 256);
             profile.targetSampleRate = Mathf.Clamp(profile.targetSampleRate, 1000, 96000);
             profile.sampleCount = Mathf.ClosestPowerOfTwo(profile.sampleCount);
             --EditorGUI.indentLevel;
@@ -71,6 +80,26 @@ public class ProfileEditor : Editor
 
             EditorGUILayout.Separator();
         }
+
+        if (EditorUtil.SimpleFoldout("Save", false, "-uLipSync-Profile"))
+        {
+            ++EditorGUI.indentLevel;
+            DrawSave();
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+
+#if ULIPSYNC_DEBUG
+        if (EditorUtil.SimpleFoldout("Debug", false, "-uLipSync-Profile"))
+        {
+            ++EditorGUI.indentLevel;
+            DrawDebug();
+            --EditorGUI.indentLevel;
+
+            EditorGUILayout.Separator();
+        }
+#endif
 
         if (EditorUtil.SimpleFoldout("Baked Data", false, "-uLipSync-Profile"))
         {
@@ -123,25 +152,6 @@ public class ProfileEditor : Editor
         EditorGUILayout.EndHorizontal();
     }
 
-    void CalcMinMax()
-    {
-        max = float.MinValue;
-        min = float.MaxValue;
-        foreach (var data in profile.mfccs)
-        {
-            for (int j = 0; j < data.mfccCalibrationDataList.Count; ++j)
-            {
-                var array = data.mfccCalibrationDataList[j].array;
-                for (int i = 0; i < array.Length; ++i)
-                {
-                    var x = array[i];
-                    max = Mathf.Max(max, x);
-                    min = Mathf.Min(min, x);
-                }
-            }
-        }
-    }
-
     void DrawMFCC(Rect position, int index, bool showCalibration)
     {
         var data = profile.mfccs[index];
@@ -169,11 +179,13 @@ public class ProfileEditor : Editor
             mfccPos.xMax -= 60;
         }
 
-        foreach (var mfcc in data.mfccCalibrationDataList)
-        {
-            EditorUtil.DrawMfcc(mfccPos, mfcc.array, max, min, 2f);
-            mfccPos.y += 2f;
-        }
+        if (!_texturePool.TryGetValue(data, out Texture2D tex)) tex = null;
+        tex = TextureCreator.CreateMfccTexture(tex, data, Common.MfccMinValue, Common.MfccMaxValue);
+        _texturePool[data] = tex;
+        
+        var area = EditorGUI.IndentedRect(mfccPos);
+        area.height = data.mfccCalibrationDataList.Count * 3f;
+        GUI.DrawTexture(area, tex, ScaleMode.StretchToFill);
 
         var calibButtonPos = new Rect(position);
         calibButtonPos.xMin = mfccPos.xMax + 8;
@@ -224,7 +236,7 @@ public class ProfileEditor : Editor
             if (EditorUtil.IsFoldOutOpened(name, true, "MfccData"))
             {
                 height += 32f;
-                height += data.mfccCalibrationDataList.Count * 2f;
+                height += data.mfccCalibrationDataList.Count * 3f;
             }
         }
 
@@ -266,6 +278,17 @@ public class ProfileEditor : Editor
         if (GUILayout.Button("  Export  ", EditorStyles.miniButtonRight))
         {
             profile.Export(profile.jsonPath);
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
+    void DrawSave()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("  Save  "))
+        {
+            profile.Save();
         }
         EditorGUILayout.EndHorizontal();
     }
@@ -313,6 +336,27 @@ public class ProfileEditor : Editor
         }
 
         EditorUtility.ClearProgressBar();
+    }
+
+    void DrawDebug()
+    {
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("  Dump  "))
+        {
+            var profileName = string.IsNullOrEmpty(profile.name) ? "profile" : profile.name;
+            foreach (var mfcc in profile.mfccs)
+            {
+                var filename = $"{profileName}-{mfcc.name}.csv";
+                var sw = new StreamWriter(filename);
+                var sb = new StringBuilder();
+                DebugUtil.DumpMfccData(sb, mfcc);
+                sw.Write(sb);
+                sw.Close();
+                Debug.Log($"{filename} was created.");
+            }
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }
 

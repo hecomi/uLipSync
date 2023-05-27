@@ -20,10 +20,7 @@ public class uLipSyncClip : PlayableAsset, ITimelineClipAsset
 
     public uLipSyncBehaviour behaviour { get; private set; }
 
-    public override double duration
-    {
-        get { return bakedData ? bakedData.duration : base.duration; }
-    }
+    public override double duration => bakedData ? bakedData.duration : base.duration;
 
     public ClipCaps clipCaps
     {

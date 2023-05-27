@@ -11,6 +11,7 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 /[Ww]iki/
+/[Dd]ebug/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -75,8 +76,11 @@ crashlytics-build.properties
 # Others
 .DS_Store
 /Assets/Extensions*
-/Assets/uLipSync/Samples/04. VRM/VRM*
 /Assets/uLipSync/Samples/XX*
+/Assets/uLipSync/Debug*
 /*.log
 .vsconfig
 .vscode
+/*.json
+.idea/*
+*.csv

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace uLipSync
@@ -9,14 +9,15 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSync))]
 public class uLipSyncEditor : Editor
 {
-    uLipSync lipSync { get { return target as uLipSync; } }
-    Profile profile { get { return lipSync.profile; } }
+    uLipSync lipSync => target as uLipSync;
+    Profile profile => lipSync.profile;
 
     Editor _profileEditor;
-    List<float[]> _mfccHistory = new List<float[]>();
+    MfccData _mfccData = new MfccData("Temp");
+    Texture2D _texture = null;
 
-    float minVolume = 0f;
-    float maxVolume = -100f;
+    float _minVolume = 0f;
+    float _maxVolume = -100f;
     float _smoothVolume = 0f;
     StringBuilder _recognizedPhonemes = new StringBuilder();
 
@@ -98,7 +99,7 @@ public class uLipSyncEditor : Editor
             EditorUtil.DrawProperty(serializedObject, nameof(profile));
             if (GUILayout.Button("Create", EditorStyles.miniButtonRight, GUILayout.Width(60)))
             {
-                lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.assetName}-Profile-New");
+                lipSync.profile = EditorUtil.CreateAssetInRoot<Profile>($"{Common.AssetName}-Profile-New");
             }
         }
         EditorGUILayout.EndHorizontal();
@@ -115,16 +116,16 @@ public class uLipSyncEditor : Editor
     void DrawRawVolume()
     {
         float volume = Mathf.Log10(lipSync.result.rawVolume);
-        if (volume != Mathf.NegativeInfinity && volume != Mathf.Infinity)
+        if (!float.IsNegativeInfinity(volume) && !float.IsPositiveInfinity(volume))
         {
             _smoothVolume += (volume - _smoothVolume) * 0.9f;
-            minVolume = Mathf.Min(minVolume, _smoothVolume);
-            maxVolume = Mathf.Max(maxVolume, _smoothVolume);
+            _minVolume = Mathf.Min(_minVolume, _smoothVolume);
+            _maxVolume = Mathf.Max(_maxVolume, _smoothVolume);
         }
 
         EditorGUILayout.LabelField("Current Volume", _smoothVolume.ToString());
-        EditorGUILayout.LabelField("Min Volume", minVolume.ToString());
-        EditorGUILayout.LabelField("Max Volume", maxVolume.ToString());
+        EditorGUILayout.LabelField("Min Volume", _minVolume.ToString());
+        EditorGUILayout.LabelField("Max Volume", _maxVolume.ToString());
     }
 
     void DrawRMSVolume()
@@ -150,22 +151,35 @@ public class uLipSyncEditor : Editor
     {
         if (!lipSync.mfcc.IsCreated) return;
 
-        var editor = _profileEditor as ProfileEditor;
-        if (!editor) return;
-
         if (!EditorApplication.isPaused)
         {
             var array = new float[lipSync.mfcc.Length];
             lipSync.mfcc.CopyTo(array);
-            _mfccHistory.Add(array);
-            while (_mfccHistory.Count > 64) _mfccHistory.RemoveAt(0);
-            while (_mfccHistory.Count < 64) _mfccHistory.Add(array);
+            _mfccData.AddCalibrationData(array);
+            _mfccData.RemoveOldCalibrationData(64);
         }
-
-        foreach (var mfcc in _mfccHistory)
+        
+        _texture = TextureCreator.CreateMfccTexture(_texture, _mfccData, Common.MfccMinValue, Common.MfccMaxValue);
+        var area = GUILayoutUtility.GetRect(Screen.width, 64f);
+        area = EditorGUI.IndentedRect(area);
+        GUI.DrawTexture(area, _texture);
+        
+#if ULIPSYNC_DEBUG
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Dump"))
         {
-            EditorUtil.DrawMfcc(mfcc, editor.max, editor.min, 1f);
+            var date = System.DateTime.Now;
+            var filename = $"{date:yyyyMMddHHmmss}.csv";
+            var sw = new StreamWriter(filename);
+            var sb = new StringBuilder();
+            Debugging.DebugUtil.DumpMfccData(sb, _mfccData);
+            sw.Write(sb);
+            sw.Close();
+            Debug.Log($"{filename} was created.");
         }
+        EditorGUILayout.EndHorizontal();
+#endif
     }
 
     void DrawRecognition()

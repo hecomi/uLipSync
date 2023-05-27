@@ -6,11 +6,11 @@ namespace uLipSync
 
 public static class Common
 {
-    public const string assetName = "uLipSync";
-    public const string defaultProfileMale = assetName + "-Profile-Male";
-    public const string defaultProfileFemale = assetName + "-Profile-Female";
-    public const float defaultMinVolume = -2.5f;
-    public const float defaultMaxVolume = -1.5f;
+    public const string AssetName = "uLipSync";
+    public const float DefaultMinVolume = -2.5f;
+    public const float DefaultMaxVolume = -1.5f;
+    public const float MfccMinValue = -50f;
+    public const float MfccMaxValue = 30f;
 }
 
 public struct LipSyncInfo
@@ -38,6 +38,13 @@ public enum UpdateMethod
     FixedUpdate,
     LipSyncUpdateEvent,
     External,
+}
+
+public enum CompareMethod
+{
+    L1Norm,
+    L2Norm,
+    CosineSimilarity,
 }
 
 }

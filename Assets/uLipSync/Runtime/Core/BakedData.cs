@@ -1,8 +1,5 @@
 using UnityEngine;
 using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
-using Unity.Mathematics;
 using System.Collections.Generic;
 
 namespace uLipSync
@@ -32,7 +29,7 @@ public struct BakedFrame
 }
 
 [BurstCompile]
-[CreateAssetMenu(menuName = Common.assetName + "/Baked Data")]
+[CreateAssetMenu(menuName = Common.AssetName + "/Baked Data")]
 public class BakedData : ScriptableObject
 {
     public Profile profile;
@@ -59,9 +56,10 @@ public class BakedData : ScriptableObject
         if (frames == null || frames.Count == 0) return BakedFrame.zero;
 
         var phonemeCount = frames[0].phonemes.Count;
-        var frame = new BakedFrame();
-        frame.phonemes = new List<BakedPhonemeRatio>();
-
+        var frame = new BakedFrame
+        {
+            phonemes = new List<BakedPhonemeRatio>()
+        };
         int index0 = (int)Mathf.Floor(t * 60f);
         int index1 = index0 + 1;
         index0 = Mathf.Clamp(index0, 0, frames.Count - 1);
@@ -92,8 +90,10 @@ public class BakedData : ScriptableObject
 
     public static LipSyncInfo GetLipSyncInfo(BakedFrame frame)
     {
-        var info = new LipSyncInfo();
-        info.phonemeRatios = new Dictionary<string, float>();
+        var info = new LipSyncInfo
+        {
+            phonemeRatios = new Dictionary<string, float>()
+        };
 
         float maxRatio = 0f;
         foreach (var pr in frame.phonemes)
@@ -114,8 +114,8 @@ public class BakedData : ScriptableObject
             }
         }
 
-        float minVol = Common.defaultMinVolume;
-        float maxVol = Common.defaultMaxVolume;
+        float minVol = Common.DefaultMinVolume;
+        float maxVol = Common.DefaultMaxVolume;
         float normVol = Mathf.Log10(frame.volume);
         normVol = (normVol - minVol) / (maxVol - minVol);
         normVol = Mathf.Clamp(normVol, 0f, 1f);
@@ -135,135 +135,6 @@ public class BakedData : ScriptableObject
         Color.blue,
         Color.gray,
     };
-
-#if UNITY_2020_1_OR_NEWER
-
-    [BurstCompile]
-    struct CreateTextureJob : IJob
-    {
-        [WriteOnly] public NativeArray<Color32> texColors;
-        [DeallocateOnJobCompletion][ReadOnly] public NativeArray<Color> phonemeColors;
-        [DeallocateOnJobCompletion][ReadOnly] public NativeArray<float> phonemeRatios;
-        [DeallocateOnJobCompletion][ReadOnly] public NativeArray<float> volumes;
-        [ReadOnly] public int width;
-        [ReadOnly] public int height;
-        [ReadOnly] public int phonemeCount;
-        [ReadOnly] public float smooth;
-
-        public void Execute()
-        {
-            var currentColor = new Color();
-
-            for (int x = 0; x < width; ++x)
-            {
-                var targetColor = new Color();
-                for (int i = 0; i < phonemeCount; ++i)
-                {
-                    var colorIndex = i % phonemeColors.Length;
-                    var ratioIndex = x * phonemeCount + i;
-                    targetColor += phonemeColors[colorIndex] * phonemeRatios[ratioIndex];
-                }
-
-                currentColor += (targetColor - currentColor) * smooth;
-
-                for (int y = 0; y < height; ++y)
-                {
-                    var index = width * y + x;
-                    var color = currentColor;
-                    var dy = ((float)y - height / 2f) / (height / 2f);
-                    dy = math.abs(dy);
-                    dy = math.pow(dy, 2f);
-                    color.a = dy > volumes[x] ? 0f : 1f;
-                    texColors[index] = color;
-                }
-            }
-        }
-    }
-
-    public Texture2D CreateTexture(int width, int height)
-    {
-        if (!isValid) return Texture2D.whiteTexture;
-
-        var tex = new Texture2D(width, height);
-        var texColors = tex.GetPixelData<Color32>(0);
-        var phonemeColorsTmp = new NativeArray<Color>(phonemeColors, Allocator.TempJob);
-        int phonemeCount = frames[0].phonemes.Count;
-        var phonemeRatiosTmp = new NativeArray<float>(width * phonemeCount, Allocator.TempJob);
-        var volumesTmp = new NativeArray<float>(width, Allocator.TempJob);
-
-        for (int x = 0; x < width; ++x)
-        {
-            var t = (float)x / width * duration;
-            var frame = GetFrame(t);
-            for (int i = 0; i < phonemeCount; ++i)
-            {
-                phonemeRatiosTmp[x * phonemeCount + i] = frame.phonemes[i].ratio;
-            }
-            volumesTmp[x] = frame.volume;
-        }
-
-        var job = new CreateTextureJob()
-        {
-            texColors = texColors,
-            phonemeColors = phonemeColorsTmp,
-            phonemeRatios = phonemeRatiosTmp,
-            volumes = volumesTmp,
-            width = width,
-            height = height,
-            phonemeCount = phonemeCount,
-            smooth = 0.15f,
-        };
-        job.Schedule().Complete();
-
-        tex.Apply();
-        return tex;
-    }
-
-#else
-
-    public Texture2D CreateTexture(int width, int height)
-    {
-        if (!isValid) return Texture2D.whiteTexture;
-
-        var colors = new Color[width * height];
-        var currentColor = new Color();
-        var smooth = 0.15f;
-
-        for (int x = 0; x < width; ++x)
-        {
-            var t = (float)x / width * duration;
-            var frame = GetFrame(t);
-            var targetColor = new Color();
-
-            for (int i = 0; i < frame.phonemes.Count; ++i)
-            {
-                var colorIndex = i % phonemeColors.Length;
-                targetColor += phonemeColors[colorIndex] * frame.phonemes[i].ratio;
-            }
-
-            currentColor += (targetColor - currentColor) * smooth;
-
-            for (int y = 0; y < height; ++y)
-            {
-                var index = width * y + x;
-                var color = currentColor;
-                var dy = ((float)y - height / 2f) / (height / 2f);
-                dy = Mathf.Abs(dy);
-                dy = Mathf.Pow(dy, 2f);
-                color.a = dy > frame.volume ? 0f : 1f;
-                colors[index] = color;
-            }
-        }
-
-        var tex = new Texture2D(width, height);
-        tex.SetPixels(colors);
-        tex.Apply();
-
-        return tex;
-    }
-
-#endif
-
 }
 
 }

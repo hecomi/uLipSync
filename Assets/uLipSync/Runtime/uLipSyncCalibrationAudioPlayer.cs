@@ -19,6 +19,8 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
     int _sampleCount = 0;
     int _channels = 1;
     int _crossFadeDataCount = 0;
+    readonly object _lockObject = new object();
+    bool _isApplyRequested = false;
     int playDataSampleCount => _sampleCount - _crossFadeDataCount;
 
     public bool isPlaying
@@ -26,7 +28,7 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
         get 
         {
             var source = GetComponent<AudioSource>();
-            return source ? source.isPlaying : false;
+            return source && source.isPlaying;
         }
     }
 
@@ -40,14 +42,27 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
         Destroy(_tmpClip);
     }
 
-    void Update()
+    public void RequestApply()
     {
-        if (!_audioReadCalled) return;
-
-        _sampleRate = AudioSettings.outputSampleRate;
+        _isApplyRequested = true;
     }
 
-    public void Apply()
+    void Update()
+    {
+        lock (_lockObject)
+        {
+            if (!_audioReadCalled) return;
+
+            _sampleRate = AudioSettings.outputSampleRate;
+
+            if (_isApplyRequested)
+            {
+                Apply();
+            }
+        }
+    }
+
+    void Apply()
     {
         if (!clip) return;
 
@@ -66,53 +81,64 @@ public class uLipSyncCalibrationAudioPlayer : MonoBehaviour
         clip.GetData(_data, startPos);
 
         var name = $"{clip.name}-{startPos}-{endPos}";
-        _tmpClip = AudioClip.Create(
-            name, 
+        var newClip = AudioClip.Create(
+            name,
             playDataSampleCount,
-            _channels, 
-            freq, 
-            true, 
-            OnAudioRead, 
+            _channels,
+            freq,
+            true,
+            OnAudioRead,
             OnAudioSetPosition);
-        source.clip = _tmpClip;
+        source.clip = newClip;
         source.loop = true;
         source.Play();
+        
+        if (_tmpClip) DestroyImmediate(_tmpClip, true);
+        _tmpClip = newClip;
+
+        _isApplyRequested = false;
     }
 
     void OnAudioRead(float[] data)
     {
-        _audioReadCalled = true;
-
-        for (int i = 0; i < data.Length / _channels; ++i)
+        lock (_lockObject)
         {
-            for (int ch = 0; ch < _channels; ++ch)
+            _audioReadCalled = true;
+
+            for (int i = 0; i < data.Length / _channels; ++i)
             {
-                int index = i * _channels + ch;
+                for (int ch = 0; ch < _channels; ++ch)
+                {
+                    int index = i * _channels + ch;
 
-                if (_currentPos < _crossFadeDataCount)
-                {
-                    float t = (float)_currentPos / _crossFadeDataCount;
-                    float sin = Mathf.Sin(Mathf.PI * 0.5f * t);
-                    float cos = Mathf.Cos(Mathf.PI * 0.5f * t);
-                    int indexS = _currentPos;
-                    int indexE = _sampleCount - (_crossFadeDataCount - _currentPos);
-                    float dataS = _data[indexS * _channels + ch];
-                    float dataE = _data[indexE * _channels + ch];
-                    data[index] = dataS * sin + dataE * cos;
+                    if (_currentPos < _crossFadeDataCount)
+                    {
+                        float t = (float)_currentPos / _crossFadeDataCount;
+                        float sin = Mathf.Sin(Mathf.PI * 0.5f * t);
+                        float cos = Mathf.Cos(Mathf.PI * 0.5f * t);
+                        int indexS = _currentPos;
+                        int indexE = _sampleCount - (_crossFadeDataCount - _currentPos);
+                        float dataS = _data[indexS * _channels + ch];
+                        float dataE = _data[indexE * _channels + ch];
+                        data[index] = dataS * sin + dataE * cos;
+                    }
+                    else
+                    {
+                        data[index] = _data[_currentPos * _channels + ch];
+                    }
                 }
-                else
-                {
-                    data[index] = _data[_currentPos * _channels + ch];
-                }
+
+                _currentPos = (_currentPos + 1) % playDataSampleCount;
             }
-
-            _currentPos = (_currentPos + 1) % playDataSampleCount;
         }
     }
 
     void OnAudioSetPosition(int newPosition)
     {
-        _currentPos = newPosition;
+        lock (_lockObject)
+        {
+            _currentPos = newPosition;
+        }
     }
 
     public void Pause()

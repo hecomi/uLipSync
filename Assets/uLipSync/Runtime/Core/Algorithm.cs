@@ -7,7 +7,7 @@ namespace uLipSync
 {
 
 [BurstCompile]
-public unsafe static class Algorithm
+public static unsafe class Algorithm
 {
     public static float GetMaxValue(in NativeArray<float> array)
     {
@@ -60,25 +60,26 @@ public unsafe static class Algorithm
         }
     }
 
-    public static void Normalize(ref NativeArray<float> array)
+    public static void Normalize(ref NativeArray<float> array, float value = 1f)
     {
-        Normalize((float*)array.GetUnsafePtr(), array.Length);
+        Normalize((float*)array.GetUnsafePtr(), array.Length, value);
     }
 
     [BurstCompile]
-    static void Normalize(float* array, int len)
+    static void Normalize(float* array, int len, float value = 1f)
     {
         float max = GetMaxValue(array, len);
         if (max < math.EPSILON) return;
+        float r = value / max;
         for (int i = 0; i < len; ++i)
         {
-            array[i] /= max;
+            array[i] *= r;
         }
     }
 
     public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
     {
-        cutoff /= sampleRate;
+        cutoff = (cutoff - range) / sampleRate;
         range /= sampleRate;
 
         var tmp = new NativeArray<float>(data, Allocator.Temp);
@@ -210,6 +211,21 @@ public unsafe static class Algorithm
         }
     }
 
+    public static void ZeroPadding(ref NativeArray<float> data, out NativeArray<float> dataWithPadding)
+    {
+        int N = data.Length;
+        dataWithPadding = new NativeArray<float>(N * 2, Allocator.Temp);
+
+        var slice1 = new NativeSlice<float>(dataWithPadding, 0, N / 2);
+        UnsafeUtility.MemSet((float*)slice1.GetUnsafePtr<float>(), 0, sizeof(float) * slice1.Length);
+
+        var slice2 = new NativeSlice<float>(dataWithPadding, N / 2, N);
+        slice2.CopyFrom(data);
+
+        var slice3 = new NativeSlice<float>(dataWithPadding, N * 3 / 2, N / 2);
+        UnsafeUtility.MemSet((float*)slice3.GetUnsafePtr<float>(), 0, sizeof(float) * slice1.Length);
+    }
+
     public static void FFT(in NativeArray<float> data, out NativeArray<float> spectrum)
     {
         int N = data.Length;
@@ -321,30 +337,50 @@ public unsafe static class Algorithm
             float fCenter = ToHz(melCenter);
             float fEnd = ToHz(melEnd);
 
-            int iBegin = (int)math.round(fBegin / df);
+            int iBegin = (int)math.ceil(fBegin / df);
             int iCenter = (int)math.round(fCenter / df);
-            int iEnd = (int)math.round(fEnd / df);
+            int iEnd = (int)math.floor(fEnd / df);
 
             float sum = 0f;
-            for (int i = iBegin + 1; i < iEnd; ++i)
+            for (int i = iBegin + 1; i <= iEnd; ++i)
             {
-                float a = (i < iCenter) ? ((float)i / iCenter) : ((float)(i - iCenter) / iCenter);
+                float f = df * i;
+                float a = (i < iCenter) ? 
+                    (f - fBegin) / (fCenter - fBegin) : 
+                    (fEnd - f) / (fEnd - fCenter);
+                a /= (fEnd - fBegin) * 0.5f;
                 sum += a * spectrum[i];
             }
             melSpectrum[n] = sum;
         }
     }
 
-    [BurstCompile]
-    public static float ToMel(float hz)
+    public static void PowerToDb(ref NativeArray<float> array)
     {
-        return 1127.010480f * math.log(hz / 700f + 1f);
+        PowerToDb((float*)array.GetUnsafePtr(), array.Length);
     }
 
     [BurstCompile]
-    public static float ToHz(float mel)
+    static void PowerToDb(float* array, int len)
     {
-        return 700f * (math.exp(mel / 1127.010480f) - 1f);
+        for (int i = 0; i < len; ++i)
+        {
+            array[i] = 10f * math.log10(array[i]);
+        }
+    }
+
+    [BurstCompile]
+    static float ToMel(float hz, bool slaney = false)
+    {
+        float a = slaney ? 2595f : 1127f;
+        return a * math.log(hz / 700f + 1f);
+    }
+
+    [BurstCompile]
+    static float ToHz(float mel, bool slaney = false)
+    {
+        float a = slaney ? 2595f : 1127f;
+        return 700f * (math.exp(mel / a) - 1f);
     }
 
     public static void DCT(
@@ -375,6 +411,28 @@ public unsafe static class Algorithm
             }
             cepstrum[i] = sum;
         }
+    }
+
+    public static float Norm(in NativeArray<float> array)
+    {
+        return Norm((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
+    }
+
+    public static float Norm(in NativeSlice<float> slice)
+    {
+        return Norm((float*)slice.GetUnsafeReadOnlyPtr(), slice.Length);
+    }
+
+    [BurstCompile]
+    static float Norm(float* array, int len)
+    {
+        float sum = 0f;
+        for (int i = 0; i < len; ++i)
+        {
+            float x = array[i];
+            sum += x * x;
+        }
+        return math.sqrt(sum);
     }
 }
 

@@ -6,42 +6,47 @@ namespace uLipSync
 [RequireComponent(typeof(AudioSource))]
 public class uLipSyncMicrophone : MonoBehaviour
 {
-    const int maxRetryMilliSec = 1000;
+    const int MaxRetryMilliSec = 1000;
 
     public int index = 0;
-    private int preIndex_ = 0;
+    private int _preIndex = 0;
+    private AudioClip _micClip = null;
+
+    [Tooltip("When ON, AudioClip of the Microphone input is automatically registered to AudioSource")]
     public bool isAutoStart = true;
 
+    [Range(0.01f, 0.2f)]
+    [Tooltip("Threshold time to resynchronize Microphone and AudioSource")]
+    public float latencyTolerance = 0.05f;
+
+    [Range(0.01f, 0.2f)]
+    [Tooltip("Buffer time for reflecting Microphone input as AudioSource (too low can cause noise)")]
+    public float bufferTime = 0.03f;
+
     public AudioSource source { get; private set; }
+    public AudioClip clip
+    {
+        get => source ? source.clip : null;
+        set { if (source) source.clip = value; }
+    }
+
     public bool isReady { get; private set; } = false;
     public bool isStartRequested { get; private set; } = false;
     public bool isStopRequested { get; private set; } = false;
     public bool isRecording { get; private set; } = false;
     public MicDevice device { get; private set; } = new MicDevice();
-    public int micFreq { get { return device.minFreq; } }
-    public int maxFreq { get { return device.maxFreq; } }
-
-    public AudioClip clip
-    {
-        get { return source ? source.clip : null; }
-        set { if (source) source.clip = value; }
-    }
-
-    public bool isPlaying
-    {
-        get { return source ? source.isPlaying : false; }
-    }
-
-    public float freq
-    {
-        get { return clip ? clip.frequency : 44100; }
-    }
+    public float latency { get; private set; } = 0;
+    public int micFreq => device.minFreq;
+    public int maxFreq => device.maxFreq;
+    public bool isMicClipSet => _micClip && clip == _micClip;
+    public bool isPlaying => source && source.isPlaying;
+    public float freq => clip ? clip.frequency : 44100;
 
     protected void OnEnable()
     {
         source = GetComponent<AudioSource>();
 
-        preIndex_ = index;
+        _preIndex = index;
 
         UpdateMicInfo();
 
@@ -59,6 +64,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     void Update()
     {
         UpdateDevice();
+        UpdateAudioClip();
 
         if (isStartRequested)
         {
@@ -71,6 +77,8 @@ public class uLipSyncMicrophone : MonoBehaviour
             isStopRequested = false;
             StopRecordInternal();
         }
+        
+        UpdateLatencyCheck();
     }
 
     public void UpdateMicInfo()
@@ -87,11 +95,57 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void UpdateDevice()
     {
-        if (preIndex_ == index) return;
+        var isRecordingNow = isRecording;
 
-        preIndex_ = index;
+        if (_preIndex == index) return;
+
+        _preIndex = index;
         StopRecordInternal();
         UpdateMicInfo();
+
+        if (isRecordingNow)
+        {
+            StartRecord();
+        }
+    }
+
+    void UpdateAudioClip()
+    {
+        if (!isRecording) return;
+        if (isMicClipSet) return;
+
+        StopRecordInternal();
+        _micClip = null;
+    }
+
+    void UpdateLatencyCheck()
+    {
+        if (!isRecording) return; 
+
+        float micTime = Microphone.GetPosition(device.name) / freq;
+        float clipTime = source.time;
+        latency = micTime - clipTime;
+        
+        if (latency < -clip.length / 2) 
+        {
+            latency += clip.length; 
+        }
+
+        if (Mathf.Abs(latency) > latencyTolerance + bufferTime)
+        {
+            Debug.LogWarning($"Microphone and AudioSource went out of sync! ({latency:0.00} s)");
+            
+            // check if the microphone stopped recording. 
+            // sometimes this is caused by a faulty connection
+            if (Microphone.IsRecording(device.name))
+            {
+                source.time = micTime - bufferTime;
+            }
+            else
+            {
+                StartRecord(); 
+            }
+        }
     }
 
     public void StartRecord()
@@ -118,12 +172,13 @@ public class uLipSyncMicrophone : MonoBehaviour
         int freq = maxFreq;
         if (freq <= 0) freq = 48000;
 
-        clip = Microphone.Start(device.name, true, 10, freq);
+        _micClip = Microphone.Start(device.name, true, 10, freq);
+        clip = _micClip;
 
         int retryCount = 0;
         while (Microphone.GetPosition(device.name) <= 0)
         {
-            if (++retryCount >= maxRetryMilliSec)
+            if (++retryCount >= MaxRetryMilliSec)
             {
                 Debug.LogError("Failed to get microphone.");
                 return;
@@ -141,10 +196,12 @@ public class uLipSyncMicrophone : MonoBehaviour
     {
         if (!source) return;
 
-        if (source.isPlaying)
+        if (source.isPlaying && isMicClipSet)
         {
             source.Stop();
         }
+
+        Microphone.End(device.name);
 
         isRecording = false;
     }

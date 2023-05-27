@@ -10,7 +10,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncBlendShape))]
 public class uLipSyncBlendShapeEditor : Editor
 {
-    uLipSyncBlendShape blendShape { get { return target as uLipSyncBlendShape; } }
+    uLipSyncBlendShape blendShape => target as uLipSyncBlendShape;
     ReorderableList _reorderableList = null;
 
     public override void OnInspectorGUI()
@@ -104,10 +104,7 @@ public class uLipSyncBlendShapeEditor : Editor
             {
                 DrawBlendShapeListItem(rect, index);
             };
-            _reorderableList.elementHeightCallback = index =>
-            {
-                return GetBlendShapeListItemHeight(index);
-            };
+            _reorderableList.elementHeightCallback = GetBlendShapeListItemHeight;
         }
 
         EditorGUILayout.Separator();
@@ -203,7 +200,7 @@ public class uLipSyncBlendShapeEditor : Editor
             {
                 minPos.x += (blendShape.minVolume + 5f) / 5f * rect.width - 30f;
             }
-            EditorGUI.LabelField(minPos, $"{blendShape.minVolume.ToString("F2")}", style);
+            EditorGUI.LabelField(minPos, $"{blendShape.minVolume:F2}", style);
 
             var maxPos = rect;
             var maxX = (blendShape.maxVolume + 5f) / 5f * rect.width;
@@ -216,12 +213,13 @@ public class uLipSyncBlendShapeEditor : Editor
             {
                 maxPos.x += maxPos.width - 48f;
             }
-            EditorGUI.LabelField(maxPos, $"{blendShape.maxVolume.ToString("F2")}", style);
+            EditorGUI.LabelField(maxPos, $"{blendShape.maxVolume:F2}", style);
             GUI.color = origColor;
         }
         EditorGUILayout.EndHorizontal();
 
         EditorUtil.DrawProperty(serializedObject, nameof(blendShape.smoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(blendShape.usePhonemeBlend));
     }
 }
 

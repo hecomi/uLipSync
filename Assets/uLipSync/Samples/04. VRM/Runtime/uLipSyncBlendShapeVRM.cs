@@ -27,6 +27,23 @@ public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
         }
         proxy.Apply();
     }
+
+    public new BlendShapeInfo AddBlendShape(string phoneme, string blendShape)
+    {
+        var bs = GetBlendShapeInfo(phoneme);
+        if (bs == null) bs = new BlendShapeInfo() { phoneme = phoneme };
+
+        blendShapes.Add(bs);
+
+        var proxy = GetComponent<VRMBlendShapeProxy>();
+        if (!proxy || !proxy.BlendShapeAvatar) return bs;
+
+        var clips = proxy.BlendShapeAvatar.Clips;
+        int index = clips.FindIndex(x => x.BlendShapeName == blendShape);
+        bs.index = index - 1;
+
+        return bs;
+    }
 }
 
 }

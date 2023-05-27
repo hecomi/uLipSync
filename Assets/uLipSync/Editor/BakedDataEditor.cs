@@ -10,9 +10,9 @@ namespace uLipSync
 [CustomEditor(typeof(BakedData))]
 public class BakedDataEditor : Editor
 {
-    BakedData data { get => target as BakedData; }
-    StringBuilder _msg = new StringBuilder();
-    public static Color[] phonemeColors = new Color[]
+    BakedData data => target as BakedData;
+    readonly StringBuilder _msg = new StringBuilder();
+    static Color[] phonemeColors = new Color[]
     {
         Color.red,
         Color.cyan,

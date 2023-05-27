@@ -10,8 +10,8 @@ namespace uLipSync.Timeline
 [CustomEditor(typeof(uLipSyncClip))]
 public class uLipSyncClipEditor : Editor
 {
-    uLipSyncClip clip { get => target as uLipSyncClip; }
-    BakedData data { get => clip.bakedData; }
+    uLipSyncClip clip => target as uLipSyncClip;
+    BakedData data => clip.bakedData;
     Editor _bakedDataEditor = null;
 
     public override void OnInspectorGUI()
@@ -89,7 +89,7 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         if (!data) return null;
 
         width = Mathf.Clamp(width, 128, 4096);
-        var tex = data.CreateTexture(width, height);
+        var tex = TextureCreator.CreateBakedDataWaveTexture(data, width, height);
         var cache = new TextureCache { texture = tex };
         _textures.Add(clip, cache);
 

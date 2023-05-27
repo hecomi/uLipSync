@@ -20,9 +20,11 @@ public static class MicUtil
 
         for (int i = 0; i < Microphone.devices.Length; ++i)
         {
-            var info = new MicDevice();
-            info.name = Microphone.devices[i];
-            info.index = i;
+            var info = new MicDevice
+            {
+                name = Microphone.devices[i],
+                index = i
+            };
             Microphone.GetDeviceCaps(info.name, out info.minFreq, out info.maxFreq);
             list.Add(info);
         }

@@ -1,6 +1,6 @@
 {
     "name": "com.hecomi.ulipsync",
-    "version": "2.0.1",
+    "version": "3.0.0",
     "displayName": "uLipSync",
     "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
     "author": {
@@ -38,12 +38,12 @@
         },
         {
             "displayName": "03. AudioSource Proxy",
-            "description": "A sample for using an AudioSource that belongs to a different GameObject.",
+            "description": "A sample for using an AudioSource attached to a different GameObject.",
             "path": "Samples~/03. AudioSource Proxy"
         },
         {
             "displayName": "04. VRM",
-            "description": "A sample to move blendshapes in VRM. VRM assets and Alicia VRM model should be setup beforehand.",
+            "description": "A sample for performing lip sync with VRM",
             "path": "Samples~/04. VRM"
         },
         {
@@ -65,6 +65,26 @@
             "displayName": "08. Texture",
             "description": "A sample of lip-syncing with textures.",
             "path": "Samples~/08. Texture"
+        },
+        {
+            "displayName": "09. Animator",
+            "description": "A sample of lip-syncing with AnimatorController.",
+            "path": "Samples~/09. Animator"
+        },
+        {
+            "displayName": "10. Runtime Setup",
+            "description": "A sample of setup for dynamically loaded model at runtime.",
+            "path": "Samples~/10. Runtime Setup"
+        },
+        {
+            "displayName": "10. Runtime Setup",
+            "description": "A sample of setup for dynamically loaded model at runtime.",
+            "path": "Samples~/10. Runtime Setup"
+        },
+        {
+            "displayName": "11. UI",
+            "description": "A sample that displays the Profile UI at runtime and enables phoneme calibration",
+            "path": "Samples~/11. UI"
         }
     ]
 }
