@@ -1,10 +1,14 @@
 using System.Linq;
 using UnityEngine;
+#if USE_VRM10
 using UniVRM10;
+#endif
 
 namespace uLipSync
 {
 
+#if USE_VRM10
+    
 [ExecuteAlways]
 [RequireComponent(typeof(Vrm10Instance))]
 public class uLipSyncExpressionVRM : uLipSyncBlendShape
@@ -43,5 +47,13 @@ public class uLipSyncExpressionVRM : uLipSyncBlendShape
         return bs;
     }
 }
+
+#else
+
+public class uLipSyncExpressionVRM : uLipSyncBlendShape
+{
+}
+
+#endif
 
 }

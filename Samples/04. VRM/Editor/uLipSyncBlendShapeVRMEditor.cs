@@ -1,15 +1,18 @@
 using UnityEditor;
-using UnityEditorInternal;
 using System.Linq;
+#if USE_VRM0X
 using VRM;
+#endif
 
 namespace uLipSync
 {
 
+#if USE_VRM0X
+    
 [CustomEditor(typeof(uLipSyncBlendShapeVRM))]
 public class uLipSyncBlendShapeVRMEditor : uLipSyncBlendShapeEditor
 {
-    uLipSyncBlendShapeVRM blendShape { get { return target as uLipSyncBlendShapeVRM; } }
+    uLipSyncBlendShapeVRM blendShape => target as uLipSyncBlendShapeVRM;
     BlendShapeAvatar _avatar = null;
 
     void OnEnable()
@@ -59,5 +62,18 @@ public class uLipSyncBlendShapeVRMEditor : uLipSyncBlendShapeEditor
         return _avatar.Clips.Select(x => x.BlendShapeName).ToArray();
     }
 }
+
+#else
+
+[CustomEditor(typeof(uLipSyncBlendShapeVRM))]
+public class uLipSyncBlendShapeVRMEditor : uLipSyncBlendShapeEditor
+{
+    public override void OnInspectorGUI()
+    {
+        EditorGUILayout.HelpBox("Please import VRM 0.X package to use this component.", MessageType.Warning);
+    }
+}
+
+#endif
 
 }

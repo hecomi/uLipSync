@@ -13,6 +13,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.vrmc.univrm",
+            "expression": "",
+            "define": "USE_VRM0X"
+        },
+        {
+            "name": "com.vrmc.vrm",
+            "expression": "",
+            "define": "USE_VRM10"
+        }
+    ],
     "noEngineReferences": false
 }
