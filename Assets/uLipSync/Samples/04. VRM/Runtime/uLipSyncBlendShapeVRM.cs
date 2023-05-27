@@ -1,9 +1,13 @@
 using UnityEngine;
+#if USE_VRM0X
 using VRM;
+#endif
 
 namespace uLipSync
 {
 
+#if USE_VRM0X
+    
 [ExecuteAlways]
 [RequireComponent(typeof(VRMBlendShapeProxy))]
 public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
@@ -45,5 +49,13 @@ public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
         return bs;
     }
 }
+
+#else
+
+public class uLipSyncBlendShapeVRM : uLipSyncBlendShape
+{
+}
+
+#endif
 
 }
