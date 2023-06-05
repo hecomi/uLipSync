@@ -36,11 +36,11 @@ public class MfccData
         Deallocate();
     }
 
-    public void Allocate()
+    public void Allocate(int arraySize)
     {
         if (IsAllocated()) return;
 
-        mfccNativeArray = new NativeArray<float>(12, Allocator.Persistent);
+        mfccNativeArray = new NativeArray<float>(arraySize, Allocator.Persistent);
     }
 
     public void Deallocate()
@@ -57,10 +57,10 @@ public class MfccData
 
     public void AddCalibrationData(float[] mfcc)
     {
-        if (mfcc.Length != 12)
+        if (mfcc.Length != 12 && mfcc.Length != 24)
         {
-            Debug.LogError("The length of MFCC array should be 12.");
-            return;
+            Debug.LogError("The length of MFCC array should be 12. When using delta it should be 24.");
+			return;
         }
         mfccCalibrationDataList.Add(new MfccCalibrationData() { array = mfcc });
     }
@@ -69,12 +69,12 @@ public class MfccData
     {
         while (mfccCalibrationDataList.Count > dataCount) mfccCalibrationDataList.RemoveAt(0);
     }
-    
+
     public void UpdateNativeArray()
     {
         if (mfccCalibrationDataList.Count == 0) return;
 
-        for (int i = 0; i < 12; ++i)
+        for (int i = 0; i < mfccNativeArray.Length; ++i)
         {
             mfccNativeArray[i] = 0f;
             foreach (var mfcc in mfccCalibrationDataList)
@@ -97,7 +97,7 @@ public class Profile : ScriptableObject
     [HideInInspector] public string jsonPath = "";
 
     [Tooltip("The number of MFCC")]
-    public int mfccNum = 12;
+    public int mfccNum => useDelta ? 24 : 12;
     [Tooltip("The number of MFCC data to calculate the average MFCC values")]
     public int mfccDataCount = 16;
     [Tooltip("The number of Mel Filter Bank channels")]
@@ -106,25 +106,30 @@ public class Profile : ScriptableObject
     public int targetSampleRate = 16000;
     [Tooltip("Number of audio samples after downsampling is applied")]
     public int sampleCount = 1024;
-    [Tooltip("Whether to perform standardization of each coefficient of MFCC")] 
+    [Tooltip("Whether to perform standardization of each coefficient of MFCC. This normalization ensures that the coefficient values are centered around zero (zero mean) and have a spread of one (unit variance).")]
     public bool useStandardization = false;
+	[Tooltip("Add delta of MFCC's for even better accuracy")]
+	public bool useDelta = false;
     [Tooltip("The comparison method for MFCC")]
     public CompareMethod compareMethod = CompareMethod.L2Norm;
+	// hide from inspector
+	[HideInInspector] public int arraySize = 12;
 
     public List<MfccData> mfccs = new List<MfccData>();
-    
+
     float[] _means = new float[12];
     float[] _stdDevs = new float[12];
-    public float[] means => _means; 
-    public float[] standardDeviation => _stdDevs; 
-        
+    public float[] means => _means;
+    public float[] standardDeviation => _stdDevs;
+
     void OnEnable()
     {
+		arraySize = GetArraySizeMfcc();
         UpdateMeansAndStandardization();
 
         foreach (var data in mfccs)
         {
-            data.Allocate();
+            data.Allocate(mfccNum);
             data.RemoveOldCalibrationData(mfccDataCount);
             data.UpdateNativeArray();
         }
@@ -138,20 +143,37 @@ public class Profile : ScriptableObject
         }
     }
 
+	public int GetArraySizeMfcc()
+		{
+			if (useDelta)
+			{
+				arraySize = 24;
+				_means = new float[24];
+				_stdDevs = new float[24];
+			}
+			else
+			{
+				arraySize = 12;
+				_means = new float[12];
+				_stdDevs = new float[12];
+			}
+			return arraySize;
+		}
+
     public string GetPhoneme(int index)
     {
         if (index < 0 || index >= mfccs.Count) return "";
-        
+
         return mfccs[index].name;
     }
 
     public void AddMfcc(string name)
     {
         var data = new MfccData(name);
-        data.Allocate();
+        data.Allocate(mfccNum);
         for (int i = 0; i < mfccDataCount; ++i)
         {
-            data.AddCalibrationData(new float[12]);
+            data.AddCalibrationData(new float[mfccNum]);
         }
         mfccs.Add(data);
     }
@@ -159,11 +181,11 @@ public class Profile : ScriptableObject
     public void RemoveMfcc(int index)
     {
         if (index < 0 || index >= mfccs.Count) return;
-        
+
         var data = mfccs[index];
         data.Deallocate();
         mfccs.RemoveAt(index);
-        
+
         UpdateMeansAndStandardization();
     }
 
@@ -237,7 +259,7 @@ public class Profile : ScriptableObject
         UpdateMeans();
         UpdateStandardizations();
     }
-    
+
     void UpdateMeans()
     {
         for (int i = 0; i < _means.Length; ++i)
@@ -282,7 +304,7 @@ public class Profile : ScriptableObject
         {
             _stdDevs[i] = 0f;
         }
-        
+
         int n = 0;
         foreach (var mfccData in mfccs)
         {
@@ -296,7 +318,7 @@ public class Profile : ScriptableObject
                 ++n;
             }
         }
-        
+
         for (int i = 0; i < _stdDevs.Length; ++i)
         {
             _stdDevs[i] = math.sqrt(_stdDevs[i] / n);
