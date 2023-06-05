@@ -413,6 +413,52 @@ public static unsafe class Algorithm
         }
     }
 
+	/// <summary>
+	/// Calculate delta coefficients.
+	/// </summary>
+	public static void CalculateDelta(
+		in NativeArray<float> buffer,
+		out NativeArray<float> delta,
+		int bufferSize = 3,
+		int numCoefficients = 12)
+	{
+		delta = new NativeArray<float>(numCoefficients, Allocator.Temp);
+
+		CalculateDelta(
+			(float*)buffer.GetUnsafeReadOnlyPtr(),
+			(float*)delta.GetUnsafePtr(),
+			bufferSize,
+			numCoefficients);
+	}
+
+	[BurstCompile]
+	private static unsafe void CalculateDelta(
+		float* buffer,
+		float* delta,
+		int bufferSize,
+		int numCoefficients)
+	{
+		for (int i = 0; i < numCoefficients; i++)
+		{
+			// Calculate delta
+			float numerator = 0f;
+			float denominator = 0f;
+			int index = 0;
+
+			for (int j = 0; j < bufferSize-1; j++)
+			{
+				float frameMfcc = buffer[j * numCoefficients + i];
+
+				float weight = index * index;
+				numerator += weight * frameMfcc;
+				denominator += weight;
+				index++;
+			}
+
+			delta[i] = numerator / (2 * denominator);
+		}
+	}
+
     public static float Norm(in NativeArray<float> array)
     {
         return Norm((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
