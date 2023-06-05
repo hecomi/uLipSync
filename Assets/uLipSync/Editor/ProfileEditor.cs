@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using uLipSync.Debugging;
+using System;
 
 namespace uLipSync
 {
@@ -36,11 +37,11 @@ public class ProfileEditor : Editor
         if (EditorUtil.SimpleFoldout("MFCC", true, "-uLipSync-Profile"))
         {
             EditorGUI.BeginChangeCheck();
-            
+
             ++EditorGUI.indentLevel;
             DrawMfccReorderableList(showCalibration);
             --EditorGUI.indentLevel;
-            
+
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(target);
@@ -62,6 +63,20 @@ public class ProfileEditor : Editor
                 profile.UpdateMeansAndStandardization();
                 EditorUtility.SetDirty(target);
             }
+			GUI.enabled = profile.mfccs.Count == 0;
+				if (profile.mfccs.Count != 0)
+				{
+					EditorGUILayout.HelpBox("Can't change delta setting when mfcc data exist." +
+						Environment.NewLine + "Create a new profile or delete the mfcc data", MessageType.Warning);
+				}
+			bool useDelta = EditorGUILayout.Toggle("Use Delta", profile.useDelta);
+			if (useDelta != profile.useDelta)
+			{
+				Undo.RecordObject(target, "Change Use Delta");
+				profile.useDelta = useDelta;
+				EditorUtility.SetDirty(target);
+			}
+			GUI.enabled = true;
             EditorUtil.DrawProperty(serializedObject, nameof(profile.compareMethod));
             profile.mfccDataCount = Mathf.Clamp(profile.mfccDataCount, 1, 256);
             profile.melFilterBankChannels = Mathf.Clamp(profile.melFilterBankChannels, 12, 256);
@@ -118,7 +133,7 @@ public class ProfileEditor : Editor
         if (_reorderableList == null)
         {
             _reorderableList = new ReorderableList(profile.mfccs, typeof(MfccData));
-            _reorderableList.drawHeaderCallback = rect => 
+            _reorderableList.drawHeaderCallback = rect =>
             {
                 rect.xMin -= EditorGUI.indentLevel * 12f;
                 EditorGUI.LabelField(rect, "MFCCs");
@@ -182,7 +197,7 @@ public class ProfileEditor : Editor
         if (!_texturePool.TryGetValue(data, out Texture2D tex)) tex = null;
         tex = TextureCreator.CreateMfccTexture(tex, data, Common.MfccMinValue, Common.MfccMaxValue);
         _texturePool[data] = tex;
-        
+
         var area = EditorGUI.IndentedRect(mfccPos);
         area.height = data.mfccCalibrationDataList.Count * 3f;
         GUI.DrawTexture(area, tex, ScaleMode.StretchToFill);
