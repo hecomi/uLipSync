@@ -26,10 +26,13 @@ public struct LipSyncJob : IJob
     [ReadOnly] public NativeArray<float> means;
     [ReadOnly] public NativeArray<float> standardDeviations;
     [ReadOnly] public NativeArray<float> phonemes;
+	[ReadOnly] public bool useDelta;
+	[ReadOnly] public NativeArray<int> bufferMelCepOffset;
     public NativeArray<float> mfcc;
     public NativeArray<float> scores;
     public NativeArray<Info> info;
-    
+	public NativeArray<float> bufferMelCep;
+
 #if ULIPSYNC_DEBUG
     public NativeArray<float> debugData;
     public NativeArray<float> debugSpectrum;
@@ -39,11 +42,12 @@ public struct LipSyncJob : IJob
 
     int cutoff => targetSampleRate / 2;
     int range => 500;
+	int bufferSize => 3;
+	int calcLength => (int)mfcc.Length/2;  //Todo: calculate the total length mfcc divide by the number of delta's
 
     public void Execute()
     {
         float volume = Algorithm.GetRMSVolume(input);
-
         Algorithm.CopyRingBuffer(input, out var buffer, startIndex);
         Algorithm.LowPassFilter(ref buffer, outputSampleRate, cutoff, range);
         Algorithm.DownSample(buffer, out var data, outputSampleRate, targetSampleRate);
@@ -55,10 +59,44 @@ public struct LipSyncJob : IJob
         Algorithm.PowerToDb(ref melSpectrum);
         Algorithm.DCT(melSpectrum, out var melCepstrum);
 
-        for (int i = 1; i <= mfcc.Length; ++i)
-        {
-            mfcc[i - 1] = melCepstrum[i];
-        }
+		if (useDelta)
+		{
+			// Fill the first slot of buffer with current melCepstrum
+			bufferMelCep.Slice(bufferMelCepOffset[0], calcLength).CopyFrom(melCepstrum.Slice(0, calcLength));
+
+			// Calculate delta
+			Algorithm.CalculateDelta(bufferMelCep, out var deltaMelCepstrum);
+
+			// Move the buffer values up one slot. Slice doesn't work with NativeArray, so we have to copy the values manually.
+			NativeArray<float> tempBuffer = new NativeArray<float>(calcLength, Allocator.Temp);
+			for (int j = bufferSize - 1; j > 0; j--)
+			{
+				int srcOffset = bufferMelCepOffset[j - 1];
+				int dstOffset = bufferMelCepOffset[j];
+				bufferMelCep.Slice(srcOffset, calcLength).CopyTo(tempBuffer);
+				for (int k = 0; k < calcLength; k++)
+				{
+					bufferMelCep[dstOffset + k] = tempBuffer[k];
+				}
+			}
+
+			// Copy the cepstrum and delta to mfcc
+			for (int i = 0; i <= calcLength-1; ++i)
+			{
+				// don't use the first value of melCepstrum, because it's the power of the signal?
+				mfcc[i] = melCepstrum[i+1];
+				mfcc[i + 12] = deltaMelCepstrum[i];
+			}
+			deltaMelCepstrum.Dispose();
+			tempBuffer.Dispose();
+		}
+		else
+		{
+			for (int i = 1; i <= mfcc.Length; ++i)
+			{
+				mfcc[i - 1] = melCepstrum[i];
+			}
+		}
 
         CalcScores();
 
@@ -67,7 +105,7 @@ public struct LipSyncJob : IJob
             volume = volume,
             mainPhonemeIndex = GetVowel(),
         };
-        
+
 #if ULIPSYNC_DEBUG
         data.CopyTo(debugData);
         spectrum.CopyTo(debugSpectrum);
@@ -82,17 +120,23 @@ public struct LipSyncJob : IJob
         melCepstrum.Dispose();
     }
 
+	/// <summary>
+	/// Calculates the scores of each phoneme. The scores can be calculated by the following methods.
+	/// - L1 Norm (Manhattan Distance)
+	/// - L2 Norm (Euclidean Distance)
+	/// - Cosine Similarity (Cosine Distance)
+	/// </summary>
     void CalcScores()
     {
         float sum = 0f;
-        
+
         for (int i = 0; i < scores.Length; ++i)
         {
             float score = CalcScore(i);
             scores[i] = score;
             sum += score;
         }
-        
+
         for (int i = 0; i < scores.Length; ++i)
         {
             scores[i] = sum > 0 ? scores[i] / sum : 0f;
@@ -117,7 +161,7 @@ public struct LipSyncJob : IJob
     {
         int n = mfcc.Length;
         var phoneme = new NativeSlice<float>(phonemes, index * n, n);
-        
+
         var distance = 0f;
         for (int i = 0; i < n; ++i)
         {
@@ -134,7 +178,7 @@ public struct LipSyncJob : IJob
     {
         int n = mfcc.Length;
         var phoneme = new NativeSlice<float>(phonemes, index * n, n);
-        
+
         var distance = 0f;
         for (int i = 0; i < n; ++i)
         {
@@ -153,7 +197,7 @@ public struct LipSyncJob : IJob
         var phoneme = new NativeSlice<float>(phonemes, index * n, n);
         float mfccNorm = 0f;
         float phonemeNorm = 0f;
-        
+
         float prod = 0f;
         for (int i = 0; i < n; ++i)
         {
@@ -171,6 +215,9 @@ public struct LipSyncJob : IJob
         return math.pow(similarity, 100f);
     }
 
+	/// <summary>
+	/// Gets the index of the phoneme with the highest score.
+	/// </summary>
     int GetVowel()
     {
         int index = -1;
