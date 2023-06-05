@@ -21,6 +21,7 @@ public class uLipSync : MonoBehaviour
     bool _allocated = false;
     int _index = 0;
     bool _isDataReceived = false;
+	int bufferSize = 3;
 
     NativeArray<float> _rawInputData;
     NativeArray<float> _inputData;
@@ -31,12 +32,14 @@ public class uLipSync : MonoBehaviour
     NativeArray<float> _phonemes;
     NativeArray<float> _scores;
     NativeArray<LipSyncJob.Info> _info;
+	NativeArray<float> _bufferMelCep;
+	NativeArray<int> _bufferMelCepOffset;
     List<int> _requestedCalibrationVowels = new List<int>();
     Dictionary<string, float> _ratios = new Dictionary<string, float>();
 
     public NativeArray<float> mfcc => _mfccForOther;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
-    
+
 #if ULIPSYNC_DEBUG
     NativeArray<float> _debugData;
     NativeArray<float> _debugSpectrum;
@@ -54,14 +57,14 @@ public class uLipSync : MonoBehaviour
 
     int inputSampleCount
     {
-        get 
-        {  
+        get
+        {
             if (!profile) return AudioSettings.outputSampleRate;
             float r = (float)AudioSettings.outputSampleRate / profile.targetSampleRate;
             return Mathf.CeilToInt(profile.sampleCount * r);
         }
     }
-    
+
     int mfccNum => profile ? profile.mfccNum : 12;
 
     void Awake()
@@ -110,14 +113,24 @@ public class uLipSync : MonoBehaviour
             int n = inputSampleCount;
             int phonemeCount = profile ? profile.mfccs.Count : 1;
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
-            _inputData = new NativeArray<float>(n, Allocator.Persistent); 
-            _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _means = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _standardDeviations = new NativeArray<float>(mfccNum, Allocator.Persistent); 
+            _inputData = new NativeArray<float>(n, Allocator.Persistent);
+            _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _means = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _standardDeviations = new NativeArray<float>(mfccNum, Allocator.Persistent);
             _scores = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
+			_bufferMelCep = new NativeArray<float>(bufferSize * mfccNum/2, Allocator.Persistent);
+			// not sure if the best place is her to initialize the offset array?
+			// also maybe there is a smarter way to do without the offset array?
+			_bufferMelCepOffset = new NativeArray<int>(bufferSize, Allocator.Persistent);
+			int offset = 0;
+			for (int i = 0; i < bufferSize; ++i)
+			{
+				_bufferMelCepOffset[i] = offset;
+				offset += mfccNum/2;
+			}
 #if ULIPSYNC_DEBUG
             _debugData = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
             _debugDataForOther = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
@@ -149,6 +162,8 @@ public class uLipSync : MonoBehaviour
             _scores.Dispose();
             _phonemes.Dispose();
             _info.Dispose();
+			_bufferMelCep.Dispose();
+			_bufferMelCepOffset.Dispose();
 #if ULIPSYNC_DEBUG
             _debugData.Dispose();
             _debugDataForOther.Dispose();
@@ -189,7 +204,7 @@ public class uLipSync : MonoBehaviour
         _debugMelSpectrumForOther.CopyFrom(_debugMelSpectrum);
         _debugMelCepstrumForOther.CopyFrom(_debugMelCepstrum);
 #endif
-        
+
         int index = _info[0].mainPhonemeIndex;
         string mainPhoneme = profile.GetPhoneme(index);
 
@@ -270,11 +285,14 @@ public class uLipSync : MonoBehaviour
             melFilterBankChannels = profile.melFilterBankChannels,
             means = _means,
             standardDeviations = _standardDeviations,
+			useDelta = profile.useDelta,
             mfcc = _mfcc,
             phonemes = _phonemes,
             compareMethod = profile.compareMethod,
             scores = _scores,
             info = _info,
+			bufferMelCep = _bufferMelCep,
+			bufferMelCepOffset = _bufferMelCepOffset,
 #if ULIPSYNC_DEBUG
             debugData = _debugData,
             debugSpectrum = _debugSpectrum,
@@ -328,7 +346,7 @@ public class uLipSync : MonoBehaviour
         {
             int n = _rawInputData.Length;
             _index = _index % n;
-            for (int i = 0; i < input.Length; i += channels) 
+            for (int i = 0; i < input.Length; i += channels)
             {
                 _rawInputData[_index++ % n] = input[i];
             }
@@ -337,7 +355,7 @@ public class uLipSync : MonoBehaviour
         if (math.abs(outputSoundGain - 1f) > math.EPSILON)
         {
             int n = input.Length;
-            for (int i = 0; i < n; ++i) 
+            for (int i = 0; i < n; ++i)
             {
                 input[i] *= outputSoundGain;
             }
