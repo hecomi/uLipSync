@@ -6,14 +6,14 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace uLipSync
 {
 
-[BurstCompile]
+[BurstCompile(FloatMode = FloatMode.Fast, FloatPrecision = FloatPrecision.Low)]
 public static unsafe class Algorithm
 {
     public static float GetMaxValue(in NativeArray<float> array)
     {
         return GetMaxValue((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
     }
-    
+
     [BurstCompile]
     static float GetMaxValue(float* array, int len)
     {
@@ -25,6 +25,9 @@ public static unsafe class Algorithm
         return max;
     }
 
+	/// <summary>
+	/// Get RMS volume.
+	/// </summary>
     public static float GetRMSVolume(in NativeArray<float> array)
     {
         return GetRMSVolume((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
@@ -41,13 +44,16 @@ public static unsafe class Algorithm
         return math.sqrt(average / len);
     }
 
+	/// <summary>
+	/// Copy ring buffer, startSrcIndex is the index of the oldest data.
+	/// </summary>
     public static void CopyRingBuffer(in NativeArray<float> input, out NativeArray<float> output, int startSrcIndex)
     {
         output = new NativeArray<float>(input.Length, Allocator.Temp);
         CopyRingBuffer(
-            (float*)input.GetUnsafeReadOnlyPtr(), 
-            (float*)output.GetUnsafePtr(), 
-            input.Length, 
+            (float*)input.GetUnsafeReadOnlyPtr(),
+            (float*)output.GetUnsafePtr(),
+            input.Length,
             startSrcIndex);
     }
 
@@ -77,6 +83,9 @@ public static unsafe class Algorithm
         }
     }
 
+	/// <summary>
+	/// Low-pass filter, cutoff is normalized by sample rate.
+	/// </summary>
     public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
     {
         cutoff = (cutoff - range) / sampleRate;
@@ -122,6 +131,9 @@ public static unsafe class Algorithm
         }
     }
 
+	/// <summary>
+	/// Downsample the specified input.
+	/// </summary>
     public static void DownSample(in NativeArray<float> input, out NativeArray<float> output, int sampleRate, int targetSampleRate)
     {
         if (sampleRate <= targetSampleRate)
@@ -133,8 +145,8 @@ public static unsafe class Algorithm
             int skip = sampleRate / targetSampleRate;
             output = new NativeArray<float>(input.Length / skip, Allocator.Temp);
             DownSample1(
-                (float*)input.GetUnsafeReadOnlyPtr(), 
-                (float*)output.GetUnsafePtr(), 
+                (float*)input.GetUnsafeReadOnlyPtr(),
+                (float*)output.GetUnsafePtr(),
                 output.Length,
                 skip);
         }
@@ -144,9 +156,9 @@ public static unsafe class Algorithm
             int n = (int)math.round(input.Length / df);
             output = new NativeArray<float>(n, Allocator.Temp);
             DownSample2(
-                (float*)input.GetUnsafeReadOnlyPtr(), 
+                (float*)input.GetUnsafeReadOnlyPtr(),
                 input.Length,
-                (float*)output.GetUnsafePtr(), 
+                (float*)output.GetUnsafePtr(),
                 output.Length,
                 df);
         }
@@ -176,6 +188,9 @@ public static unsafe class Algorithm
         }
     }
 
+	/// <summary>
+	/// Pre-emphasis, which is a high-pass filter
+	/// </summary>
     public static void PreEmphasis(ref NativeArray<float> data, float p)
     {
         var tmp = new NativeArray<float>(data, Allocator.Temp);
@@ -298,8 +313,11 @@ public static unsafe class Algorithm
         oddIm.Dispose();
     }
 
+	/// <summary>
+	/// Convert frequency to mel frequency by subdividing the mel scale into melDiv parts.
+	/// </summary>
     public static void MelFilterBank(
-        in NativeArray<float> spectrum, 
+        in NativeArray<float> spectrum,
         out NativeArray<float> melSpectrum,
         float sampleRate,
         int melDiv)
@@ -315,7 +333,7 @@ public static unsafe class Algorithm
 
     [BurstCompile]
     static void MelFilterBank(
-        float* spectrum, 
+        float* spectrum,
         float* melSpectrum,
         int len,
         float sampleRate,
@@ -345,8 +363,8 @@ public static unsafe class Algorithm
             for (int i = iBegin + 1; i <= iEnd; ++i)
             {
                 float f = df * i;
-                float a = (i < iCenter) ? 
-                    (f - fBegin) / (fCenter - fBegin) : 
+                float a = (i < iCenter) ?
+                    (f - fBegin) / (fCenter - fBegin) :
                     (fEnd - f) / (fEnd - fCenter);
                 a /= (fEnd - fBegin) * 0.5f;
                 sum += a * spectrum[i];
@@ -355,6 +373,9 @@ public static unsafe class Algorithm
         }
     }
 
+	/// <summary>
+	/// Convert power spectrum to decibel.
+	/// </summary>
     public static void PowerToDb(ref NativeArray<float> array)
     {
         PowerToDb((float*)array.GetUnsafePtr(), array.Length);
@@ -383,13 +404,16 @@ public static unsafe class Algorithm
         return 700f * (math.exp(mel / a) - 1f);
     }
 
+	/// <summary>
+	/// Discrete Cosine Transform.
+	/// </summary>
     public static void DCT(
         in NativeArray<float> spectrum,
         out NativeArray<float> cepstrum)
     {
         cepstrum = new NativeArray<float>(spectrum.Length, Allocator.Temp);
         DCT(
-            (float*)spectrum.GetUnsafeReadOnlyPtr(), 
+            (float*)spectrum.GetUnsafeReadOnlyPtr(),
             (float*)cepstrum.GetUnsafePtr(),
             spectrum.Length);
     }
