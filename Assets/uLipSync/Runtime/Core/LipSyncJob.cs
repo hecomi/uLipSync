@@ -44,6 +44,7 @@ public struct LipSyncJob : IJob
     int range => 500;
 	int bufferSize => 3;
 	int calcLength => (int)mfcc.Length/2;  //Todo: calculate the total length mfcc divide by the number of delta's
+										   	// delta should be an enum instead of a bool for next version.
 
     public void Execute()
     {
@@ -67,35 +68,26 @@ public struct LipSyncJob : IJob
 			// Calculate delta
 			Algorithm.CalculateDelta(bufferMelCep, out var deltaMelCepstrum);
 
-			// Move the buffer values up one slot. Slice doesn't work with NativeArray, so we have to copy the values manually.
+			// Move the buffer values up one slot
 			NativeArray<float> tempBuffer = new NativeArray<float>(calcLength, Allocator.Temp);
 			for (int j = bufferSize - 1; j > 0; j--)
 			{
 				int srcOffset = bufferMelCepOffset[j - 1];
 				int dstOffset = bufferMelCepOffset[j];
-				bufferMelCep.Slice(srcOffset, calcLength).CopyTo(tempBuffer);
-				for (int k = 0; k < calcLength; k++)
-				{
-					bufferMelCep[dstOffset + k] = tempBuffer[k];
-				}
+				NativeArray<float>.Copy(bufferMelCep, srcOffset, tempBuffer, 0, calcLength);
+				NativeArray<float>.Copy(tempBuffer, 0, bufferMelCep, dstOffset, calcLength);
 			}
 
 			// Copy the cepstrum and delta to mfcc
-			for (int i = 0; i <= calcLength-1; ++i)
-			{
-				// don't use the first value of melCepstrum, because it's the power of the signal?
-				mfcc[i] = melCepstrum[i+1];
-				mfcc[i + 12] = deltaMelCepstrum[i];
-			}
+			NativeArray<float>.Copy(melCepstrum, 1, mfcc, 0, calcLength);
+			NativeArray<float>.Copy(deltaMelCepstrum, 0, mfcc, calcLength, calcLength);
+
 			deltaMelCepstrum.Dispose();
 			tempBuffer.Dispose();
 		}
 		else
 		{
-			for (int i = 1; i <= mfcc.Length; ++i)
-			{
-				mfcc[i - 1] = melCepstrum[i];
-			}
+			NativeArray<float>.Copy(melCepstrum, 1, mfcc, 0, mfcc.Length);
 		}
 
         CalcScores();
