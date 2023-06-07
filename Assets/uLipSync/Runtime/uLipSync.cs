@@ -102,11 +102,11 @@ public class uLipSync : MonoBehaviour
     {
         if (_allocated)
         {
+        	_jobHandle.Complete();
             DisposeBuffers();
         }
         _allocated = true;
 
-        _jobHandle.Complete();
 
         lock (_lockObject)
         {
