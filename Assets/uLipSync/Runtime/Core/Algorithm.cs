@@ -2,6 +2,7 @@
 using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
+using System.Runtime.CompilerServices;
 
 namespace uLipSync
 {
@@ -9,6 +10,11 @@ namespace uLipSync
 [BurstCompile(FloatMode = FloatMode.Fast, FloatPrecision = FloatPrecision.Low)]
 public static unsafe class Algorithm
 {
+	/// <summary>
+	/// Get the maximum value of the array.
+	/// </summary>
+	/// <param name="array">Array to get max from.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float GetMaxValue(in NativeArray<float> array)
     {
         return GetMaxValue((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
@@ -28,6 +34,7 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Get RMS volume.
 	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float GetRMSVolume(in NativeArray<float> array)
     {
         return GetRMSVolume((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
@@ -47,6 +54,10 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Copy ring buffer, startSrcIndex is the index of the oldest data.
 	/// </summary>
+	/// <param name="input">Source buffer.</param>
+	/// <param name="output">Destination buffer. This is a temporary buffer and needs to be disposed.</param>
+	/// <param name="startSrcIndex">Index of the oldest data.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyRingBuffer(in NativeArray<float> input, out NativeArray<float> output, int startSrcIndex)
     {
         output = new NativeArray<float>(input.Length, Allocator.Temp);
@@ -66,6 +77,12 @@ public static unsafe class Algorithm
         }
     }
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	/// <summary>
+	/// Normalize array to the specified value.
+	/// </summary>
+	/// <param name="array">Array to normalize.</param>
+	/// <param name="value">Value to use for normalization.</param>
     public static void Normalize(ref NativeArray<float> array, float value = 1f)
     {
         Normalize((float*)array.GetUnsafePtr(), array.Length, value);
@@ -86,6 +103,11 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Low-pass filter, cutoff is normalized by sample rate.
 	/// </summary>
+	/// <param name="data">Data. </param>
+	/// <param name="sampleRate">Sample rate.</param>
+	/// <param name="cutoff">Cutoff frequency.</param>
+	/// <param name="range">Range of cutoff frequency.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void LowPassFilter(ref NativeArray<float> data, float sampleRate, float cutoff, float range)
     {
         cutoff = (cutoff - range) / sampleRate;
@@ -132,8 +154,13 @@ public static unsafe class Algorithm
     }
 
 	/// <summary>
-	/// Downsample the specified input.
+	/// Down sample the specified input.
 	/// </summary>
+	/// <param name="input">Input.</param>
+	/// <param name="output">Output. This is a temporary buffer and needs to be disposed.</param>
+	/// <param name="sampleRate">Sample rate.</param>
+	/// <param name="targetSampleRate">Target sample rate.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void DownSample(in NativeArray<float> input, out NativeArray<float> output, int sampleRate, int targetSampleRate)
     {
         if (sampleRate <= targetSampleRate)
@@ -191,6 +218,7 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Pre-emphasis, which is a high-pass filter
 	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void PreEmphasis(ref NativeArray<float> data, float p)
     {
         var tmp = new NativeArray<float>(data, Allocator.Temp);
@@ -211,6 +239,7 @@ public static unsafe class Algorithm
         }
     }
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void HammingWindow(ref NativeArray<float> array)
     {
         HammingWindow((float*)array.GetUnsafePtr(), array.Length);
@@ -226,7 +255,12 @@ public static unsafe class Algorithm
         }
     }
 
-    public static void ZeroPadding(ref NativeArray<float> data, out NativeArray<float> dataWithPadding)
+    /// <summary>
+	/// Add zero padding to the begin and end of the data.
+	/// </summary>
+	/// <param name="data">Data.</param>
+	/// <param name="dataWithPadding">Data with padding. This is a temporary buffer and needs to be disposed.</param>
+	public static void ZeroPadding(ref NativeArray<float> data, out NativeArray<float> dataWithPadding)
     {
         int N = data.Length;
         dataWithPadding = new NativeArray<float>(N * 2, Allocator.Temp);
@@ -241,6 +275,12 @@ public static unsafe class Algorithm
         UnsafeUtility.MemSet((float*)slice3.GetUnsafePtr<float>(), 0, sizeof(float) * slice1.Length);
     }
 
+	/// <summary>
+	/// Fast Fourier transform.
+	/// </summary>
+	/// <param name="data">Data.</param>
+	/// <param name="spectrum">Spectrum. This is a temporary buffer and needs to be disposed.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void FFT(in NativeArray<float> data, out NativeArray<float> spectrum)
     {
         int N = data.Length;
@@ -316,6 +356,9 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Convert frequency to mel frequency by subdividing the mel scale into melDiv parts.
 	/// </summary>
+	/// <param name="spectrum">Spectrum.</param>
+	/// <param name="melSpectrum">Mel spectrum. This is a temporary buffer and needs to be disposed.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void MelFilterBank(
         in NativeArray<float> spectrum,
         out NativeArray<float> melSpectrum,
@@ -376,6 +419,7 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Convert power spectrum to decibel.
 	/// </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void PowerToDb(ref NativeArray<float> array)
     {
         PowerToDb((float*)array.GetUnsafePtr(), array.Length);
@@ -407,6 +451,9 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Discrete Cosine Transform.
 	/// </summary>
+	/// <param name="spectrum">Spectrum.</param>
+	/// <param name="cepstrum">Cepstrum. This is a temporary buffer and needs to be disposed.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void DCT(
         in NativeArray<float> spectrum,
         out NativeArray<float> cepstrum)
@@ -440,6 +487,9 @@ public static unsafe class Algorithm
 	/// <summary>
 	/// Calculate delta coefficients.
 	/// </summary>
+	/// <param name="buffer">MFCC buffer.</param>
+	/// <param name="delta">Delta coefficients. This is a temporary buffer and needs to be disposed.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void CalculateDelta(
 		in NativeArray<float> buffer,
 		out NativeArray<float> delta,
@@ -483,11 +533,13 @@ public static unsafe class Algorithm
 		}
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Norm(in NativeArray<float> array)
     {
         return Norm((float*)array.GetUnsafeReadOnlyPtr(), array.Length);
     }
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Norm(in NativeSlice<float> slice)
     {
         return Norm((float*)slice.GetUnsafeReadOnlyPtr(), slice.Length);
