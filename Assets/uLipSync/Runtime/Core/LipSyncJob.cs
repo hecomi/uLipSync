@@ -30,14 +30,14 @@ public struct LipSyncJob : IJob
 	[ReadOnly] public NativeArray<int> bufferMelCepOffset;
     public NativeArray<float> mfcc;
     public NativeArray<float> scores;
-    public NativeArray<Info> info;
+    [WriteOnly] public NativeArray<Info> info;
 	public NativeArray<float> bufferMelCep;
 
 #if ULIPSYNC_DEBUG
-    public NativeArray<float> debugData;
-    public NativeArray<float> debugSpectrum;
-    public NativeArray<float> debugMelSpectrum;
-    public NativeArray<float> debugMelCepstrum;
+    [WriteOnly] public NativeArray<float> debugData;
+    [WriteOnly] public NativeArray<float> debugSpectrum;
+    [WriteOnly] public NativeArray<float> debugMelSpectrum;
+    [WriteOnly] public NativeArray<float> debugMelCepstrum;
 #endif
 
     int cutoff => targetSampleRate / 2;
