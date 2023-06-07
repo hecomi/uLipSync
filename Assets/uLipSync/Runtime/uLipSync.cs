@@ -23,6 +23,8 @@ public class uLipSync : MonoBehaviour
     bool _isDataReceived = false;
 	int bufferSize = 3;
 
+	int halfMfcc => mfccNum / 2;
+
     NativeArray<float> _rawInputData;
     NativeArray<float> _inputData;
     NativeArray<float> _mfcc;
@@ -121,16 +123,13 @@ public class uLipSync : MonoBehaviour
             _scores = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
-			_bufferMelCep = new NativeArray<float>(bufferSize * mfccNum/2, Allocator.Persistent);
-			// not sure if the best place is her to initialize the offset array?
-			// also maybe there is a smarter way to do without the offset array?
-			_bufferMelCepOffset = new NativeArray<int>(bufferSize, Allocator.Persistent);
-			int offset = 0;
-			for (int i = 0; i < bufferSize; ++i)
+			_bufferMelCep = new NativeArray<float>(bufferSize * halfMfcc, Allocator.Persistent);
+			_bufferMelCepOffset = new NativeArray<int>(bufferSize, Allocator.Persistent)
 			{
-				_bufferMelCepOffset[i] = offset;
-				offset += mfccNum/2;
-			}
+				[0] = 0,
+				[1] = halfMfcc,
+				[2] = mfccNum
+			};
 #if ULIPSYNC_DEBUG
             _debugData = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
             _debugDataForOther = new NativeArray<float>(profile.sampleCount, Allocator.Persistent);
