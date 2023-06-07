@@ -255,7 +255,7 @@ public class uLipSync : MonoBehaviour
         {
             foreach (var value in data.mfccNativeArray)
             {
-                if (index >= _phonemes.Length) break;
+                if (index >= _phonemes.Length) return;
                 _phonemes[index++] = value;
             }
         }
