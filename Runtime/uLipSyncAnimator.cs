@@ -53,12 +53,12 @@ public class uLipSyncAnimator : MonoBehaviour
     }
 
 	void Awake()
-		{
-			foreach (AnimatorInfo par in parameters)
-			{
-				par.nameHash = Animator.StringToHash(par.name);
-			}
-		}
+    {
+        foreach (AnimatorInfo par in parameters)
+        {
+            par.nameHash = Animator.StringToHash(par.name);
+        }
+    }
 
     void Update()
     {
@@ -93,10 +93,9 @@ public class uLipSyncAnimator : MonoBehaviour
     {
         float smoothedValue = Mathf.SmoothDamp(value, target, ref velocity, smoothness);
 
-		// Check if the absolute value of the smoothedValue is below a threshold
 		if (Mathf.Abs(smoothedValue) < threshold)
 		{
-			smoothedValue = 0f; // Set it to zero
+			smoothedValue = 0f;
 		}
 
     	return smoothedValue;
