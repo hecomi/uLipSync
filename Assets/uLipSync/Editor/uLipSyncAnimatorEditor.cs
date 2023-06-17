@@ -44,13 +44,13 @@ public class uLipSyncAnimatorEditor : Editor
         if (EditorUtil.Foldout("Animator Controller Parameters", true))
         {
             ++EditorGUI.indentLevel;
-            if (anim.animator != null)
-            { 
-                DrawAnimatorReorderableList(); 
+            if (anim.animator != null && anim.animator.isActiveAndEnabled)
+            {
+                DrawAnimatorReorderableList();
             }
             else
-            { 
-                EditorGUILayout.HelpBox("Animator is not available.", MessageType.Warning); 
+            {
+                EditorGUILayout.HelpBox("Animator is not available! To edit parameters open the prefab or have game object in scene.", MessageType.Warning);
             }
             --EditorGUI.indentLevel;
             EditorGUILayout.Separator();
@@ -246,6 +246,7 @@ public class uLipSyncAnimatorEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorUtil.DrawProperty(serializedObject, nameof(anim.smoothness));
+        EditorUtil.DrawProperty(serializedObject, nameof(anim.minimalValueThreshold));
     }
 }
 
