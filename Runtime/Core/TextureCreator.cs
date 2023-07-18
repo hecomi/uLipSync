@@ -73,9 +73,10 @@ public static class TextureCreator
 
     public static Texture2D CreateBakedDataWaveTexture(BakedData data, int width, int height)
     {
-        if (!data.isValid) return Texture2D.whiteTexture;
-
         var tex = new Texture2D(width, height);
+
+        if (!data.isValid) return tex;
+        
         var texColors = GetOrCreatePixelData(tex);
         var phonemeColorsTmp = new NativeArray<Color>(BakedData.phonemeColors, Allocator.TempJob);
         int phonemeCount = data.frames[0].phonemes.Count;
