@@ -284,6 +284,9 @@ public class BakedDataEditor : Editor
 
         ls.OnBakeEnd();
         DestroyImmediate(go);
+        
+        EditorUtility.SetDirty(data);
+        AssetDatabase.SaveAssets();
     }
 }
 
