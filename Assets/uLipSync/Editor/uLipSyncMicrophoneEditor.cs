@@ -11,6 +11,8 @@ public class uLipSyncMicrophoneEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        serializedObject.Update();
+        
         if (!Application.isPlaying)
         {
             mic.UpdateMicInfo();
@@ -22,6 +24,8 @@ public class uLipSyncMicrophoneEditor : Editor
         {
             DrawButtons();
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     void DrawProps()
