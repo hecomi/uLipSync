@@ -1191,7 +1191,7 @@ MonoBehaviour:
   Description: {fileID: 11400000, guid: 55b3b52d5eeec4a2ca7b5f5bb67dc72f, type: 2}
 --- !u!95 &1509777886347093727
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1208,7 +1208,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6652395991324121826
 MonoBehaviour:
   m_ObjectHideFlags: 0
