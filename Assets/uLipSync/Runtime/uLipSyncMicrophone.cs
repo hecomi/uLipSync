@@ -6,6 +6,7 @@ namespace uLipSync
 [RequireComponent(typeof(AudioSource))]
 public class uLipSyncMicrophone : MonoBehaviour
 {
+#if !UNITY_WEBGL
     const int MaxRetryMilliSec = 1000;
 
     public int index = 0;
@@ -27,7 +28,7 @@ public class uLipSyncMicrophone : MonoBehaviour
     public AudioClip clip
     {
         get => source ? source.clip : null;
-        set { if (source) source.clip = value; }
+        private set { if (source) source.clip = value; }
     }
 
     public bool isReady { get; private set; } = false;
@@ -219,6 +220,7 @@ public class uLipSyncMicrophone : MonoBehaviour
         source.loop = true;
         source.Play();
     }
+#endif
 }
 
 }

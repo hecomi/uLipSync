@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/uLipSync/Samples/01. Play AudioClip/01-1. Play Audio Clip.unity
+    guid: 62af663744f084f289bbf7caa1d30695
   m_configObjects: {}
