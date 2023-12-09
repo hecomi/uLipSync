@@ -385,6 +385,11 @@ By using `uLipSyncExpressionVRM`, you can control `VRM10ObjectExpression`.
 
 For more details, please refer to *Samples / VRM*. In this sample, `uLipSyncExpressionVRM` is used for the setup of VRM 1.0.
 
+### Scripting Define Symbols
+
+When installing the VRM package from a .unitypackage, you need to manually add *Scripting Define Symbols*. For VRM 0.X, add `USE_VRM0X`, and for VRM 1.0, add `USE_VRM10`. If you add the package via the Package Manager, these symbols are added automatically.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/VRM-Scripting-Define-Symbols.png" width="640" />
 
 Runtime Setup
 -------------
