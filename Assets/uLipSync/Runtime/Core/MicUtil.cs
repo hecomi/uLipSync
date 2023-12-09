@@ -18,7 +18,7 @@ public static class MicUtil
     {
         var list = new List<MicDevice>();
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL || UNITY_EDITOR
         for (int i = 0; i < Microphone.devices.Length; ++i)
         {
             var info = new MicDevice

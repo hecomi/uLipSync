@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
@@ -13,6 +14,7 @@ public class uLipSync : MonoBehaviour
     public LipSyncUpdateEvent onLipSyncUpdate = new LipSyncUpdateEvent();
     [Range(0f, 1f)] public float outputSoundGain = 1f;
 
+    AudioSource _audioSource;
     public uLipSyncAudioSource audioSourceProxy;
     uLipSyncAudioSource _currentAudioSourceProxy;
 
@@ -36,6 +38,10 @@ public class uLipSync : MonoBehaviour
 
     public NativeArray<float> mfcc => _mfccForOther;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
+    
+#if UNITY_WEBGL && !UNITY_EDITOR
+    float[] _audioBuffer = null;
+#endif
     
 #if ULIPSYNC_DEBUG
     NativeArray<float> _debugData;
@@ -67,6 +73,7 @@ public class uLipSync : MonoBehaviour
     void Awake()
     {
         UpdateAudioSource();
+        UpdateAudioSourceProxy();
     }
 
     void OnEnable()
@@ -85,6 +92,9 @@ public class uLipSync : MonoBehaviour
         if (!profile) return;
         if (!_jobHandle.IsCompleted) return;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        UpdateWebGL();
+#endif
         UpdateResult();
         InvokeCallback();
         UpdateCalibration();
@@ -93,6 +103,7 @@ public class uLipSync : MonoBehaviour
 
         UpdateBuffers();
         UpdateAudioSource();
+        UpdateAudioSourceProxy();
     }
 
     void AllocateBuffers()
@@ -305,6 +316,13 @@ public class uLipSync : MonoBehaviour
 
     void UpdateAudioSource()
     {
+        if (_audioSource) return;
+
+        _audioSource = GetComponent<AudioSource>();
+    }
+
+    void UpdateAudioSourceProxy()
+    {
         if (audioSourceProxy == _currentAudioSourceProxy) return;
 
         if (_currentAudioSourceProxy)
@@ -348,11 +366,32 @@ public class uLipSync : MonoBehaviour
 
     void OnAudioFilterRead(float[] input, int channels)
     {
-        if (!audioSourceProxy)
-        {
-            OnDataReceived(input, channels);
-        }
+        if (audioSourceProxy) return;
+        
+        OnDataReceived(input, channels);
     }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    void UpdateWebGL()
+    {
+        if (!_audioSource) return;
+        
+        var clip = _audioSource.clip;
+        if (!clip || clip.loadState != AudioDataLoadState.Loaded) return;
+
+        int ch = clip.channels;
+        int n = inputSampleCount * ch;
+        if (_audioBuffer == null || _audioBuffer.Length != n)
+        {
+            _audioBuffer = new float[n];
+        }
+
+        int offset = _audioSource.timeSamples;
+        offset = math.min(clip.samples - n - 1, offset);
+        clip.GetData(_audioBuffer, offset);
+        OnDataReceived(_audioBuffer, ch);
+    }
+#endif
 
 #if UNITY_EDITOR
     public void OnBakeStart(Profile profile)

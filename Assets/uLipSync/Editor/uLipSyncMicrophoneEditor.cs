@@ -7,12 +7,7 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncMicrophone))]
 public class uLipSyncMicrophoneEditor : Editor
 {
-#if UNITY_WEBGL
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-    }
-#else
+#if !UNITY_WEBGL || UNITY_EDITOR 
     uLipSyncMicrophone mic => target as uLipSyncMicrophone;
     
     public override void OnInspectorGUI()
