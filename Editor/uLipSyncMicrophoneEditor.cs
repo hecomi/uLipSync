@@ -69,6 +69,8 @@ public class uLipSyncMicrophoneEditor : Editor
 
                 if (mic.isRecording) EditorGUILayout.LabelField("Is Recording", "Recording", onStyle);
                 else EditorGUILayout.LabelField("Is Recording", "Stop", offStyle);
+                
+                EditorGUILayout.LabelField("Latency", $"{mic.latency:0.00}", !mic.isOutOfSync ? onStyle : offStyle);
             }
 
             --EditorGUI.indentLevel;
