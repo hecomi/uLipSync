@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Jobs;
@@ -39,8 +38,12 @@ public class uLipSync : MonoBehaviour
     public NativeArray<float> mfcc => _mfccForOther;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
     
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL
+    public bool autoAudioSyncOnWebGL = true;
+    [Range(-0.2f, 0.2f)] public float audioSyncOffsetTime = 0f;
+    #if !UNITY_EDITOR
     float[] _audioBuffer = null;
+    #endif
 #endif
     
 #if ULIPSYNC_DEBUG
@@ -74,6 +77,10 @@ public class uLipSync : MonoBehaviour
     {
         UpdateAudioSource();
         UpdateAudioSourceProxy();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        InitializeWebGL();
+#endif
     }
 
     void OnEnable()
@@ -372,22 +379,39 @@ public class uLipSync : MonoBehaviour
     }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-    void UpdateWebGL()
+    public void InitializeWebGL()
+    {
+        if (_audioSource && autoAudioSyncOnWebGL)
+        {
+            WebGL.Register(this);
+        }
+    }
+
+    public void OnAuidoContextInitiallyResumed()
     {
         if (!_audioSource) return;
-        
+        _audioSource.timeSamples = _audioSource.timeSamples;
+        Debug.Log("AudioSource.timeSamples has been automatically synchronized.");
+    }
+
+    void UpdateWebGL()
+    {
+        if (!_audioSource || !_audioSource.isPlaying) return;
+
         var clip = _audioSource.clip;
         if (!clip || clip.loadState != AudioDataLoadState.Loaded) return;
 
         int ch = clip.channels;
-        int n = inputSampleCount * ch;
+        int fps = 60;
+        int n = AudioSettings.outputSampleRate * ch / fps * ch;
         if (_audioBuffer == null || _audioBuffer.Length != n)
         {
             _audioBuffer = new float[n];
         }
 
         int offset = _audioSource.timeSamples;
-        offset = math.min(clip.samples - n - 1, offset);
+        offset += (int)(audioSyncOffsetTime * AudioSettings.outputSampleRate * ch);
+        offset = math.min(offset, clip.samples - n - 2);
         clip.GetData(_audioBuffer, offset);
         OnDataReceived(_audioBuffer, ch);
     }

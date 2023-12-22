@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/uLipSync/Samples/01. Play AudioClip/01-1. Play Audio Clip.unity
-    guid: 62af663744f084f289bbf7caa1d30695
+    path: Assets/uLipSync/Samples/12. WebGL/12-1. WebGL.unity
+    guid: facea827637364a67b14147495e961f3
   m_configObjects: {}
