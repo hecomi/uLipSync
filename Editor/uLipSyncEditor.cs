@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.IO;
 using System.Text;
 
 namespace uLipSync
@@ -31,6 +30,10 @@ public class uLipSyncEditor : Editor
 
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.outputSoundGain));
             EditorUtil.DrawProperty(serializedObject, nameof(lipSync.audioSourceProxy));
+#if UNITY_WEBGL
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.autoAudioSyncOnWebGL));
+            EditorUtil.DrawProperty(serializedObject, nameof(lipSync.audioSyncOffsetTime));
+#endif
 
             EditorGUILayout.Separator();
 
