@@ -178,9 +178,10 @@ public class BakedDataEditor : Editor
 
         for (int j = 0; j < phonemeCount; ++j)
         {
-            var points = new Vector3[n];
+            var pointsCount = Mathf.Min(n, maxN);
+            var points = new Vector3[pointsCount];
 
-            for (int i = 0; i < n; ++i)
+            for (int i = 0; i < pointsCount; ++i)
             {
                 var index = Mathf.Min(i * skip, data.frames.Count - 1);
                 var frame = data.frames[index];
