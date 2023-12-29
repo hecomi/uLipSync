@@ -1,6 +1,6 @@
 {
     "name": "com.hecomi.ulipsync",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "displayName": "uLipSync",
     "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
     "author": {
