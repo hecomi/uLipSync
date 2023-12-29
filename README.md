@@ -35,11 +35,11 @@ Features
 
 ### Timeline
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-Timeline.gif" width="640" />
 
 ### AnimationClip
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-AnimationClip.gif" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-AnimationClip.gif" width="640" />
 
 ### Texture Change
 
@@ -48,6 +48,10 @@ Features
 ### VRM Support
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-VRM.gif" width="640" />
+
+### WebGL Support
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Feature-WebGL.gif" width="640" />
 
 
 Install
@@ -74,7 +78,7 @@ When a sound is played by `AudioSource`, a buffer of the sound comes into the `O
 
 The component that performs this analysis is `uLipSync`, the data that contains phoneme parameters is `Profile`, and the component that moves the blendshape is `uLipSyncBlendShape`. We also have a `uLipSyncMicrophone` asset that plays the audio from the microphone. Here's an illustration of what it looks like.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Runtime.png" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Runtime.png" width="640" />
 
 ### Setup
 
@@ -167,7 +171,7 @@ If you have a slightly different way of speaking, for example, between your natu
 
 Next is the calibration method using audio data. If there is a voice that says "aaaaaaa" or "iiiiiii", please play it in a loop and press the *Calib* button as well. However, in most cases, there is no such audio, so we want to achieve calibration by trimming the "aaa"-like or "iii"-like part of the existing audio and playing it back. A useful component for this is `uLipSyncCalibrationAudioPlayer`. This is a component that loops the audio waveform while slightly cross-fading the part you want to play.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncCalibrationAudioPlayer.gif" width="640"  />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncCalibrationAudioPlayer.gif" width="640" />
 
 Select the part that seems to say "aaaaa" by dragging the boundary, and then press the *Calib* button for each phoneme to register the MFCC to the `Profile`.
 
@@ -194,7 +198,7 @@ So far, we have looked at runtime processing. Now we will look at the production
 
 If you have audio data, you can calculate in advance what kind of analysis results you will receive each frame, so we will bake it into a `ScriptableObject` called `BakedData`. At runtime, instead of using `uLipSync` to analyze the data at runtime, we will use a component named `uLipSyncBakedDataPlayer` to play the data. This component can notify the result of the analysis with an event just like `uLipSync`, so you can register `uLipSyncBlendShape` to realize lipsync. This flow is illustrated in the following figure.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/BakedData.png" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/BakedData.png" width="640" />
 
 ### Setup
 
@@ -244,7 +248,7 @@ Timeline
 
 You can add special tracks and clips for uLipSync in *Timeline*. We then need to bind which objects will be moved using the data from the Timeline. To do this, a component named `uLipSyncTimelineEvent` that receives playback information and notifies `uLipSyncBlendShape` is introduced. The flow is illustrated below.
 
-<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Timeline.png" />
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/Timeline.png" width="640" />
 
 ### Setup
 
@@ -532,6 +536,18 @@ Please refer to *CalibrationByKeyboardInput.cs* to see how it actually works. Al
 | FixedUpdate |	FixedUpdate |
 | LipSyncUpdateEvent | Immediately after receiving `LipSyncUpdateEvent` |
 | External | Update from an external script (`ApplyBlendShapes()`) |
+
+### WebGL
+
+When setting WebGL as the target platform, a small UI addition occurs.
+
+<img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSync-WebGL.png" width="640" />
+
+In WebGL, due to the Autoplay Policy, audio will not play unless there is an interaction with the page content (such as a click). However, as Unity is still playing the sound internally, this results in a desynchronization of audio that was supposed to be playing from the start. Enabling *Auto Audio Sync On Web GL* will correct this discrepancy when user interaction occurs.
+
+*Audio Sync Offset Time* can be used to adjust the timing of lip-sync delays. Internally, since `OnAudioFilterRead()` is not available in WebGL, `AudioClip.GetData()` is used instead. This approach leverages the ability to slightly adjust the position of the buffer being retrieved.
+
+Currently, Unity does not support JobSystem and Burst for WebGL, which means the performance is not optimal. For cases where real-time analysis is not critical, pre-baking the data is recommended.
 
 ### Mac Build
 
