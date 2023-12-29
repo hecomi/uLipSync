@@ -1,5 +1,5 @@
 {
-    "name": "uLipSync.Samples.PlayAudioClip.Runtime",
+    "name": "uLipSync.Samples.WebGL.Runtime",
     "rootNamespace": "",
     "references": [],
     "includePlatforms": [],

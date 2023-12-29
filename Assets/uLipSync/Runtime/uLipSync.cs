@@ -381,7 +381,9 @@ public class uLipSync : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
     public void InitializeWebGL()
     {
-        if (_audioSource && autoAudioSyncOnWebGL)
+        if (!_audioSource) return;
+
+        if (autoAudioSyncOnWebGL)
         {
             WebGL.Register(this);
         }
@@ -390,7 +392,9 @@ public class uLipSync : MonoBehaviour
     public void OnAuidoContextInitiallyResumed()
     {
         if (!_audioSource) return;
+
         _audioSource.timeSamples = _audioSource.timeSamples;
+
         Debug.Log("AudioSource.timeSamples has been automatically synchronized.");
     }
 
@@ -402,8 +406,10 @@ public class uLipSync : MonoBehaviour
         if (!clip || clip.loadState != AudioDataLoadState.Loaded) return;
 
         int ch = clip.channels;
-        int fps = 60;
-        int n = AudioSettings.outputSampleRate * ch / fps * ch;
+        int fps = Application.targetFrameRate;
+        if (fps <= 0) fps = 60;
+        int n = AudioSettings.outputSampleRate * ch / fps;
+
         if (_audioBuffer == null || _audioBuffer.Length != n)
         {
             _audioBuffer = new float[n];
