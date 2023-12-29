@@ -83,8 +83,13 @@
         },
         {
             "displayName": "11. UI",
-            "description": "A sample that displays the Profile UI at runtime and enables phoneme calibration",
+            "description": "A sample that displays the Profile UI at runtime and enables phoneme calibration.",
             "path": "Samples~/11. UI"
+        },
+        {
+            "displayName": "12. WebGL",
+            "description": "A sample for conducting WebGL tests",
+            "path": "Samples~/12. WebGL"
         }
     ]
 }
