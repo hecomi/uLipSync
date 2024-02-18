@@ -13,38 +13,25 @@ public class RuntimeAudioClipPlayer : MonoBehaviour
     
     public void Play()
     {
-        StartCoroutine(DownloadAndPlay(false));
+        StartCoroutine(DownloadAndPlay());
     }
     
-    public void PlayOneShot()
-    {
-        StartCoroutine(DownloadAndPlay(true));
-    }
-    
-    IEnumerator DownloadAndPlay(bool oneshot)
+    IEnumerator DownloadAndPlay()
     {
         var source = GetComponent<AudioSource>();
         if (!source) yield return null;
         
         var url = inputField.text;
         var type = AudioType.WAV;
-        using (var www = UnityWebRequestMultimedia.GetAudioClip(url, type))
-        {
-            yield return www.SendWebRequest();
-            var clip = DownloadHandlerAudioClip.GetContent(www);
-            clip.name = inputField.text;
-            source.timeSamples = 0;
-            if (oneshot)
-            {
-                source.PlayOneShot(clip);
-            }
-            else
-            {
-                source.loop = false;
-                source.clip = clip;
-                source.Play();
-            }
-        }
+        using var www = UnityWebRequestMultimedia.GetAudioClip(url, type);
+        yield return www.SendWebRequest();
+        
+        var clip = DownloadHandlerAudioClip.GetContent(www);
+        clip.name = inputField.text;
+        
+        source.loop = false;
+        source.clip = clip;
+        source.Play();
     }
 }
 
