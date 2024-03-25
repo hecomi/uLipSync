@@ -5,7 +5,7 @@ uLipSync
 
 - Utilizes **Job System** and **Burst Compiler** to run faster on any OS without using native plugins.
 - Can be calibrated to create a per-character **profile**.
-- Both **run-time** analysis and **pre-bake** processing are available.
+- Both **runtime** analysis and **pre-bake** processing are available.
 - Pre-bake processing can be integrated with **Timeline**.
 - Pre-bake data can be converted to **AnimationClip**
 
@@ -104,7 +104,7 @@ Now when you run the game, Unity-chan will move her mouth as she speaks.
 
 ### Adjust lipsync
 
-The range of the volume to be recognized and the response speed of the mouth can be set in the *Paramteters* of the `uLipSyncBlendShape` component.
+The range of the volume to be recognized and the response speed of the mouth can be set in the *Parameters* of the `uLipSyncBlendShape` component.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncBlendShape-Parameters.png" width="640" />
 
@@ -115,7 +115,7 @@ The range of the volume to be recognized and the response speed of the mouth can
 
 As for the volume, you can see the information about the current, maximum, and minimum volume in the *Runtime Information* of the `uLipSync` component, so try to set it based on this information.
 
-### AudioSource potiion
+### AudioSource Position
 
 In some cases, you may want to attach the `AudioSource` to the mouth position and `uLipSync` to another GameObject. In this case, it may be a bit troublesome, but you can add a component called `uLipSyncAudioSource` to the same GameObject as the `AudioSource`, and set it in *uLipSync Parameters > Audio Source Proxy*. *Samples / 03. AudioSource Proxy* is a sample scene.
 
@@ -141,7 +141,7 @@ In the `uLipSync` component, go to *Profile > Profile* and select a profile from
 Calibration
 -----------
 
-So far we have used the sample `Profile` data, but in this sectio, let's see how to create data adjusted for other voices (voice actors' data or your own voice).
+So far we have used the sample `Profile` data, but in this section, let's see how to create data adjusted for other voices (voice actors' data or your own voice).
 
 ### Create Profile
 
@@ -356,7 +356,7 @@ Animator
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/AnimatorController.png" width="640" />
 
-Then set the phonemes and the corresponding AnimatorContorller parameters to `uLipSyncAnimator` as follows.
+Then set the phonemes and the corresponding AnimatorController parameters to `uLipSyncAnimator` as follows.
 
 <img src="https://raw.githubusercontent.com/wiki/hecomi/uLipSync/v2/UI-uLipSyncAnimator.png" width="640" />
 
@@ -471,7 +471,7 @@ public class DebugPrintLipSyncInfo : MonoBehaviour
 
         if (info.volume < Mathf.Epsilon) return;
 
-        Debug.LogFormat($"PHENOME: {info.phoneme}, VOL: {info.volume} ");
+        Debug.LogFormat($"PHONEME: {info.phoneme}, VOL: {info.volume} ");
     }
 }
 ```
