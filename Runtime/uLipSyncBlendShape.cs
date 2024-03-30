@@ -21,6 +21,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
     public UpdateMethod updateMethod = UpdateMethod.LateUpdate;
     public SkinnedMeshRenderer skinnedMeshRenderer;
     public List<BlendShapeInfo> blendShapes = new List<BlendShapeInfo>();
+    public float maxBlendShapeValue = 100f;
     public float minVolume = -2.5f;
     public float maxVolume = -1.5f;
     [Range(0f, 0.3f)] public float smoothness = 0.05f;
@@ -169,7 +170,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
         {
             if (bs.index < 0) continue;
             float weight = skinnedMeshRenderer.GetBlendShapeWeight(bs.index);
-            weight += bs.weight * bs.maxWeight * volume * 100;
+            weight += bs.weight * bs.maxWeight * volume * maxBlendShapeValue;
             skinnedMeshRenderer.SetBlendShapeWeight(bs.index, weight);
         }
     }
@@ -222,7 +223,7 @@ public class uLipSyncBlendShape : AnimationBakableMonoBehaviour
         foreach (var bs in blendShapes)
         {
             if (bs.index < 0) continue;
-            var weight = bs.weight * bs.maxWeight * volume * 100f;
+            var weight = bs.weight * bs.maxWeight * volume * maxBlendShapeValue;
             weights.Add(weight);
         }
 

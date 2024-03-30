@@ -44,6 +44,7 @@ public class uLipSyncBlendShapeEditor : Editor
         if (EditorUtil.Foldout("Blend Shapes", true))
         {
             ++EditorGUI.indentLevel;
+            EditorUtil.DrawProperty(serializedObject, nameof(blendShape.maxBlendShapeValue));
             DrawBlendShapeReorderableList();
             --EditorGUI.indentLevel;
             EditorGUILayout.Separator();
