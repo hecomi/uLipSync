@@ -201,7 +201,6 @@ public class uLipSync : MonoBehaviour
     void UpdateResult()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-/*
         if (!_isWebGLProcessed)
         {
             result = new LipSyncInfo()
@@ -213,7 +212,6 @@ public class uLipSync : MonoBehaviour
             };
             return;
         }
-        */
 #endif
         
         _jobHandle.Complete();
