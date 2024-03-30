@@ -584,7 +584,7 @@ MonoBehaviour:
   outputSoundGain: 1
   audioSourceProxy: {fileID: 0}
   autoAudioSyncOnWebGL: 1
-  audioSyncOffsetTime: 0.1
+  audioSyncOffsetTime: 0.15
 --- !u!114 &496503022
 MonoBehaviour:
   m_ObjectHideFlags: 0
