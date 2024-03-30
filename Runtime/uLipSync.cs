@@ -40,10 +40,11 @@ public class uLipSync : MonoBehaviour
     
 #if UNITY_WEBGL
     public bool autoAudioSyncOnWebGL = true;
-    [Range(-0.2f, 0.2f)] public float audioSyncOffsetTime = 0f;
+    [Range(-0.1f, 0.3f)] public float audioSyncOffsetTime = 0f;
     #if !UNITY_EDITOR
     float[] _audioBuffer = null;
     #endif
+    bool _isWebGLProcessed = false;
 #endif
     
 #if ULIPSYNC_DEBUG
@@ -199,8 +200,25 @@ public class uLipSync : MonoBehaviour
 
     void UpdateResult()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+/*
+        if (!_isWebGLProcessed)
+        {
+            result = new LipSyncInfo()
+            {
+                phoneme = result.phoneme,
+                volume = 0f,
+                rawVolume = 0f,
+                phonemeRatios = _ratios,
+            };
+            return;
+        }
+        */
+#endif
+        
         _jobHandle.Complete();
         _mfccForOther.CopyFrom(_mfcc);
+        
 #if ULIPSYNC_DEBUG
         _debugDataForOther.CopyFrom(_debugData);
         _debugSpectrumForOther.CopyFrom(_debugSpectrum);
@@ -400,6 +418,8 @@ public class uLipSync : MonoBehaviour
 
     void UpdateWebGL()
     {
+        _isWebGLProcessed = false;
+
         if (!_audioSource || !_audioSource.isPlaying) return;
 
         var clip = _audioSource.clip;
@@ -420,6 +440,8 @@ public class uLipSync : MonoBehaviour
         offset = math.min(offset, clip.samples - n - 2);
         clip.GetData(_audioBuffer, offset);
         OnDataReceived(_audioBuffer, ch);
+
+        _isWebGLProcessed = true;
     }
 #endif
 
