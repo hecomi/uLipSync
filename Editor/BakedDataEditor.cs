@@ -70,10 +70,13 @@ public class BakedDataEditor : Editor
     {
         _msg.Clear();
 
+#if USE_AIVOICE_FOR_GAMES
+#else
         if (!data.profile)
         {
             _msg.Append("* Please set Profile.");
         }
+#endif
 
         if (!data.audioClip)
         {

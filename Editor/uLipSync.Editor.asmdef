@@ -15,6 +15,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "jp.ai-j.aivoice-for-games",
+            "expression": "",
+            "define": "USE_AIVOICE_FOR_GAMES"
+        }
+    ],
     "noEngineReferences": false
 }
