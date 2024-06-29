@@ -122,7 +122,7 @@ public class uLipSyncClipTimelineEditor : ClipEditor
     public override void DrawBackground(TimelineClip clip, ClipBackgroundRegion region)
     {
         DrawBackground(region);
-        DrawWave(clip, region);
+        if (Preference.displayWaveformOnTimeline) DrawWave(clip, region);
     }
 
     void DrawBackground(ClipBackgroundRegion region)
