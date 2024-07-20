@@ -88,7 +88,10 @@ public class uLipSyncClipTimelineEditor : ClipEditor
         var data = clip.bakedData;
         if (!data) return null;
 
-        width = Mathf.Clamp(width, 128, 4096);
+        width = Mathf.Clamp(
+            width, 
+            Preference.minWidthOfWaveformTextureOnTimeline,
+            Preference.maxWidthOfWaveformTextureOnTimeline);
         var tex = TextureCreator.CreateBakedDataWaveTexture(data, width, height);
         var cache = new TextureCache { texture = tex };
         _textures.Add(clip, cache);
