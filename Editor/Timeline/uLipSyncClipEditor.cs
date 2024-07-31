@@ -92,7 +92,8 @@ public class uLipSyncClipTimelineEditor : ClipEditor
             width, 
             Preference.minWidthOfWaveformTextureOnTimeline,
             Preference.maxWidthOfWaveformTextureOnTimeline);
-        var tex = TextureCreator.CreateBakedDataWaveTexture(data, width, height);
+        var smooth = Preference.textureSmoothOnTimeline;
+        var tex = TextureCreator.CreateBakedDataWaveTexture(data, width, height, smooth);
         var cache = new TextureCache { texture = tex };
         _textures.Add(clip, cache);
 

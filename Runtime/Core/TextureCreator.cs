@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Unity.Burst;
 using Unity.Collections;
@@ -55,7 +56,7 @@ public static class TextureCreator
                     targetColor += phonemeColors[colorIndex] * phonemeRatios[ratioIndex];
                 }
 
-                currentColor += (targetColor - currentColor) * smooth;
+                currentColor += (targetColor - currentColor) * (1f - smooth);
 
                 for (int y = 0; y < height; ++y)
                 {
@@ -71,7 +72,7 @@ public static class TextureCreator
         }
     }
 
-    public static Texture2D CreateBakedDataWaveTexture(BakedData data, int width, int height)
+    public static Texture2D CreateBakedDataWaveTexture(BakedData data, int width, int height, float smooth = 0.85f)
     {
         var tex = new Texture2D(width, height);
 
@@ -104,7 +105,7 @@ public static class TextureCreator
             width = width,
             height = height,
             phonemeCount = phonemeCount,
-            smooth = 0.15f,
+            smooth = Mathf.Clamp(smooth, 0f, 1f),
         };
         job.Schedule().Complete();
 
