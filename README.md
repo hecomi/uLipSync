@@ -62,6 +62,10 @@ Install
   - Import `Unity.Burst` and `Unity.Mathematics` from Package Manager.
 - Git URL (UPM)
   - Add `https://github.com/hecomi/uLipSync.git#upm` to Package Manager.
+  - or "com.hecomi.ulipsync": "https://github.com/hecomi/uLipSync.git#upm" to manifest.json
+- Git path URL (UPM)
+  - Add `https://github.com/hecomi/uLipSync.git?path=/Assets/uLipSync` to Package Manager.
+  - or `"com.hecomi.ulipsync": "https://github.com/hecomi/uLipSync.git?path=/Assets/uLipSync"` to manifest.json
 - Scoped Registry (UPM)
   - Add a scoped registry to your project.
     - URL: `https://registry.npmjs.com`
