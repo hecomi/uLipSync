@@ -1,95 +1,95 @@
 {
-    "name": "com.hecomi.ulipsync",
-    "version": "3.1.1",
-    "displayName": "uLipSync",
-    "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
-    "author": {
-        "name": "hecomi",
-        "url": "https://tips.hecomi.com"
+  "name": "com.hecomi.ulipsync",
+  "version": "3.1.4",
+  "displayName": "uLipSync",
+  "description": "A MFCC-based LipSync plugin for Unity using Job and Burst Compiler",
+  "author": {
+    "name": "hecomi",
+    "url": "https://tips.hecomi.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hecomi/uLipSync"
+  },
+  "dependencies": {
+    "com.unity.burst": "1.4.11",
+    "com.unity.mathematics": "1.2.5"
+  },
+  "keywords": [
+    "unity",
+    "lipsync"
+  ],
+  "license": "MIT License",
+  "samples": [
+    {
+      "displayName": "00. Common",
+      "description": "Common assets required for all samples, including UnityChan © UTJ/UCL.",
+      "path": "Samples~/00. Common"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/hecomi/uLipSync"
+    {
+      "displayName": "01. Play AudioClip",
+      "description": "A basic sample to play AudioSource and analyze it at runtime.",
+      "path": "Samples~/01. Play AudioClip"
     },
-    "dependencies": {
-        "com.unity.burst": "1.4.11",
-        "com.unity.mathematics": "1.2.5"
+    {
+      "displayName": "02. Mic Input",
+      "description": "A sample to analyze AudioSource that plays mic input in realtime.",
+      "path": "Samples~/02. Mic Input"
     },
-    "keywords": [
-        "unity",
-        "lipsync"
-    ],
-    "license": "MIT License",
-    "samples": [
-        {
-            "displayName": "00. Common",
-            "description": "Common assets required for all samples, including UnityChan © UTJ/UCL.",
-            "path": "Samples~/00. Common"
-        },
-        {
-            "displayName": "01. Play AudioClip",
-            "description": "A basic sample to play AudioSource and analyze it at runtime.",
-            "path": "Samples~/01. Play AudioClip"
-        },
-        {
-            "displayName": "02. Mic Input",
-            "description": "A sample to analyze AudioSource that plays mic input in realtime.",
-            "path": "Samples~/02. Mic Input"
-        },
-        {
-            "displayName": "03. AudioSource Proxy",
-            "description": "A sample for using an AudioSource attached to a different GameObject.",
-            "path": "Samples~/03. AudioSource Proxy"
-        },
-        {
-            "displayName": "04. VRM",
-            "description": "A sample for performing lip sync with VRM",
-            "path": "Samples~/04. VRM"
-        },
-        {
-            "displayName": "05. Bake",
-            "description": "A sample to play pre-calculated data.",
-            "path": "Samples~/05. Bake"
-        },
-        {
-            "displayName": "06. Timeline",
-            "description": "A sample to play lipsync with Timeline.",
-            "path": "Samples~/06. TImeline"
-        },
-        {
-            "displayName": "07. Animation Bake",
-            "description": "A sample to create animation clips.",
-            "path": "Samples~/07. Animation Bake"
-        },
-        {
-            "displayName": "08. Texture",
-            "description": "A sample of lip-syncing with textures.",
-            "path": "Samples~/08. Texture"
-        },
-        {
-            "displayName": "09. Animator",
-            "description": "A sample of lip-syncing with AnimatorController.",
-            "path": "Samples~/09. Animator"
-        },
-        {
-            "displayName": "10. Runtime Setup",
-            "description": "A sample of setup for dynamically loaded model at runtime.",
-            "path": "Samples~/10. Runtime Setup"
-        },
-        {
-            "displayName": "10. Runtime Setup",
-            "description": "A sample of setup for dynamically loaded model at runtime.",
-            "path": "Samples~/10. Runtime Setup"
-        },
-        {
-            "displayName": "11. UI",
-            "description": "A sample that displays the Profile UI at runtime and enables phoneme calibration.",
-            "path": "Samples~/11. UI"
-        },
-        {
-            "displayName": "12. WebGL",
-            "description": "A sample for conducting WebGL tests",
-            "path": "Samples~/12. WebGL"
-        }
-    ]
+    {
+      "displayName": "03. AudioSource Proxy",
+      "description": "A sample for using an AudioSource attached to a different GameObject.",
+      "path": "Samples~/03. AudioSource Proxy"
+    },
+    {
+      "displayName": "04. VRM",
+      "description": "A sample for performing lip sync with VRM",
+      "path": "Samples~/04. VRM"
+    },
+    {
+      "displayName": "05. Bake",
+      "description": "A sample to play pre-calculated data.",
+      "path": "Samples~/05. Bake"
+    },
+    {
+      "displayName": "06. Timeline",
+      "description": "A sample to play lipsync with Timeline.",
+      "path": "Samples~/06. TImeline"
+    },
+    {
+      "displayName": "07. Animation Bake",
+      "description": "A sample to create animation clips.",
+      "path": "Samples~/07. Animation Bake"
+    },
+    {
+      "displayName": "08. Texture",
+      "description": "A sample of lip-syncing with textures.",
+      "path": "Samples~/08. Texture"
+    },
+    {
+      "displayName": "09. Animator",
+      "description": "A sample of lip-syncing with AnimatorController.",
+      "path": "Samples~/09. Animator"
+    },
+    {
+      "displayName": "10. Runtime Setup",
+      "description": "A sample of setup for dynamically loaded model at runtime.",
+      "path": "Samples~/10. Runtime Setup"
+    },
+    {
+      "displayName": "10. Runtime Setup",
+      "description": "A sample of setup for dynamically loaded model at runtime.",
+      "path": "Samples~/10. Runtime Setup"
+    },
+    {
+      "displayName": "11. UI",
+      "description": "A sample that displays the Profile UI at runtime and enables phoneme calibration.",
+      "path": "Samples~/11. UI"
+    },
+    {
+      "displayName": "12. WebGL",
+      "description": "A sample for conducting WebGL tests",
+      "path": "Samples~/12. WebGL"
+    }
+  ]
 }

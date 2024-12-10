@@ -18,7 +18,6 @@ public static class MicUtil
     {
         var list = new List<MicDevice>();
 
-#if !UNITY_WEBGL || UNITY_EDITOR
         for (int i = 0; i < Microphone.devices.Length; ++i)
         {
             var info = new MicDevice
@@ -29,7 +28,6 @@ public static class MicUtil
             Microphone.GetDeviceCaps(info.name, out info.minFreq, out info.maxFreq);
             list.Add(info);
         }
-#endif
 
         return list;
     }

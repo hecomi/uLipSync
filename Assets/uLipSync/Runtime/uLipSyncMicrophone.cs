@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+
+using UnityEngine;
 
 namespace uLipSync
 {
@@ -6,7 +8,6 @@ namespace uLipSync
 [RequireComponent(typeof(AudioSource))]
 public class uLipSyncMicrophone : MonoBehaviour
 {
-#if !UNITY_WEBGL || UNITY_EDITOR
     const int MaxRetryMilliSec = 1000;
 
     public int index = 0;
@@ -65,13 +66,18 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void Update()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if(!Microphone.JS_Microphone_InitOrResumeContext())
+            return;
+#endif
+
         UpdateDevice();
         UpdateAudioClip();
 
         if (isStartRequested)
         {
             isStartRequested = false;
-            StartRecordInternal();
+            StartCoroutine(StartRecordInternal());
         }
 
         if (isStopRequested)
@@ -79,7 +85,7 @@ public class uLipSyncMicrophone : MonoBehaviour
             isStopRequested = false;
             StopRecordInternal();
         }
-        
+
         UpdateLatencyCheck();
     }
 
@@ -122,15 +128,15 @@ public class uLipSyncMicrophone : MonoBehaviour
 
     void UpdateLatencyCheck()
     {
-        if (!isRecording) return; 
+        if (!isRecording) return;
 
         float micTime = Microphone.GetPosition(device.name) / freq;
         float clipTime = source.time;
         latency = micTime - clipTime;
-        
-        if (latency < -clip.length / 2) 
+
+        if (clip && latency < -clip.length / 2)
         {
-            latency += clip.length; 
+            latency += clip.length;
         }
 
         if (isOutOfSync)
@@ -141,7 +147,7 @@ public class uLipSyncMicrophone : MonoBehaviour
             }
             else
             {
-                StartRecord(); 
+                StartRecord();
             }
         }
     }
@@ -163,9 +169,10 @@ public class uLipSyncMicrophone : MonoBehaviour
         isStartRequested = false;
     }
 
-    void StartRecordInternal()
+    IEnumerator StartRecordInternal()
     {
-        if (!source) return;
+        if (!source)
+            yield break;
 
         int freq = maxFreq;
         if (freq <= 0) freq = 48000;
@@ -179,9 +186,10 @@ public class uLipSyncMicrophone : MonoBehaviour
             if (++retryCount >= MaxRetryMilliSec)
             {
                 Debug.LogError("Failed to get microphone.");
-                return;
+                yield break;
             }
-            System.Threading.Thread.Sleep(1);
+
+            yield return new WaitForSeconds(1);
         }
 
         source.loop = true;
@@ -217,7 +225,6 @@ public class uLipSyncMicrophone : MonoBehaviour
         source.loop = true;
         source.Play();
     }
-#endif
 }
 
 }

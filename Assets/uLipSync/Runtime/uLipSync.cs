@@ -37,16 +37,16 @@ public class uLipSync : MonoBehaviour
 
     public NativeArray<float> mfcc => _mfccForOther;
     public LipSyncInfo result { get; private set; } = new LipSyncInfo();
-    
+
 #if UNITY_WEBGL
     public bool autoAudioSyncOnWebGL = true;
     [Range(-0.1f, 0.3f)] public float audioSyncOffsetTime = 0f;
-    #if !UNITY_EDITOR
-    float[] _audioBuffer = null;
-    #endif
+#if !UNITY_EDITOR
     bool _isWebGLProcessed = false;
+    float[] _audioBuffer = null;
 #endif
-    
+#endif
+
 #if ULIPSYNC_DEBUG
     NativeArray<float> _debugData;
     NativeArray<float> _debugSpectrum;
@@ -64,14 +64,14 @@ public class uLipSync : MonoBehaviour
 
     int inputSampleCount
     {
-        get 
-        {  
+        get
+        {
             if (!profile) return AudioSettings.outputSampleRate;
             float r = (float)AudioSettings.outputSampleRate / profile.targetSampleRate;
             return Mathf.CeilToInt(profile.sampleCount * r);
         }
     }
-    
+
     int mfccNum => profile ? profile.mfccNum : 12;
 
     void Awake()
@@ -129,11 +129,11 @@ public class uLipSync : MonoBehaviour
             int n = inputSampleCount;
             int phonemeCount = profile ? profile.mfccs.Count : 1;
             _rawInputData = new NativeArray<float>(n, Allocator.Persistent);
-            _inputData = new NativeArray<float>(n, Allocator.Persistent); 
-            _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _means = new NativeArray<float>(mfccNum, Allocator.Persistent); 
-            _standardDeviations = new NativeArray<float>(mfccNum, Allocator.Persistent); 
+            _inputData = new NativeArray<float>(n, Allocator.Persistent);
+            _mfcc = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _mfccForOther = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _means = new NativeArray<float>(mfccNum, Allocator.Persistent);
+            _standardDeviations = new NativeArray<float>(mfccNum, Allocator.Persistent);
             _scores = new NativeArray<float>(phonemeCount, Allocator.Persistent);
             _phonemes = new NativeArray<float>(mfccNum * phonemeCount, Allocator.Persistent);
             _info = new NativeArray<LipSyncJob.Info>(1, Allocator.Persistent);
@@ -213,17 +213,17 @@ public class uLipSync : MonoBehaviour
             return;
         }
 #endif
-        
+
         _jobHandle.Complete();
         _mfccForOther.CopyFrom(_mfcc);
-        
+
 #if ULIPSYNC_DEBUG
         _debugDataForOther.CopyFrom(_debugData);
         _debugSpectrumForOther.CopyFrom(_debugSpectrum);
         _debugMelSpectrumForOther.CopyFrom(_debugMelSpectrum);
         _debugMelCepstrumForOther.CopyFrom(_debugMelCepstrum);
 #endif
-        
+
         int index = _info[0].mainPhonemeIndex;
         string mainPhoneme = profile.GetPhoneme(index);
 
@@ -369,7 +369,7 @@ public class uLipSync : MonoBehaviour
         {
             int n = _rawInputData.Length;
             _index = _index % n;
-            for (int i = 0; i < input.Length; i += channels) 
+            for (int i = 0; i < input.Length; i += channels)
             {
                 _rawInputData[_index++ % n] = input[i];
             }
@@ -378,7 +378,7 @@ public class uLipSync : MonoBehaviour
         if (math.abs(outputSoundGain - 1f) > math.EPSILON)
         {
             int n = input.Length;
-            for (int i = 0; i < n; ++i) 
+            for (int i = 0; i < n; ++i)
             {
                 input[i] *= outputSoundGain;
             }
@@ -390,7 +390,7 @@ public class uLipSync : MonoBehaviour
     void OnAudioFilterRead(float[] input, int channels)
     {
         if (audioSourceProxy) return;
-        
+
         OnDataReceived(input, channels);
     }
 

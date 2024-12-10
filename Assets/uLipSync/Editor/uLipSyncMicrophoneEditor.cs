@@ -7,13 +7,12 @@ namespace uLipSync
 [CustomEditor(typeof(uLipSyncMicrophone))]
 public class uLipSyncMicrophoneEditor : Editor
 {
-#if !UNITY_WEBGL || UNITY_EDITOR 
     uLipSyncMicrophone mic => target as uLipSyncMicrophone;
-    
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        
+
         if (!Application.isPlaying)
         {
             mic.UpdateMicInfo();
@@ -69,7 +68,7 @@ public class uLipSyncMicrophoneEditor : Editor
 
                 if (mic.isRecording) EditorGUILayout.LabelField("Is Recording", "Recording", onStyle);
                 else EditorGUILayout.LabelField("Is Recording", "Stop", offStyle);
-                
+
                 EditorGUILayout.LabelField("Latency", $"{mic.latency:0.00}", !mic.isOutOfSync ? onStyle : offStyle);
             }
 
@@ -82,16 +81,16 @@ public class uLipSyncMicrophoneEditor : Editor
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
 
-        if (mic.isRecording && 
+        if (mic.isRecording &&
             mic.clip &&
             GUILayout.Button($"Record & Play (last {mic.clip.length} sec)", GUILayout.Width(180)))
         {
             mic.StopRecordAndCreateAudioClip();
         }
 
-        if (!mic.isRecording && 
-            mic.isMicClipSet && 
-            mic.isPlaying && 
+        if (!mic.isRecording &&
+            mic.isMicClipSet &&
+            mic.isPlaying &&
             GUILayout.Button("Stop", GUILayout.Width(120)))
         {
             mic.source.Stop();
@@ -111,7 +110,6 @@ public class uLipSyncMicrophoneEditor : Editor
 
         EditorGUILayout.EndHorizontal();
     }
-#endif
 }
 
 }
