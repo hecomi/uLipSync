@@ -67,6 +67,7 @@ Install
     - URL: `https://registry.npmjs.com`
     - Scope: `com.hecomi`
   - Install uLipSync in Package Manager.
+    - If you can't find uLipSync in the list, please try entering `com.hecomi.ulipsync` directly.
 
 
 How to Use
