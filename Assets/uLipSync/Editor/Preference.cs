@@ -8,12 +8,14 @@ internal class EditorPrefsStr
 {
     public const string DisplayWaveformOnTimeline = "uLipSync-Timeline-DisplayWaveform";
     public const string MaxWidthOfWaveformTextureOnTimeline = "uLipSync-Timeline-MaxWidthOfWaveformTexture";
+    public const string TextureSmoothOnTimeline = "uLipSync-Timeline-TextureSmooth";
 }
 
 internal class EditorPrefsDefault
 {
     public const int MinWidthOfWaveformTextureOnTimeline = 32;
     public const int MaxWidthOfWaveformTextureOnTimeline = 2048;
+    public const float TextureSmoothOnTimeline = 0.85f;
 }
 
 public static class Preference
@@ -30,6 +32,12 @@ public static class Preference
     {
         get => EditorPrefs.GetInt(EditorPrefsStr.MaxWidthOfWaveformTextureOnTimeline, EditorPrefsDefault.MaxWidthOfWaveformTextureOnTimeline);
         set => EditorPrefs.SetInt(EditorPrefsStr.MaxWidthOfWaveformTextureOnTimeline, value);
+    }
+    
+    public static float textureSmoothOnTimeline
+    {
+        get => EditorPrefs.GetFloat(EditorPrefsStr.TextureSmoothOnTimeline, EditorPrefsDefault.TextureSmoothOnTimeline);
+        set => EditorPrefs.SetFloat(EditorPrefsStr.TextureSmoothOnTimeline, value);
     }
 }
 
@@ -69,6 +77,15 @@ public class PreferenceProvider : SettingsProvider
                     result, 
                     EditorPrefsDefault.MinWidthOfWaveformTextureOnTimeline,
                     EditorPrefsDefault.MaxWidthOfWaveformTextureOnTimeline);
+            }
+        }
+        
+        {
+            float current = Preference.textureSmoothOnTimeline;
+            float result = EditorGUILayout.FloatField("Texture Smoothness On Timeline", current);
+            if (Math.Abs(current - result) > 0f)
+            {
+                Preference.textureSmoothOnTimeline = Math.Clamp(result, 0f, 1f);
             }
         }
         
