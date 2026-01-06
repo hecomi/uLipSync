@@ -110,14 +110,11 @@ public static unsafe class Algorithm
             b[i] = 2f * cutoff * math.sin(ang) / ang;
         }
 
-        for (int i = 0; i < len; ++i)
+        for (int j = 0; j < bLen; ++j)
         {
-            for (int j = 0; j < bLen; ++j)
+            for (int i = j; i < len; ++i)
             {
-                if (i - j >= 0)
-                {
-                    data[i] += b[j] * tmp[i - j];
-                }
+                data[i] += b[j] * tmp[i - j];
             }
         }
     }
