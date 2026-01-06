@@ -363,10 +363,10 @@ public class uLipSync : MonoBehaviour
 
     public void OnDataReceived(float[] input, int channels)
     {
-        if (_rawInputData.Length == 0) return;
-
         lock (_lockObject)
         {
+            if (!_rawInputData.IsCreated || _rawInputData.Length == 0) return;
+            
             int n = _rawInputData.Length;
             _index = _index % n;
             for (int i = 0; i < input.Length; i += channels) 
